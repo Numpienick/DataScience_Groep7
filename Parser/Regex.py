@@ -18,5 +18,5 @@ class Plot:
     file = "plot"
 
 class Rating:
-    initialRegex = "\s*?(?P<Distribution>[0-9\.*]{10})\s+?(?P<Votes>\d+)\s+?(?P<Rating>.\d\.\d)\s+?(?P<Title>.*?)\((?P<Year>\d{4}).*?\)|\s+?\((?P<Platform>(?:TV)|(?:V)|(?:VG))\)\s*?|{(?P<Episode>.*?)}"
+    initialRegex = "\s*?(?P<Distribution>[0-9\.*]{10})\s+?(?P<Votes>\d+)\s+?(?P<Rating>.\d\.\d)\s+?(?P<Title>.*?)\s+?\((?P<Year>\d{4}.*?)\)\s+?((?:{.*})?)((?:\(.*\))?)"
     file = "ratings"
