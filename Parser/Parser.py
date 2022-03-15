@@ -15,7 +15,7 @@ def readFile(dataType):
 
 def writeCSV(data, name):
     # create the csv writer
-    with open("output/" + name + '.csv', 'w', newline='') as f:
+    with open("output/" + name + '.csv', 'w', encoding="ANSI", newline='') as f:
         writer = csv.writer(f, delimiter=';', dialect="excel")
         writer.writerows(data)
     print("done writing to CSV")
