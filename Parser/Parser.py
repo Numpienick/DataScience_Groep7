@@ -23,7 +23,7 @@ def writeCSV(data, name):
 
 # Movies
 movie = Movie()
-# writeCSV(readFile(movie), movie.file)
+writeCSV(readFile(movie), movie.file)
 
 # Country
 country = Country()
