@@ -130,3 +130,5 @@ dmypy.json
 *.list
 
 database.ini
+.idea/
+output/
