@@ -12,6 +12,16 @@ def readFile(dataType):
     file.close()
     return data
 
+def getMatches(dataType):
+    file = open("data/" + dataType.file + ".list", "r", encoding="ANSI")
+    lines = file.readlines()
+    matches = list()
+    for line in lines:
+        match = re.search(dataType.regex, line, re.M)
+        if match is not None:
+            matches.append(match)
+    return matches
+
 
 def writeCSV(data, name):
     # create the csv writer
@@ -23,7 +33,7 @@ def writeCSV(data, name):
 
 # Movies
 movie = Movie()
-writeCSV(readFile(movie), movie.file)
+#matches = getMatches(movie)
 
 # Country
 country = Country()
@@ -34,4 +44,4 @@ plot = Plot()
 # writeCSV(readFile(plot), plot.file)
 
 rating = Rating()
-writeCSV(readFile(rating), rating.file)
+#writeCSV(readFile(rating), rating.file)
