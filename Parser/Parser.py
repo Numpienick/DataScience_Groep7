@@ -46,3 +46,5 @@ cinematographer = Cinematographer()
 
 director = Director()
 writeCSV(readFile(director), director.file)
+
+print("Done!")
