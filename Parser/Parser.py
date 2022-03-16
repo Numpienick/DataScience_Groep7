@@ -1,6 +1,7 @@
 import re
 import csv
 
+from DbConnector import connect
 from Regex import *
 
 
@@ -15,6 +16,16 @@ def readFile(dataType):
     except IOError:
         print("File could not be opened: " + dataType.file)
 
+def getMatches(dataType):
+    file = open("data/" + dataType.file + ".list", "r", encoding="ANSI")
+    lines = file.readlines()
+    matches = list()
+    for line in lines:
+        match = re.search(dataType.regex, line, re.M)
+        if match is not None:
+            matches.append(match)
+    return matches
+
 
 def writeCSV(data, name):
     print("\nStarts writing " + name)
@@ -26,11 +37,11 @@ def writeCSV(data, name):
     except IOError:
         print("File could not be created: " + name + ".csv")
 
-
 print("Welkom bij de IMDB-Parser van groep 7")
 print("Welke dataset wil je omzetten naar CSV?")
 print(
     "1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movie \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
+
 
 dataSetChoice = int(input())
 
@@ -55,6 +66,7 @@ if dataSetChoice == 6 or dataSetChoice == 0:
 if dataSetChoice == 7 or dataSetChoice == 0:
     movie = Movie()
     writeCSV(readFile(movie), movie.file)
+    #matches = getMatches(movie)
 if dataSetChoice == 8 or dataSetChoice == 0:
     plot = Plot()
     writeCSV(readFile(plot), plot.file)
