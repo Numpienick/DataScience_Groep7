@@ -8,7 +8,7 @@ from Regex import *
 def readFile(dataType):
     file = open("data/" + dataType.file + ".list", "r", encoding="ANSI")
     txt = file.read()
-    data = re.findall(dataType.initialRegex, str(txt))
+    data = re.findall(dataType.regex, str(txt))
     print("done reading")
     file.close()
     return data
@@ -24,10 +24,14 @@ def getMatches(dataType):
     return matches
 
 
-def writeCSV(data, name):
+def writeCSV(data, dataType):
+    pattern = re.compile(dataType.regex)
+    groups = str(pattern.groupindex)
+    headers = re.findall(r"([a-z]+)", groups, re.M | re.I)
     # create the csv writer
-    with open("output/" + name + '.csv', 'w', encoding="ANSI", newline='') as f:
+    with open("output/" + dataType.file + '.csv', 'w', encoding="ANSI", newline='') as f:
         writer = csv.writer(f, delimiter=';', dialect="excel")
+        writer.writerow(headers)
         writer.writerows(data)
     print("done writing to CSV")
 
@@ -35,6 +39,7 @@ def writeCSV(data, name):
 # Movies
 movie = Movie()
 #matches = getMatches(movie)
+writeCSV(readFile(movie), movie)
 
 # Country
 country = Country()
