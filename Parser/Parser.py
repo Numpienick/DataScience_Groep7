@@ -6,12 +6,15 @@ from Regex import *
 
 
 def readFile(dataType):
-    file = open("data/" + dataType.file + ".list", "r", encoding="ANSI")
-    txt = file.read()
-    data = re.findall(dataType.regex, str(txt))
-    print("done reading")
-    file.close()
-    return data
+    print("\nStarts reading " + dataType.file)
+    try:
+        with open("data/" + dataType.file + ".list", "r", encoding="ANSI") as f:
+            txt = f.read()
+            data = re.findall(dataType.regex, str(txt))
+            print("Done reading " + dataType.file)
+            return data
+    except IOError:
+        print("File could not be opened: " + dataType.file)
 
 def getMatches(dataType):
     file = open("data/" + dataType.file + ".list", "r", encoding="ANSI")
@@ -21,33 +24,63 @@ def getMatches(dataType):
         match = re.search(dataType.regex, line, re.M)
         if match is not None:
             matches.append(match)
+    file.close()
     return matches
 
 
 def writeCSV(data, dataType):
+    name = dataType.file
     pattern = re.compile(dataType.regex)
     groups = str(pattern.groupindex)
     headers = re.findall(r"([a-z]+)", groups, re.M | re.I)
-    # create the csv writer
-    with open("output/" + dataType.file + '.csv', 'w', encoding="ANSI", newline='') as f:
-        writer = csv.writer(f, delimiter=';', dialect="excel")
-        writer.writerow(headers)
-        writer.writerows(data)
-    print("done writing to CSV")
+    print("\nStarts writing " + name)
+    try:
+        with open("output/" + name + '.csv', 'w', encoding="ANSI", newline='') as f:
+            writer = csv.writer(f, delimiter=';', dialect="excel")
+            writer.writerow(headers)
+            writer.writerows(data)
+            print("Done writing to " + name + ".csv")
+    except IOError:
+        print("File could not be created: " + name + ".csv")
+
+print("Welkom bij de IMDB-Parser van groep 7")
+print("Welke dataset wil je omzetten naar CSV?")
+print(
+    "1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movie \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
 
 
-# Movies
-movie = Movie()
-#matches = getMatches(movie)
-writeCSV(readFile(movie), movie)
+dataSetChoice = int(input())
 
-# Country
-country = Country()
-# writeCSV(readFile(country), country.file)
+if dataSetChoice == 1 or dataSetChoice == 0:
+    actor = Actor()
+    writeCSV(readFile(actor), actor)
+if dataSetChoice == 2 or dataSetChoice == 0:
+    actress = Actress()
+    writeCSV(readFile(actress), actress)
+if dataSetChoice == 3 or dataSetChoice == 0:
+    cinematographer = Cinematographer()
+    writeCSV(readFile(cinematographer), cinematographer)
+if dataSetChoice == 4 or dataSetChoice == 0:
+    country = Country()
+    writeCSV(readFile(country), country)
+if dataSetChoice == 5 or dataSetChoice == 0:
+    director = Director()
+    writeCSV(readFile(director), director)
+if dataSetChoice == 6 or dataSetChoice == 0:
+    genre = Genre()
+    writeCSV(readFile(genre), genre)
+if dataSetChoice == 7 or dataSetChoice == 0:
+    movie = Movie()
+    writeCSV(readFile(movie), movie)
+    #matches = getMatches(movie)
+if dataSetChoice == 8 or dataSetChoice == 0:
+    plot = Plot()
+    writeCSV(readFile(plot), plot)
+if dataSetChoice == 9 or dataSetChoice == 0:
+    rating = Rating()
+    writeCSV(readFile(rating), rating)
+if dataSetChoice == 10 or dataSetChoice == 0:
+    runningTime = RunningTime()
+    writeCSV(readFile(runningTime), runningTime)
 
-# Plot
-plot = Plot()
-# writeCSV(readFile(plot), plot.file)
-
-rating = Rating()
-#writeCSV(readFile(rating), rating.file)
+print("Done!")
