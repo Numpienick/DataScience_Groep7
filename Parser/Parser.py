@@ -1,48 +1,74 @@
 import re
 import csv
+import time
 
 from DbConnector import connect
 from Regex import *
 
 
 def readFile(dataType):
-    print("\nStarts reading " + dataType.file)
+    print(f"\nStarts reading {dataType.file}")
+    startTime = time.perf_counter()
     try:
         with open("data/" + dataType.file + ".list", "r", encoding="ANSI") as f:
             txt = f.read()
+            cleanfileRegex = dataType.cleanFileRegex
+            if cleanfileRegex != "":
+                cleaned = re.search(cleanfileRegex, str(txt))
+                dataStr = str(cleaned.group("data"))
+                data = re.findall(dataType.regex, dataStr)
+                endTime = time.perf_counter()
+                print(f"Done reading {dataType.file} in {endTime - startTime:0.04f} seconds")
+                return data
             data = re.findall(dataType.regex, str(txt))
-            print("Done reading " + dataType.file)
+            endTime = time.perf_counter()
+            print(f"Done reading {dataType.file} in {endTime - startTime:0.04f} seconds")
             return data
-    except IOError:
-        print("File could not be opened: " + dataType.file)
+    except Exception as e:
+        print(e)
 
 
 def getMatches(dataType):
-    file = open("data/" + dataType.file + ".list", "r", encoding="ANSI")
-    lines = file.readlines()
-    matches = list()
-    for line in lines:
-        match = re.search(dataType.regex, line, re.M)
-        if match is not None:
-            matches.append(match)
-    file.close()
-    return matches
+    print(f"\nStarts getting matches from {dataType.file}")
+    startTime = time.perf_counter()
+    try:
+        with open("data/" + dataType.file + ".list", "r", encoding="ANSI") as f:
+            cleanfileRegex = dataType.cleanFileRegex
+            if cleanfileRegex != "":
+                cleaned = re.search(cleanfileRegex, str(txt))
+                dataStr = str(cleaned.group("data"))
+                lines = dataStr.splitlines()
+            else:
+                lines = f.readlines()
+
+            matches = list()
+            for line in lines:
+                match = re.search(dataType.regex, line, re.M)
+                if match is not None:
+                    matches.append(match)
+            endTime = time.perf_counter()
+            print(f"Done getting matches from {dataType.file} in {endTime - startTime:0.04f} seconds")
+            return matches
+    except Exception as e:
+        print(e)
 
 
 def writeCSV(data, dataType):
+    startTime = time.perf_counter()
     name = dataType.file
     pattern = re.compile(dataType.regex)
     groups = str(pattern.groupindex)
     headers = re.findall(r"([a-z]+)", groups, re.M | re.I)
-    print("\nStarts writing " + name)
+    print(f"\nStarts writing {name}")
     try:
         with open("output/" + name + '.csv', 'w', encoding="ANSI", newline='') as f:
             writer = csv.writer(f, delimiter=';', dialect="excel")
             writer.writerow(headers)
             writer.writerows(data)
-            print("Done writing to " + name + ".csv")
-    except IOError:
-        print("File could not be created: " + name + ".csv")
+            endTime = time.perf_counter()
+            print(f"Done writing to {name}.csv in {endTime - startTime:0.04f} seconds")
+    except Exception as e:
+        print(e)
 
 
 def main():
@@ -52,6 +78,7 @@ def main():
         "1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movie \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
 
     dataSetChoice = input()
+    startTime = time.perf_counter()
 
     match(dataSetChoice):
         case "0":
@@ -109,7 +136,8 @@ def main():
             print("\n" * 100)
             print("Dat is geen optie. Probeer het opnieuw\n\n")
             main()
+    endTime = time.perf_counter()
+    print(f"\nFinished parsing in {endTime - startTime:0.04f} seconds")
 
 
 main()
-print("Done!")
