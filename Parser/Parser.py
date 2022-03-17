@@ -5,6 +5,7 @@ from DbConnector import connect
 from Regex import *
 
 
+# Reads .list file
 def readFile(dataType):
     print("\nStarts reading " + dataType.file)
     try:
@@ -16,7 +17,8 @@ def readFile(dataType):
     except IOError:
         print("File could not be opened: " + dataType.file)
 
-
+        
+# Gets matches based on header
 def getMatches(dataType):
     file = open("data/" + dataType.file + ".list", "r", encoding="ANSI")
     lines = file.readlines()
@@ -29,6 +31,7 @@ def getMatches(dataType):
     return matches
 
 
+# Writes CSV with data from .list file
 def writeCSV(data, dataType):
     name = dataType.file
     pattern = re.compile(dataType.regex)
@@ -48,12 +51,11 @@ def writeCSV(data, dataType):
 def main():
     print("Welkom bij de IMDB-Parser van groep 7")
     print("Welke dataset wil je omzetten naar CSV?")
-    print(
-        "1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movie \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
+    print("1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movie \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
 
     dataSetChoice = input()
 
-    match(dataSetChoice):
+    match (dataSetChoice):
         case "0":
             data = Actor()
             writeCSV(readFile(data), data)
