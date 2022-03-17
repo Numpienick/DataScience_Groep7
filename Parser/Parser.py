@@ -17,7 +17,7 @@ def readFile(dataType):
     except IOError:
         print("File could not be opened: " + dataType.file)
 
-
+        
 # Gets matches based on header
 def getMatches(dataType):
     file = open("data/" + dataType.file + ".list", "r", encoding="ANSI")
