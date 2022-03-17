@@ -15,7 +15,7 @@ Parser made in Python
 ### Installing Python
 1. Head to [Python.org](https://www.python.org/downloads/)
 2. Download and install Python for the correct platform.
-#### Tested in Python 3.7, 3.8 and 3.10
+#### Because of using certain functions, Python 3.10 is required
 
 ### Parsing data
 1. Put all .list file datasets in the `data` folder.
