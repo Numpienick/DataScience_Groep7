@@ -21,6 +21,7 @@ def readFile(dataType):
                 txt = str(cleaned.group("data"))
                 endTimeClean = time.perf_counter()
                 print(f"Done cleaning {dataType.file} in {endTimeClean - startTime:0.04f} seconds")
+                print(f"\nContinuing reading {dataType.file}")
 
             data = re.findall(dataType.regex, str(txt))
             endTime = time.perf_counter()
