@@ -1,6 +1,7 @@
 import re
 import csv
 import time
+import itertools as it
 
 from DbConnector import connect
 from Regex import *
@@ -11,9 +12,13 @@ def readFile(dataType):
     startTime = time.perf_counter()
     try:
         with open("data/" + dataType.file + ".list", "r", encoding="ANSI") as f:
+            data = dataType.sectionData(f)
+            if data != "":
+                data = re.findall(dataType.regex, data)
+                return data
             txt = f.read()
             cleanfileRegex = dataType.cleanFileRegex
-            if cleanfileRegex != "":
+            if cleanfileRegex != r"":
                 cleaned = re.search(cleanfileRegex, str(txt))
                 dataStr = str(cleaned.group("data"))
                 data = re.findall(dataType.regex, dataStr)
@@ -34,13 +39,12 @@ def getMatches(dataType):
     try:
         with open("data/" + dataType.file + ".list", "r", encoding="ANSI") as f:
             cleanfileRegex = dataType.cleanFileRegex
-            if cleanfileRegex != "":
+            if cleanfileRegex != r"":
                 cleaned = re.search(cleanfileRegex, str(txt))
                 dataStr = str(cleaned.group("data"))
                 lines = dataStr.splitlines()
             else:
                 lines = f.readlines()
-
             matches = list()
             for line in lines:
                 match = re.search(dataType.regex, line, re.M)
