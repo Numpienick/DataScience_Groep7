@@ -1,3 +1,6 @@
+import re
+
+
 class DataSet:
     regex = ""
     file = ""
@@ -47,7 +50,7 @@ class Director(DataSet):
 class Genre(DataSet):
     def __init__(self):
         super().__init__()
-        self.regex = ""
+        self.regex = "(?:\")?(?P<ShowTitle>.+?)(?:\")?\s\((?P<ReleaseDateOrder>\d{4}(?:[^)]+?)?|\?{4}(?:.+?)?)\)\s+?(?:\((?P<ShowType>(?:TV)|(?:V)|(?:VG))\))?(?:\{(?P<EpisodeTitle>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s)?(?:\(\#(?P<SeasonNumber>\d+?)\.(?P<EpisodeNumber>\d+?)\)\})?(?:\s)?(?:(?P<Suspended>\{\{SUSPENDED\}\}))?(?:\0+?)?(?:\s)+(?P<Genre>.+)"
         self.file = "genres"
 
 
@@ -61,7 +64,7 @@ class Movie(DataSet):
 class Plot(DataSet):
     def __init__(self):
         super().__init__()
-        self.regex = "(MV[\s\S]*?-------------------------------------------------------------------------------)"
+        self.regex = "(?:(?:MV:\s)(?:\")?(?P<ShowTitle>.+?)(?:\")?\s\((?P<ReleaseDateOrder>\d{4}(?:[^)]+?)?|\?{4}(?:.+?)?)\)\s+?(?:\((?P<ShowType>(?:TV)|(?:V)|(?:VG))\))?(?:\{(?P<EpisodeTitle>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s)?(?:\(\#(?P<SeasonNumber>\d+?)\.(?P<EpisodeNumber>\d+?)\)\})?(?:\s))|(?:(?<=PL:\s)(?:(?P<LastPLot>.+\n\n)|(?P<PLot>.+)))|(?:(?:BY:\s)(?:(?P<BY>.+))(?:<(?P<Email>.+)>))"
         self.file = "plot"
 
 
