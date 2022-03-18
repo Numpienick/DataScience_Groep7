@@ -7,6 +7,7 @@ from DbConnector import connect
 from Regex import *
 
 
+# Reads IMDB .list file
 def readFile(dataType):
     print(f"\nStarts reading {dataType.file}")
     startTime = time.perf_counter()
@@ -17,14 +18,16 @@ def readFile(dataType):
                 data = re.findall(dataType.regex, data)
                 return data
             txt = f.read()
-            cleanfileRegex = dataType.cleanFileRegex
-            if cleanfileRegex != r"":
-                cleaned = re.search(cleanfileRegex, str(txt))
-                dataStr = str(cleaned.group("data"))
-                data = re.findall(dataType.regex, dataStr)
-                endTime = time.perf_counter()
-                print(f"Done reading {dataType.file} in {endTime - startTime:0.04f} seconds")
-                return data
+
+            # Some files needs a cleanup step before the regex, this if statement will trigger
+            if len(dataType.cleanFileRegex.strip()) > 0:
+                print(f"\nStarts cleaning {dataType.file}")
+                cleaned = re.search(dataType.cleanFileRegex, str(txt))
+                txt = str(cleaned.group("data"))
+                endTimeClean = time.perf_counter()
+                print(f"Done cleaning {dataType.file} in {endTimeClean - startTime:0.04f} seconds")
+                print(f"\nContinuing reading {dataType.file}")
+
             data = re.findall(dataType.regex, str(txt))
             endTime = time.perf_counter()
             print(f"Done reading {dataType.file} in {endTime - startTime:0.04f} seconds")
@@ -33,11 +36,14 @@ def readFile(dataType):
         print(e)
 
 
+# Can loop through regexxed data line by line
+# At the moment unused
 def getMatches(dataType):
     print(f"\nStarts getting matches from {dataType.file}")
     startTime = time.perf_counter()
     try:
         with open("data/" + dataType.file + ".list", "r", encoding="ANSI") as f:
+            txt = f.read()
             cleanfileRegex = dataType.cleanFileRegex
             if cleanfileRegex != r"":
                 cleaned = re.search(cleanfileRegex, str(txt))
@@ -57,6 +63,7 @@ def getMatches(dataType):
         print(e)
 
 
+# Writes csv from read file
 def writeCSV(data, dataType):
     startTime = time.perf_counter()
     name = dataType.file
@@ -64,6 +71,7 @@ def writeCSV(data, dataType):
     groups = str(pattern.groupindex)
     headers = re.findall(r"([a-z]+)", groups, re.M | re.I)
     print(f"\nStarts writing {name}")
+
     try:
         with open("output/" + name + '.csv', 'w', encoding="ANSI", newline='') as f:
             writer = csv.writer(f, delimiter=';', dialect="excel")
@@ -75,6 +83,7 @@ def writeCSV(data, dataType):
         print(e)
 
 
+# Main function, provides info and choice
 def main():
     print("Welkom bij de IMDB-Parser van groep 7")
     print("Welke dataset wil je omzetten naar CSV?")
@@ -84,7 +93,7 @@ def main():
     dataSetChoice = input()
     startTime = time.perf_counter()
 
-    match(dataSetChoice):
+    match (dataSetChoice):
         case "0":
             data = Actor()
             writeCSV(readFile(data), data)
@@ -141,7 +150,7 @@ def main():
             print("Dat is geen optie. Probeer het opnieuw\n\n")
             main()
     endTime = time.perf_counter()
-    print(f"\nFinished parsing in {endTime - startTime:0.04f} seconds")
+    print(f"\nDone! Finished parsing in {endTime - startTime:0.04f} seconds")
 
 
 main()
