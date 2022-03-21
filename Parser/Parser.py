@@ -1,50 +1,89 @@
 import re
 import csv
+import time
+import itertools as it
 
 from DbConnector import connect
 from Regex import *
 
 
+# Reads IMDB .list file
 def readFile(dataType):
-    print("\nStarts reading " + dataType.file)
+    print(f"\nStarts reading {dataType.file}")
+    startTime = time.perf_counter()
+    try:
+        with open("data/" + dataType.file + ".list", "r", encoding="ANSI") as f:
+            data = dataType.sectionData(f)
+            if data != "":
+                data = re.findall(dataType.regex, data)
+                return data
+            txt = f.read()
+
+            # Some files needs a cleanup step before the regex, this if statement will trigger
+            if len(dataType.cleanFileRegex.strip()) > 0:
+                print(f"\nStarts cleaning {dataType.file}")
+                cleaned = re.search(dataType.cleanFileRegex, str(txt))
+                txt = str(cleaned.group("data"))
+                endTimeClean = time.perf_counter()
+                print(f"Done cleaning {dataType.file} in {endTimeClean - startTime:0.04f} seconds")
+                print(f"\nContinuing reading {dataType.file}")
+
+            data = re.findall(dataType.regex, str(txt))
+            endTime = time.perf_counter()
+            print(f"Done reading {dataType.file} in {endTime - startTime:0.04f} seconds")
+            return data
+    except Exception as e:
+        print(e)
+
+
+# Can loop through regexxed data line by line
+# At the moment unused
+def getMatches(dataType):
+    print(f"\nStarts getting matches from {dataType.file}")
+    startTime = time.perf_counter()
     try:
         with open("data/" + dataType.file + ".list", "r", encoding="ANSI") as f:
             txt = f.read()
-            data = re.findall(dataType.regex, str(txt))
-            print("Done reading " + dataType.file)
-            return data
-    except IOError:
-        print("File could not be opened: " + dataType.file)
+            cleanfileRegex = dataType.cleanFileRegex
+            if cleanfileRegex != r"":
+                cleaned = re.search(cleanfileRegex, str(txt))
+                dataStr = str(cleaned.group("data"))
+                lines = dataStr.splitlines()
+            else:
+                lines = f.readlines()
+            matches = list()
+            for line in lines:
+                match = re.search(dataType.regex, line, re.M)
+                if match is not None:
+                    matches.append(match)
+            endTime = time.perf_counter()
+            print(f"Done getting matches from {dataType.file} in {endTime - startTime:0.04f} seconds")
+            return matches
+    except Exception as e:
+        print(e)
 
 
-def getMatches(dataType):
-    file = open("data/" + dataType.file + ".list", "r", encoding="ANSI")
-    lines = file.readlines()
-    matches = list()
-    for line in lines:
-        match = re.search(dataType.regex, line, re.M)
-        if match is not None:
-            matches.append(match)
-    file.close()
-    return matches
-
-
+# Writes csv from read file
 def writeCSV(data, dataType):
+    startTime = time.perf_counter()
     name = dataType.file
     pattern = re.compile(dataType.regex)
     groups = str(pattern.groupindex)
     headers = re.findall(r"([a-z]+)", groups, re.M | re.I)
-    print("\nStarts writing " + name)
+    print(f"\nStarts writing {name}")
+
     try:
         with open("output/" + name + '.csv', 'w', encoding="ANSI", newline='') as f:
             writer = csv.writer(f, delimiter=';', dialect="excel")
             writer.writerow(headers)
             writer.writerows(data)
-            print("Done writing to " + name + ".csv")
-    except IOError:
-        print("File could not be created: " + name + ".csv")
+            endTime = time.perf_counter()
+            print(f"Done writing to {name}.csv in {endTime - startTime:0.04f} seconds")
+    except Exception as e:
+        print(e)
 
 
+# Main function, provides info and choice
 def main():
     print("Welkom bij de IMDB-Parser van groep 7")
     print("Welke dataset wil je omzetten naar CSV?")
@@ -52,8 +91,9 @@ def main():
         "1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movie \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
 
     dataSetChoice = input()
+    startTime = time.perf_counter()
 
-    match(dataSetChoice):
+    match (dataSetChoice):
         case "0":
             data = Actor()
             writeCSV(readFile(data), data)
@@ -109,7 +149,8 @@ def main():
             print("\n" * 100)
             print("Dat is geen optie. Probeer het opnieuw\n\n")
             main()
+    endTime = time.perf_counter()
+    print(f"\nDone! Finished parsing in {endTime - startTime:0.04f} seconds")
 
 
 main()
-print("Done!")
