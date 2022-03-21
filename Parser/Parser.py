@@ -1,6 +1,7 @@
 import re
 import csv
 import time
+import itertools as it
 
 from DbConnector import connect
 from Regex import *
@@ -12,6 +13,10 @@ def readFile(dataType):
     startTime = time.perf_counter()
     try:
         with open("data/" + dataType.file + ".list", "r", encoding="ANSI") as f:
+            data = dataType.sectionData(f)
+            if data != "":
+                data = re.findall(dataType.regex, data)
+                return data
             txt = f.read()
 
             # Some files needs a cleanup step before the regex, this if statement will trigger
@@ -40,13 +45,12 @@ def getMatches(dataType):
         with open("data/" + dataType.file + ".list", "r", encoding="ANSI") as f:
             txt = f.read()
             cleanfileRegex = dataType.cleanFileRegex
-            if cleanfileRegex != "":
+            if cleanfileRegex != r"":
                 cleaned = re.search(cleanfileRegex, str(txt))
                 dataStr = str(cleaned.group("data"))
                 lines = dataStr.splitlines()
             else:
                 lines = f.readlines()
-
             matches = list()
             for line in lines:
                 match = re.search(dataType.regex, line, re.M)
@@ -83,8 +87,7 @@ def writeCSV(data, dataType):
 def main():
     print("Welkom bij de IMDB-Parser van groep 7")
     print("Welke dataset wil je omzetten naar CSV?")
-    print(
-        "1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movie \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
+    print("1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movie \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
 
     dataSetChoice = input()
     startTime = time.perf_counter()
