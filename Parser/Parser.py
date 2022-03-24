@@ -69,7 +69,7 @@ def writeCSV(data, dataType):
     name = dataType.file
     pattern = re.compile(dataType.regex)
     groups = str(pattern.groupindex)
-    headers = re.findall(r"([a-z]+)", groups, re.M | re.I)
+    headers = re.findall(r"([_a-z]+)", groups, re.M | re.I)
     print(f"\nStarts writing {name}")
 
     try:
