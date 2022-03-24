@@ -1,0 +1,15 @@
+{% extends "info/base.html" %}
+{% block content %}
+    {% for rating in ratings %}
+        <article class="media content-section m-5">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{ rating.id }}</a>
+              <small class="text-muted">{{ rating.amount_of_votes }}</small>
+            </div>
+            <h2><a class="article-title" href="#">{{ rating.rating }}</a></h2>
+            <p class="article-content">{{ rating.distribution }}</p>
+          </div>
+        </article>
+    {% endfor %}
+{% endblock content %}
