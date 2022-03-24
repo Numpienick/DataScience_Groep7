@@ -30,6 +30,9 @@ Parser made in Python
 4. You can select which datasets you want to be parsed by a number corresponding with the dataset.
 5. This will take a while, but it will tell you which datasets it has completed.
 6. The results (.csv files) will be output in the `output` folder.
+4. You can select which datasets you want to be parsed by a number corresponding with the dataset.
+5. This will take a while, but it will tell you which datasets it has completed.
+6. The results (.csv files) will be output in the `output` folder.
 
 
 
