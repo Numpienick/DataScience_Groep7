@@ -14,7 +14,7 @@ class Post(models.Model):
 
 
 class Rating(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.IntegerField(primary_key=True, db_column='rating_id')
     distribution = models.CharField(max_length=20)
     amount_of_votes = models.IntegerField()
     rating = models.FloatField()
