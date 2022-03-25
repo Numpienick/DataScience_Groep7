@@ -60,14 +60,17 @@ CREATE TABLE "cinematographers" (
   "season_number" int,
   "episode_number" int,
   "suspended" varchar,
-  "also_known_as" varchar,
-  "uncredited" varchar,
-  "credit_only" varchar,
-  "archive_footage" varchar,
-  "type_of_director" varchar,
   "type_of_cinematographer" varchar,
+  "video" varchar,
+  "also_known_as" varchar,
   "segment" varchar,
-  "rumored" varchar
+  "voice_actor" varchar,
+  "scenes_deleted" varchar,
+  "credit_only" varchar,
+  "archived_footage" varchar,
+  "uncredited" varchar,
+  "rumored" varchar,
+  "motion_capture" varchar
 );
 
 CREATE TABLE "countries" (
@@ -94,14 +97,17 @@ CREATE TABLE "directors" (
   "season_number" int,
   "episode_number" int,
   "suspended" varchar,
-  "also_known_as" varchar,
-  "collaborating" varchar,
-  "uncredited" varchar,
-  "credit_only" varchar,
-  "archive_footage" varchar,
   "type_of_director" varchar,
+  "video" varchar,
+  "also_known_as" varchar,
   "segment" varchar,
-  "rumored" varchar
+  "voice_actor" varchar,
+  "scenes_deleted" varchar,
+  "credit_only" varchar,
+  "archived_footage" varchar,
+  "uncredited" varchar,
+  "rumored" varchar,
+  "motion_capture" varchar
 );
 
 CREATE TABLE "genres" (
@@ -125,7 +131,7 @@ CREATE TABLE "movies" (
   "season_number" int,
   "episode_number" int,
   "suspended" varchar,
-  "release_year" int,
+  "release_year" varchar,
   "end_year" varchar
 );
 

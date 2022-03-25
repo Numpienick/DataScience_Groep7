@@ -54,11 +54,11 @@ def connect(dbType = 'staging'):
         #     cur.copy_from(f, filename, sep=';', null="")
         # conn.commit()
 
-        #fill_db(conn)
+        # fill_db(conn)
 
         #Empty The Database
-        cur.execute("DELETE FROM actors")
-        conn.commit()
+        # cur.execute("DELETE FROM actors")
+        # conn.commit()
         # empty_db(conn, dbType, "actors")
 
         cur.close()
@@ -137,23 +137,39 @@ def setupDatabase(dbType = 'staging'):
             connection.close()
 
 
-def fill_db(conn):
-    cur = conn.cursor()
-    filenames = ['actors', 'actresses', 'cinematographers', 'countries', 'directors', 'genres', 'movies', 'plot',
-                 'ratings', 'running-times']
-    for filename in filenames:
-        filepath = 'output/' + filename + '.csv'
-        print(filepath)
-        if filename == 'running-times':
-            with open(filepath, 'r', encoding="ANSI", newline='') as f:
-                next(f)
-                cur.copy_from(f, 'running_time', sep=';', null="")
-            conn.commit()
-        else:
-            with open(filepath, 'r', encoding="ANSI", newline='') as f:
-                next(f)
-                cur.copy_from(f, filename, sep=';', null="")
-            conn.commit()
+def fill_db(dbType = 'staging'):
+    while dbType not in ["staging", "final"]:
+        print(f'Wrong dbType: {dbType}\nIt should be either "staging" or "final"')
+        return
+
+    try:
+        params = config(dbType)
+        conn = psycopg2.connect(**params)
+        cur = conn.cursor()
+
+        filenames = ['actors', 'actresses', 'cinematographers', 'countries', 'directors', 'genres', 'movies', 'plot',
+                     'ratings', 'running-times']
+        for filename in filenames:
+            filepath = 'output/' + filename + '.csv'
+            print(filepath)
+            if filename == 'running-times':
+                with open(filepath, 'r', encoding="ANSI", newline='') as f:
+                    next(f)
+                    cur.copy_from(f, 'running_time', sep=';', null="")
+                conn.commit()
+            else:
+                with open(filepath, 'r', encoding="ANSI", newline='') as f:
+                    next(f)
+                    cur.copy_from(f, filename, sep=';', null="")
+                conn.commit()
+
+        cur.close()
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+        return None
+    print('Connected to database')
+    return conn
 
 
 def empty_db(conn, dbType, table_name):
@@ -165,6 +181,7 @@ def empty_db(conn, dbType, table_name):
             'table_name': table_name
         })
     conn.commit()
+
 
 def main():
     config()
