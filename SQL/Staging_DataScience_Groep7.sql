@@ -160,16 +160,19 @@ CREATE TABLE "running_time" (
   "suspended" varchar,
   "country" varchar,
   "running_time" int,
-  "approximated" varchar,
-  "season" varchar,
   "including_commercials" varchar,
   "amount_of_episodes" varchar,
-  "fps" varchar,
   "amount_of_parts" int,
+  "season" varchar,
+  "release_year" varchar,
+  "end_year" varchar,
+  "fps" varchar,
   "festival" varchar,
   "cut" varchar,
   "market" varchar,
-  "print" varchar
+  "print" varchar,
+  "approximated" varchar
+
 );
 
 CREATE TABLE "plot" (

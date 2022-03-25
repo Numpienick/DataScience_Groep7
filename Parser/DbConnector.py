@@ -152,16 +152,23 @@ def fill_db(dbType = 'staging'):
         for filename in filenames:
             filepath = 'output/' + filename + '.csv'
             print(filepath)
-            if filename == 'running-times':
+            # if filename == 'running-times':
+            #     with open(filepath, 'r', encoding="ANSI", newline='') as f:
+            #         next(f)
+            #         cur.copy_from(f, 'running_time', sep=';', null="")
+            #     conn.commit()
+            #TODO: hij mist de written_by colom in de csv om een of andere manier
+            if filename == 'plot':
                 with open(filepath, 'r', encoding="ANSI", newline='') as f:
                     next(f)
-                    cur.copy_from(f, 'running_time', sep=';', null="")
+                    cur.copy_from(f, 'plot', sep=';', null="")
                 conn.commit()
-            else:
-                with open(filepath, 'r', encoding="ANSI", newline='') as f:
-                    next(f)
-                    cur.copy_from(f, filename, sep=';', null="")
-                conn.commit()
+                #TODO: remove the ifs and reopen the else for everything
+            # else:
+            #     with open(filepath, 'r', encoding="ANSI", newline='') as f:
+            #         next(f)
+            #         cur.copy_from(f, filename, sep=';', null="")
+            #     conn.commit()
 
         cur.close()
 
