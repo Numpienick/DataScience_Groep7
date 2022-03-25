@@ -11,7 +11,7 @@ def config(section='staging'):
     If not defined defaults to "staging"
     """
     while section not in ["staging", "final"]:
-        print(f'Wrong dbType: {dbType}\nIt should be either "staging" or "final"')
+        print(f'Wrong section: {section}\nIt should be either "staging" or "final"')
         return
 
     parser = ConfigParser()
