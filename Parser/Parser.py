@@ -3,7 +3,7 @@ import csv
 import time
 import itertools as it
 
-from DbConnector import connect
+from DbConnector import *
 from Regex import *
 
 
@@ -151,5 +151,6 @@ def main():
     endTime = time.perf_counter()
     print(f"\nDone! Finished parsing in {endTime - startTime:0.04f} seconds")
 
-
+#setupDatabase()
+#setupDatabase("final")
 main()
