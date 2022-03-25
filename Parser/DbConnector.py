@@ -12,7 +12,7 @@ def config(section='staging'):
     If not defined defaults to "staging"
     """
     while section not in ["staging", "final"]:
-        print(f'Wrong dbType: {dbType}\nIt should be either "staging" or "final"')
+        print(f'Wrong dbType: {section}\nIt should be either "staging" or "final"')
         return
 
     parser = ConfigParser()
@@ -45,10 +45,21 @@ def connect(dbType = 'staging'):
         cur = conn.cursor()
 
         #Fill the Database
-        # fill_db(conn)
+
+        # filename = "actors"
+        # filepath = 'output/' + filename + '.csv'
+        # print(filepath)
+        # with open(filepath, 'r', encoding="ANSI", newline='') as f:
+        #     next(f)
+        #     cur.copy_from(f, filename, sep=';', null="")
+        # conn.commit()
+
+        #fill_db(conn)
 
         #Empty The Database
-        #empty_db(conn)
+        cur.execute("DELETE FROM actors")
+        conn.commit()
+        # empty_db(conn, dbType, "actors")
 
         cur.close()
 
@@ -56,7 +67,6 @@ def connect(dbType = 'staging'):
         print(error)
         return None
     print('Connected to database')
-    conn.close()
     return conn
 
 
@@ -121,6 +131,7 @@ def setupDatabase(dbType = 'staging'):
                     print("Finished creating all the tables")
     except Exception as err:
         raise err
+
     finally:
         if connection:
             connection.close()
@@ -128,12 +139,11 @@ def setupDatabase(dbType = 'staging'):
 
 def fill_db(conn):
     cur = conn.cursor()
-    filenames = ['actor', 'actresses', 'cinematographers', 'countries', 'directors', 'genres', 'movies', 'plot',
+    filenames = ['actors', 'actresses', 'cinematographers', 'countries', 'directors', 'genres', 'movies', 'plot',
                  'ratings', 'running-times']
     for filename in filenames:
         filepath = 'output/' + filename + '.csv'
         print(filepath)
-        filesize = os.stat(filepath).st_size
         if filename == 'running-times':
             with open(filepath, 'r', encoding="ANSI", newline='') as f:
                 next(f)
@@ -142,17 +152,19 @@ def fill_db(conn):
         else:
             with open(filepath, 'r', encoding="ANSI", newline='') as f:
                 next(f)
-                cur.copy_from(f, 'running_time', sep=';', null="")
+                cur.copy_from(f, filename, sep=';', null="")
             conn.commit()
 
 
-def empty_db(conn):
+def empty_db(conn, dbType, table_name):
     cur = conn.cursor()
-    tablenames = ['actor', 'actresses', 'cinematographers', 'countries', 'directors', 'genres', 'movies', 'plot',
-                 'ratings', 'running_time']
-    for tablename in tablenames:
-        cur.execute("DELETE FROM {table_name }")
-        conn.commit()
+    params = config(dbType)
+    dbName = params['database']
+    createCommand = "DELETE FROM %(table_name)s;"
+    cur.execute(sql.SQL(createCommand).format(sql.Identifier(dbName)), {
+            'table_name': table_name
+        })
+    conn.commit()
 
 def main():
     config()
