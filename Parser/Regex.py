@@ -23,7 +23,7 @@ class DataSet:
 class Actor(DataSet):
     def __init__(self):
         super().__init__()
-        self.regex = r"(?:, )?(?P<nick_name>\'[\S ]+?\'|^\"[\S ]+?\")?(?:,)?(?: )?(?:(?:(?P<last_name>[\S ]+?)?, )?(?P<first_name>[\S ]+?)[^ \S]+?|(?:\t\t\t))\s*\"?(?P<show_title>.+(?= \((Music Video)\) \([\d?])|.+(?=\")|.+(?= \([\d?]))\"?\s\((?:(?P<music_video>Music Video)?\)\s\()?(?P<release_date>.+?)\)(?:\s*\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?\}?\s?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s*\((?P<type_of_show>[TVG]{1,2})\))?(?:\s*\((?P<scenes_deleted>scenes deleted)\))?(?:\s*\((?P<voice_actor>voice.*?)\))?(?:\s*\((?P<credit_only>credit only)\s*\))?(?:\s*\((?P<archived_footage>archive footage)\))?(?:\s*\((?P<also_known_as>as\s.*)\))?(?:\s*\((?P<uncredited>uncredited)\))?(?:\s*\{\{?(?P<suspended>SUSPENDED)\}\})?(?:\s*\((?P<rumored>rumored)\))?(?:\s*\[(?P<character_name>.+?)(?: \(segment\s\"(?P<segment>.+?)\"\))?(?: \((?P<motion_capture>motion capture)\))?\])?(?:.+?\<(?P<role_position>[0-9]{1,})\>)?"
+        self.regex = r"(?:, )?(?P<nick_name>\'[\S ]+?\'|^\"[\S ]+?\")?(?:,)?(?: )?(?:(?:(?P<last_name>[\S ]+?)?, )?(?P<first_name>[\S ]+?)[^ \S]+|(?:\t\t\t))\"?(?P<show_title>.+(?= \(Music Video\) \([\d?])|.+(?=\")|.+(?= \([\d?]))\"?\s\((?:(?P<music_video>Music Video)?\)\s\()?(?P<release_date>.+?)\)(?:\s+?\((?P<type_of_show>TV|V|VG)\))?(?:\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s\{\{?(?P<suspended>SUSPENDED)\}\})?(?:(?:(?:(?:\s+)?\[(?:(?P<character_name>[^\[{()}\]]+?))(?:(?=\(|\{)|\)|\}|\])+)|(?:(?:\s+)?(?:\(|\{|\[)(?:(?:as (?P<also_known_as>[^)}\]]+?))|(?P<segment>segment[^)}\]]*?)|(?P<voice_actor>voice[^)}\]]*?)|(?P<scenes_deleted>scenes deleted)|(?P<credit_only>credit only)|(?P<archived_footage>archive footage)|(?P<uncredited>uncredited)|(?P<rumored>rumored)|(?P<motion_capture>motion capture)|(?:[^)}\]]+?))(?:\)|\}|\])+))+)?(?:\s+<(?P<role_position>[0-9]{1,})\>)?"
         self.file = "actors"
         self.cleanFileRegex = r"-{4}\s+?-{6}\s+(?P<data>[\s\S]+?(?=-{77}))"
 
@@ -31,7 +31,7 @@ class Actor(DataSet):
 class Actress(DataSet):
     def __init__(self):
         super().__init__()
-        self.regex = r"(?:, )?(?P<nick_name>\'[\S ]+?\'|^\"[\S ]+?\")?(?:,)?(?: )?(?:(?:(?P<last_name>[\S ]+?)?, )?(?P<first_name>[\S ]+?)[^ \S]+?|(?:\t\t\t))\s*\"?(?P<show_title>.+(?= \((Music Video)\) \([\d?])|.+(?=\")|.+(?= \([\d?]))\"?\s\((?:(?P<music_video>Music Video)?\)\s\()?(?P<release_date>.+?)\)(?:\s*\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?\}?\s?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s*\((?P<type_of_show>[TVG]{1,2})\))?(?:\s*\((?P<scenes_deleted>scenes deleted)\))?(?:\s*\((?P<voice_actor>voice.*?)\))?(?:\s*\((?P<credit_only>credit only)\s*\))?(?:\s*\((?P<archived_footage>archive footage)\))?(?:\s*\((?P<also_known_as>as\s.*)\))?(?:\s*\((?P<uncredited>uncredited)\))?(?:\s*\{\{?(?P<suspended>SUSPENDED)\}\})?(?:\s*\((?P<rumored>rumored)\))?(?:\s*\[(?P<character_name>.+?)(?: \(segment\s\"(?P<segment>.+?)\"\))?(?: \((?P<motion_capture>motion capture)\))?\])?(?:.+?\<(?P<role_position>[0-9]{1,})\>)?"
+        self.regex = r"(?:, )?(?P<nick_name>\'[\S ]+?\'|^\"[\S ]+?\")?(?:,)?(?: )?(?:(?:(?P<last_name>[\S ]+?)?, )?(?P<first_name>[\S ]+?)[^ \S]+|(?:\t\t\t))\"?(?P<show_title>.+(?= \(Music Video\) \([\d?])|.+(?=\")|.+(?= \([\d?]))\"?\s\((?:(?P<music_video>Music Video)?\)\s\()?(?P<release_date>.+?)\)(?:\s+?\((?P<type_of_show>TV|V|VG)\))?(?:\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s\{\{?(?P<suspended>SUSPENDED)\}\})?(?:(?:(?:(?:\s+)?\[(?:(?P<character_name>[^\[{()}\]]+?))(?:(?=\(|\{)|\)|\}|\])+)|(?:(?:\s+)?(?:\(|\{|\[)(?:(?:as (?P<also_known_as>[^)}\]]+?))|(?P<segment>segment[^)}\]]*?)|(?P<voice_actor>voice[^)}\]]*?)|(?P<scenes_deleted>scenes deleted)|(?P<credit_only>credit only)|(?P<archived_footage>archive footage)|(?P<uncredited>uncredited)|(?P<rumored>rumored)|(?P<motion_capture>motion capture)|(?:[^)}\]]+?))(?:\)|\}|\])+))+)?(?:\s+<(?P<role_position>[0-9]{1,})\>)?"
         self.file = "actresses"
         self.cleanFileRegex = r"-{4}\s+?-{6}\s+(?P<data>[\s\S]+?(?=-{77}))"
 
@@ -39,7 +39,7 @@ class Actress(DataSet):
 class Cinematographer(DataSet):
     def __init__(self):
         super().__init__()
-        self.regex = r"(?:, )?(?P<nick_name>\'[\S ]+?\'|^\"[\S ]+?\")?(?:,)?(?: )?(?:(?:(?P<last_name>[\S ]+?)?, )?(?P<first_name>[\S ]+?)[^ \S]+?|(?:\t\t\t))(?:\"(?P<show_title>(?!\t).+?)\"|(?P<Title>(?!\t).+?))\s\((?P<release_date>.+?)\)(?: )?(?:\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s)?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s)?(?:\0+?)?(?:\s+?)?\s+(?:\((?P<type_of_show>[TVG]{1,2})\))?(?:.+?\((?P<voice_actor>voice)\))?(?:.+?\((?P<archived_footage>archived_footage footage)\))?(?:.+?\((?P<also_known_as>as\s.*)\))?(?:.+?\((?P<uncredited>uncredited)\))?(?:\{\{(?P<suspended>SUSPENDED)\}\})?(?:.+?\[(?:(?P<character_name>.+?)(?:\(segment\s\"(?P<segment>.+?)\"\))?)\])?(?:.+?\<(?P<role_position>[0-9]{1,})\>)?"
+        self.regex = r"(?:, )?(?P<nick_name>\'[\S ]+?\'|^\"[\S ]+?\")?(?:,)?(?: )?(?:(?:(?P<last_name>[\S ]+?)?, )?(?P<first_name>[\S ]+?)[^ \S]+|(?:\t\t\t))\"?(?P<show_title>.+(?= \(Music Video\) \([\d?])|.+(?=\")|.+(?= \([\d?]))\"?\s\((?:(?P<music_video>Music Video)?\)\s\()?(?P<release_date>.+?)\)(?:\s+?\((?P<type_of_show>TV|V|VG)\))?(?:\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s\{\{?(?P<suspended>SUSPENDED)\}\})?(?:(?:(?:\s+)?\((?:(?P<type_of_director>[^)]*?(?:director)|(?:directed)[^)]*?)|(?:videos? (?P<video>[^)]+?)?)|(?:as (?P<also_known_as>[^)]+?))|(?P<segment>segment[^)]*?)|(?P<voice_actor>voice[^)]*?)|(?P<scenes_deleted>scenes deleted)|(?P<credit_only>credit only)|(?P<archived_footage>archive footage)|(?P<uncredited>uncredited)|(?P<rumored>rumored)|(?P<motion_capture>motion capture)|(?:[^)]+?))\))+)?"
         self.file = "cinematographers"
         self.cleanFileRegex = r"-{4}\s+?-{6}\s+(?P<data>[\s\S]+?(?=-{77}))"
 
@@ -47,14 +47,14 @@ class Cinematographer(DataSet):
 class Country(DataSet):
     def __init__(self):
         super().__init__()
-        self.regex = r"\"?(?P<show_title>.+(?= \((Music Video)\) \([\d?])|.+(?=\")|.+(?= \([\d?]))\"?\s\((?:(?P<music_video>Music Video)?\)\s\()?(?P<release_date>.+?)\)\s+?(?:\((?P<type_of_show>TV|V|VG)\))?(?:\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s)?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?\s*(?:\{\{?(?P<suspended>SUSPENDED)\}\})?\0*?\s+?(?P<countries_of_origin>\w.+)"
+        self.regex = r"\"?(?P<show_title>.+(?= \(Music Video\) \([\d?])|.+(?=\")|.+(?= \([\d?]))\"?\s\((?:(?P<music_video>Music Video)?\)\s\()?(?P<release_date>.+?)\)\s+?(?:\((?P<type_of_show>TV|V|VG)\))?(?:\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s)?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?\s*(?:\{\{?(?P<suspended>SUSPENDED)\}\})?\0*?\s+?(?P<countries_of_origin>\w.+)"
         self.file = "countries"
 
 
 class Director(DataSet):
     def __init__(self):
         super().__init__()
-        self.regex = r"(?:, )?(?P<nick_name>\'[\S ]+?\'|^\"[\S ]+?\")?(?:,)?(?: )?(?:(?:(?P<last_name>[\S ]+?)?, )?(?P<first_name>[\S ]+?)[^ \S]+?|(?:\t\t\t))\"?(?P<show_title>.+(?= \((Music Video)\) \([\d?])|.+(?=\")|.+(?= \([\d?]))\"?\s\((?:(?P<music_video>Music Video)?\)\s\()?(?P<release_date>.+?)\)(?: )?(?:\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s)?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s)?(?:\0+?)?(?:\s+?)?\s+(?:\((?P<type_of_show>[TVG]{1,2})\))?(?:.+?\((?P<voice_actor>voice)\))?(?:.+?\((?P<archived_footage>archived_footage footage)\))?(?:.+?\((?P<also_known_as>as\s.*)\))?(?:.+?\((?P<uncredited>uncredited)\))?(?:\{\{(?P<suspended>SUSPENDED)\}\})?(?:.+?\[(?:(?P<character_name>.+?)(?:\(segment\s\"(?P<segment>.+?)\"\))?)\])?(?:.+?\<(?P<role_position>[0-9]{1,})\>)?"
+        self.regex = r"(?:, )?(?P<nick_name>\'[\S ]+?\'|^\"[\S ]+?\")?(?:,)?(?: )?(?:(?:(?P<last_name>[\S ]+?)?, )?(?P<first_name>[\S ]+?)[^ \S]+|(?:\t\t\t))\"?(?P<show_title>.+(?= \(Music Video\) \([\d?])|.+(?=\")|.+(?= \([\d?]))\"?\s\((?:(?P<music_video>Music Video)?\)\s\()?(?P<release_date>.+?)\)(?:\s+?\((?P<type_of_show>TV|V|VG)\))?(?:\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s\{\{?(?P<suspended>SUSPENDED)\}\})?(?:(?:(?:\s+)?\((?:(?P<type_of_director>[^)]*?(?:director)|(?:directed)[^)]*?)|(?:videos? (?P<video>[^)]+?)?)|(?:as (?P<also_known_as>[^)]+?))|(?P<segment>segment[^)]*?)|(?P<voice_actor>voice[^)]*?)|(?P<scenes_deleted>scenes deleted)|(?P<credit_only>credit only)|(?P<archived_footage>archive footage)|(?P<uncredited>uncredited)|(?P<rumored>rumored)|(?P<motion_capture>motion capture)|(?:[^)]+?))\))+)?"
         self.file = "directors"
         self.cleanFileRegex = r"-{4}\s+?-{6}\s+(?P<data>[\s\S]+?(?=-{77}))"
 
@@ -62,21 +62,21 @@ class Director(DataSet):
 class Genre(DataSet):
     def __init__(self):
         super().__init__()
-        self.regex = r"\"?(?P<show_title>.+(?= \((Music Video)\) \([\d?])|.+(?=\")|.+(?= \([\d?]))\"?\s\((?:(?P<music_video>Music Video)?\)\s\()?(?P<release_date>.+?)\)\s+?(?:\((?P<type_of_show>TV|V|VG)\))?(?:\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s)?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?\s*(?:\{\{?(?P<suspended>SUSPENDED)\}\})?\0*?\s+?(?P<Genre>\w.+)"
+        self.regex = r"\"?(?P<show_title>.+(?= \(Music Video\) \([\d?])|.+(?=\")|.+(?= \([\d?]))\"?\s\((?:(?P<music_video>Music Video)?\)\s\()?(?P<release_date>.+?)\)\s+?(?:\((?P<type_of_show>TV|V|VG)\))?(?:\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s)?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?\s*(?:\{\{?(?P<suspended>SUSPENDED)\}\})?\0*?\s+?(?P<Genre>\w.+)"
         self.file = "genres"
 
 
 class Movie(DataSet):
     def __init__(self):
         super().__init__()
-        self.regex = r"\"?(?P<show_title>.+(?= \((Music Video)\) \([\d?])|.+(?=\")|.+(?= \([\d?]))\"?\s\((?:(?P<music_video>Music Video)?\)\s\()?(?P<release_date>.+?)\)\s+?(?:\((?P<type_of_show>TV|V|VG)\))?(?:\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s)?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s)?(?:\{\{?(?P<suspended>SUSPENDED)\}\})?\0*?\s*?(?P<release_year>\d{4}|\?{4})(?:-(?P<end_year>\d{4}|\?{4}))?"
+        self.regex = r"\"?(?P<show_title>.+(?= \(Music Video\) \([\d?])|.+(?=\")|.+(?= \([\d?]))\"?\s\((?:(?P<music_video>Music Video)?\)\s\()?(?P<release_date>.+?)\)\s+?(?:\((?P<type_of_show>TV|V|VG)\))?(?:\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s)?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s)?(?:\{\{?(?P<suspended>SUSPENDED)\}\})?\0*?\s*?(?P<release_year>\d{4}|\?{4})(?:-(?P<end_year>\d{4}|\?{4}))?"
         self.file = "movies"
 
 
 class Plot(DataSet):
     def __init__(self):
         super().__init__()
-        self.regex = r"(?:(?:MV:\s)\"?(?P<show_title>.+(?= \((Music Video)\) \([\d?])|.+(?=\")|.+(?= \([\d?]))\"?\s\((?:(?P<music_video>Music Video)?\)\s\()?(?P<release_date>.+?)\)\s+?(?:\((?P<type_of_show>TV|V|VG)\))?(?:\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s)?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?)?(?:\{\{?(?P<suspended>SUSPENDED)\}\})?\s+PL: (?:(?P<plot>[\s\S]+?)(?=(?:\nBY:|\n-{79})|\n\n\n)(?:\nBY:\s(?P<written_by>.+))?)"
+        self.regex = r"(?:(?:MV:\s)\"?(?P<show_title>.+(?= \(Music Video\) \([\d?])|.+(?=\")|.+(?= \([\d?]))\"?\s\((?:(?P<music_video>Music Video)?\)\s\()?(?P<release_date>.+?)\)\s+?(?:\((?P<type_of_show>TV|V|VG)\))?(?:\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s)?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?)?(?:\{\{?(?P<suspended>SUSPENDED)\}\})?\s+PL: (?:(?P<plot>[\s\S]+?)(?=(?:\nBY:|\n-{79})|\n\n\n)(?:\nBY:\s(?P<written_by>.+))?)"
         self.file = "plot"
         self.seperator = "-------------------------------------------------------------------------------"
 
@@ -115,12 +115,12 @@ class Plot(DataSet):
 class Rating(DataSet):
     def __init__(self):
         super().__init__()
-        self.regex = r"\s*?(?P<distribution>[0-9\.*]{10})\s+?(?P<amount_of_votes>\d+)\s+?(?P<rating>\d+?\.\d)\s+(?:\")?\"?(?P<show_title>.+(?= \((Music Video)\) \([\d?])|.+(?=\")|.+(?= \([\d?]))\"?\s\((?:(?P<music_video>Music Video)?\)\s\()?(?P<release_date>.+?)\)\s+?(?:\((?P<type_of_show>TV|V|VG)\))?(?:\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s)?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s)?(?:\{\{?(?P<suspended>SUSPENDED)\}\})?\s*"
+        self.regex = r"\s*?(?P<distribution>[0-9\.*]{10})\s+?(?P<amount_of_votes>\d+)\s+?(?P<rating>\d+?\.\d)\s+(?:\")?\"?(?P<show_title>.+(?= \(Music Video\) \([\d?])|.+(?=\")|.+(?= \([\d?]))\"?\s\((?:(?P<music_video>Music Video)?\)\s\()?(?P<release_date>.+?)\)\s+?(?:\((?P<type_of_show>TV|V|VG)\))?(?:\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s)?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s)?(?:\{\{?(?P<suspended>SUSPENDED)\}\})?\s*"
         self.file = "ratings"
 
 
 class RunningTime(DataSet):
     def __init__(self):
         super().__init__()
-        self.regex = r"\"?(?P<show_title>.+(?= \((Music Video)\) \([\d?])|.+(?=\")|.+(?= \([\d?]))\"?\s\((?:(?P<music_video>Music Video)?\)\s\()?(?P<release_date>.+?)\)\s+?(?:\((?P<type_of_show>TV|V|VG)\))?(?:\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s)?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s)?(?:\{\{?(?P<suspended>SUSPENDED)\}\})?\0*?\s*(?P<country>.*?)(?::)?(?P<running_time>\d{1,4})\s+?(?:\()?(?P<approximated>(?:approx.)?)(?:\)\s*\()?(?P<including_commercials>(?:\w*\s*commercials)?)(?:\)\s*\()?(?P<amount_of_episodes>(?:\d{1,3}\s*[eE]pisodes)?)(?:\)\s*\()?(?P<season>[\w\s\-]*season[s\w\s\-]*)?(?:\)\s*\()?(?:(?P<release_year>[\d\?]{4})-(?P<end_year>[\d\?]{4}))?(?P<fps>(?:\d*\s*fps)?)(?:\)\s*\()?(?P<version>(?:[a-zA-Z0-9\s]*?version|TV|V|VG)?)(?:\)\s*\()?(?P<parts>(?:\d{0,3}\s*parts|\w*\s*parts)?)(?:\)\s*\()?(?P<festival>(?:[a-zA-z\s]*?Festival)?)(?:\)\s*\()?(?P<cut>(?:[a-zA-z'\s]*?cut|[a-zA-z'\s]*?Cut)?)(?:\)\s*\()?(?P<market>(?:[a-zA-z\s]*?Market)?)(?:\)\s*\()?(?P<print>(?:\w*\s*print)?)(?:\))?"
+        self.regex = r"\"?(?P<show_title>.+(?= \(Music Video\) \([\d?])|.+(?=\")|.+(?= \([\d?]))\"?\s\((?:(?P<music_video>Music Video)?\)\s\()?(?P<release_date>.+?)\)\s+?(?:\((?P<type_of_show>TV|V|VG)\))?(?:\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s)?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s)?(?:\{\{?(?P<suspended>SUSPENDED)\}\})?(?:\s+)?(?:(?P<country>.+?)?:)?(?P<running_time>\d+)(?:(?:(?:\s+)?\((?:(?P<commercial>[^)]*?(?:C|c)ommercials?[^)]*?)|(?P<episodes>[^)]*?(?:E|e)pisodes?[^)]*?)|(?P<part>[^)]*?(?:P|p)arts?[^)]*?)|(?P<season>[^)]*?(?:S|s)easons?[^)]*?)|(?:(?P<release_year>[\d\?]{4})-(?P<end_year>[\d\?]{4}))|(?P<fps>[^)]*?fps)|(?P<festival>[^(]*?(?:F|f)estival)|(?P<cut>[^)]*?(?:C|c)ut[^)]*?)|(?P<market>[^)]*?(?:M|m)arket)|(?P<print>[^)]*(?:P|p)rint)|(?P<approximated>approx\.)|(?:[^)]+?))\))+)?"
         self.file = "running-times"

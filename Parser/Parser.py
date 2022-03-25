@@ -18,6 +18,8 @@ def readFile(dataType):
                 data = re.findall(dataType.regex, data)
                 return data
             txt = f.read()
+            txt = re.sub(';', ':', txt)
+            txt = re.sub('\\\\', ' ', txt)
 
             # Some files needs a cleanup step before the regex, this if statement will trigger
             if len(dataType.cleanFileRegex.strip()) > 0:
@@ -69,12 +71,12 @@ def writeCSV(data, dataType):
     name = dataType.file
     pattern = re.compile(dataType.regex)
     groups = str(pattern.groupindex)
-    headers = re.findall(r"([a-z]+)", groups, re.M | re.I)
+    headers = re.findall(r"([_a-z]+)", groups, re.M | re.I)
     print(f"\nStarts writing {name}")
 
     try:
         with open("output/" + name + '.csv', 'w', encoding="ANSI", newline='') as f:
-            writer = csv.writer(f, delimiter=';', dialect="excel")
+            writer = csv.writer(f, dialect="excel", delimiter=';', quoting=csv.QUOTE_MINIMAL)
             writer.writerow(headers)
             writer.writerows(data)
             endTime = time.perf_counter()
