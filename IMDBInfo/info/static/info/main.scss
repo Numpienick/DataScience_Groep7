@@ -1,5 +1,5 @@
 body {
-  font-family: "Anton", sans-serif !important;
+  font-family: 'Anton', sans-serif !important;
   background: #fafafa;
   color: #333333;
   margin-top: 5rem;
@@ -14,7 +14,7 @@ body {
 }
 
 .btn:hover {
-  background-color: #891649 !important;
+  background-color: darken(#dd2879, 20%) !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -71,7 +71,7 @@ a.article-title:hover {
 .article-metadata {
   padding-bottom: 1px;
   margin-bottom: 4px;
-  border-bottom: 1px solid #e3e3e3;
+  border-bottom: 1px solid #e3e3e3
 }
 
 .article-metadata a:hover {
@@ -95,5 +95,3 @@ a.article-title:hover {
 .account-heading {
   font-size: 2.5rem;
 }
-
-/*# sourceMappingURL=main.css.map */
