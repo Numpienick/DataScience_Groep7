@@ -2,8 +2,8 @@ CREATE TABLE "actors" (
   "nick_name" varchar,
   "last_name" varchar,
   "first_name" varchar,
-  "music_video" varchar,
   "show_title" varchar,
+  "music_video" varchar,
   "release_date" varchar,
   "episode_title" varchar,
   "season_number" int,
@@ -27,8 +27,8 @@ CREATE TABLE "actresses" (
   "nick_name" varchar,
   "last_name" varchar,
   "first_name" varchar,
-  "music_video" varchar,
   "show_title" varchar,
+  "music_video" varchar,
   "release_date" varchar,
   "episode_title" varchar,
   "season_number" int,
@@ -149,7 +149,7 @@ CREATE TABLE "ratings" (
   "suspended" varchar
 );
 
-CREATE TABLE "running_time" (
+CREATE TABLE "running_times" (
   "show_title" varchar,
   "music_video" varchar,
   "release_date" varchar,
@@ -162,7 +162,6 @@ CREATE TABLE "running_time" (
   "running_time" int,
   "including_commercials" varchar,
   "amount_of_episodes" varchar,
-  "amount_of_parts" int,
   "season" varchar,
   "release_year" varchar,
   "end_year" varchar,

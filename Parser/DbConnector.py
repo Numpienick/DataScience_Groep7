@@ -136,66 +136,55 @@ def setupDatabase(dbType = 'staging'):
         if connection:
             connection.close()
 
+    fill_db()
+
 
 def fill_db(dbType = 'staging'):
+    """
+        Fills the staging database with data.
+
+        :param dbType: Is either "staging" or "final". Defines the database that needs to be set up.
+        If not defined defaults to "staging"
+        """
     while dbType not in ["staging", "final"]:
         print(f'Wrong dbType: {dbType}\nIt should be either "staging" or "final"')
         return
 
-    try:
+    try:  # Retrieves the data from files and puts it in the correct table.
         params = config(dbType)
         conn = psycopg2.connect(**params)
-        cur = conn.cursor()
+        conn.autocommit = True
 
-        filenames = ['actors', 'actresses', 'cinematographers', 'countries', 'directors', 'genres', 'movies', 'plot',
-                     'ratings', 'running-times']
-        for filename in filenames:
-            filepath = 'output/' + filename + '.csv'
-            print(filepath)
-            # if filename == 'running-times':
-            #     with open(filepath, 'r', encoding="ANSI", newline='') as f:
-            #         next(f)
-            #         cur.copy_from(f, 'running_time', sep=';', null="")
-            #     conn.commit()
-            #TODO: hij mist de written_by colom in de csv om een of andere manier
-            if filename == 'plot':
-                with open(filepath, 'r', encoding="ANSI", newline='') as f:
-                    next(f)
-                    cur.copy_from(f, 'plot', sep=';', null="")
-                conn.commit()
-                #TODO: remove the ifs and reopen the else for everything
-            # else:
-            #     with open(filepath, 'r', encoding="ANSI", newline='') as f:
-            #         next(f)
-            #         cur.copy_from(f, filename, sep=';', null="")
-            #     conn.commit()
+        path = 'output'
+        files = os.listdir(path)
 
-        cur.close()
+        for file in files:
+            if file.endswith(".csv"):
+                with conn.cursor() as cur:
+                    filename = file.split(sep='.')[0]
+                    filepath = 'output/' + filename + '.csv'
+                    if filename == "running-times":
+                        filename = "running_times"
+                    print(f"Started transferring {filename} data to database ")
+                    with open(filepath, 'r', encoding="ANSI", newline="") as f:
+                        next(f)
+                        copy_sql = """
+                                        COPY {}
+                                        FROM stdin
+                                        CSV DELIMITER as ';'
+                                        """.format(filename)
+                        cur.copy_expert(sql=copy_sql, file=f)
+                    print(f"Finished transferring {filename} data to database ")
 
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-        return None
-    print('Connected to database')
-    return conn
+    except Exception as err:
+        raise err
 
+    finally:
+        if conn:
+            conn.close()
+        print('Connected to database')
+        return conn
 
-def empty_db(conn, dbType, table_name):
-    cur = conn.cursor()
-    params = config(dbType)
-    dbName = params['database']
-    createCommand = "DELETE FROM %(table_name)s;"
-    cur.execute(sql.SQL(createCommand).format(sql.Identifier(dbName)), {
-            'table_name': table_name
-        })
-    conn.commit()
-
-
-def main():
-    config()
-    connect()
-
-
-main()
 
 
 

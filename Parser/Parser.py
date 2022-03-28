@@ -153,8 +153,11 @@ def main():
     endTime = time.perf_counter()
     print(f"\nDone! Finished parsing in {endTime - startTime:0.04f} seconds")
 
-# setupDatabase()
+
+main()
+setupDatabase()
 #setupDatabase("final")
-# main()
-fill_db()
+
+
+
 
