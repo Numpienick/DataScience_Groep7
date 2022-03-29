@@ -2,6 +2,8 @@ import psycopg2
 import os
 from psycopg2 import sql
 from configparser import ConfigParser
+from psycopg2.extensions import AsIs
+from psycopg2.sql import NULL
 
 
 def config(section='staging'):
@@ -28,7 +30,7 @@ def config(section='staging'):
     return db
 
 
-def connect(dbType = 'staging'):
+def connect(dbType='staging'):
     """
     Connects to the database corresponding to dbType
 
@@ -44,7 +46,7 @@ def connect(dbType = 'staging'):
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
 
-        #Fill the Database
+        # Fill the Database
 
         # filename = "actors"
         # filepath = 'output/' + filename + '.csv'
@@ -56,7 +58,7 @@ def connect(dbType = 'staging'):
 
         # fill_db(conn)
 
-        #Empty The Database
+        # Empty The Database
         # cur.execute("DELETE FROM actors")
         # conn.commit()
         # empty_db(conn, dbType, "actors")
@@ -70,7 +72,7 @@ def connect(dbType = 'staging'):
     return conn
 
 
-def setupDatabase(dbType = 'staging'):
+def setupDatabase(dbType='staging'):
     """
     Drops and recreates the database with tables provided by the corresponding setup script
 
@@ -85,7 +87,7 @@ def setupDatabase(dbType = 'staging'):
     dbName = params['database']
     owner = params['user']
     params["database"] = ""
-    try:    # Recreates the database
+    try:  # Recreates the database
         conn = psycopg2.connect(**params)
         conn.autocommit = True
         with conn.cursor() as cur:
@@ -110,13 +112,13 @@ def setupDatabase(dbType = 'staging'):
         filename = "DataScience_Groep7.sql"
 
     with open(f"../SQL/{filename}", "r") as f:
-        try:    # Reads the setup script
+        try:  # Reads the setup script
             sqlFile = f.read()
             sqlCommands = sqlFile.split(';')
         except Exception as err:
-            raise(err)
+            raise (err)
 
-    try:    # Execute all the commands in setup script
+    try:  # Execute all the commands in setup script
         with connect(dbType) as connection:
             with connection.cursor() as cur:
                 for command in sqlCommands:
@@ -124,7 +126,8 @@ def setupDatabase(dbType = 'staging'):
                         try:
                             cur.execute(command)
                         except Exception as err:
-                            print(f"Something went wrong: {err}\nThis happened with the following command: {command}\nClosing the transaction...")
+                            print(
+                                f"Something went wrong: {err}\nThis happened with the following command: {command}\nClosing the transaction...")
                             cur.close()
                             break
                 if not cur.closed:
@@ -139,7 +142,7 @@ def setupDatabase(dbType = 'staging'):
     fill_db()
 
 
-def fill_db(dbType = 'staging'):
+def fill_db(dbType='staging'):
     """
         Fills the staging database with data.
 
@@ -154,27 +157,27 @@ def fill_db(dbType = 'staging'):
         params = config(dbType)
         conn = psycopg2.connect(**params)
         conn.autocommit = True
+        if (dbType == 'staging'):
+            path = 'output'
+            files = os.listdir(path)
 
-        path = 'output'
-        files = os.listdir(path)
-
-        for file in files:
-            if file.endswith(".csv"):
-                with conn.cursor() as cur:
-                    filename = file.split(sep='.')[0]
-                    filepath = 'output/' + filename + '.csv'
-                    if filename == "running-times":
-                        filename = "running_times"
-                    print(f"Started transferring {filename} data to database ")
-                    with open(filepath, 'r', encoding="ANSI", newline="") as f:
-                        next(f)
-                        copy_sql = """
-                                        COPY {}
-                                        FROM stdin
-                                        CSV DELIMITER as ';'
-                                        """.format(filename)
-                        cur.copy_expert(sql=copy_sql, file=f)
-                    print(f"Finished transferring {filename} data to database ")
+            for file in files:
+                if file.endswith(".csv"):
+                    with conn.cursor() as cur:
+                        filename = file.split(sep='.')[0]
+                        filepath = 'output/' + filename + '.csv'
+                        if filename == "running-times":
+                            filename = "running_times"
+                        print(f"Started transferring {filename} data to database ")
+                        with open(filepath, 'r', encoding="ANSI", newline="") as f:
+                            next(f)
+                            copy_sql = """
+                                            COPY {}
+                                            FROM stdin
+                                            CSV DELIMITER as ';'
+                                            """.format(filename)
+                            cur.copy_expert(sql=copy_sql, file=f)
+                        print(f"Finished transferring {filename} data to database ")
 
     except Exception as err:
         raise err
@@ -186,6 +189,81 @@ def fill_db(dbType = 'staging'):
         return conn
 
 
+def convert_db(dbType="staging"):
+    try:
+        connFinal = connect("final")
+
+        with connFinal.cursor() as cur:
+            command = "SELECT table_name FROM information_schema.tables WHERE (table_schema = 'public') ORDER BY table_name"
+            cur.execute(command)
+            finalTables = cur.fetchall()
+
+            for finalTable in finalTables:
+                # new_table = table[0]
+                # command = "SELECT * FROM {}".format(new_table)
+                # cur.execute(command)
+                # data = cur.fetchone()
+                # print(data)
+                command = "SELECT data_type, column_name FROM information_schema.columns WHERE TABLE_NAME = {};"
+                cur.execute(sql.SQL(command).format(sql.Literal(finalTable[0])))
+                finalColumns = cur.fetchall()
+                # print(finalTable)
+                # print(finalColumns)
+
+                try:
+                    connStaging = connect("staging")
+                    with connStaging.cursor() as stagingCur:
+                        command = "SELECT table_name FROM information_schema.tables WHERE (table_schema = 'public') ORDER BY table_name"
+                        stagingCur.execute(command)
+                        tables = stagingCur.fetchall()
+
+                        for table in tables:
+                            command = "SELECT data_type, column_name FROM information_schema.columns WHERE TABLE_NAME = {};"
+                            stagingCur.execute(sql.SQL(command).format(sql.Literal(table[0])))
+                            columns = stagingCur.fetchall()
+                            # print(table)
+                            # print(columns)
+                            for finalColumn in finalColumns:
+                                for column in columns:
+                                    if(finalColumn == column):
+                                        print("SAME")
+                                        print(finalColumn)
+                                        print(column)
+
+                                        command = "SELECT {} FROM %(table)s;"
+                                        stagingCur.execute(sql.SQL(command).format(sql.Identifier(column[1])), {
+                                            'table': AsIs(table[0])
+                                        })
+                                        data = stagingCur.fetchall()
+                                        i = 0
+                                        for row in data:
+                                            command = "INSERT INTO %(table)s ({}) VALUES (%(value)s)"
+                                            if(finalColumn[0] == 'boolean' and len(finalColumn[1]) != 0):
+                                                row = True
+                                            if (finalColumn[0] == 'boolean' and len(finalColumn[1]) == 0):
+                                                row = False
+
+                                            cur.execute(sql.SQL(command).format(sql.Literal(AsIs(finalColumn[1]))), {
+                                                'table': AsIs(finalTable[0]),
+                                                'value': row[0]
+                                            })
+                                            if(i % 10000 == 0):
+                                                print(i)
+                                                print("added " + finalColumn[1] + " to " + finalTable[0])
+                                                if(i == 10000):
+                                                    break
+
+                                            i = i + 1
+                except Exception as err:
+                    raise err
+                finally:
+                    if connStaging:
+                        connStaging.close()
 
 
+    except Exception as err:
+        raise err
+    finally:
+        if connFinal:
+            connFinal.close()
 
