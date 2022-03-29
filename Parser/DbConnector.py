@@ -29,7 +29,8 @@ def config(section='staging'):
 
 def connect(dbType = 'staging'):
     """
-    Connects to the database corresponding to dbType
+    Connects to the database corresponding to dbType.
+    Autocommit is turned on.
 
     :param dbType: Is either "staging" or "final". Defines the database that will be connected to.
     If not defined defaults to "staging"
@@ -41,6 +42,7 @@ def connect(dbType = 'staging'):
     try:
         params = config(dbType)
         conn = psycopg2.connect(**params)
+        conn.autocommit = True
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
         return None
@@ -70,6 +72,7 @@ def setupDatabase(dbType = 'staging'):
             cur.execute(sql.SQL(dropCommand).format(sql.Identifier(dbName)))
             print(f"Database {dbName} has been successfully dropped")
 
+        with conn.cursor() as cur:
             createCommand = "CREATE DATABASE {} OWNER %(owner)s;"
             cur.execute(sql.SQL(createCommand).format(sql.Identifier(dbName)), {
                 'owner': owner
@@ -81,11 +84,7 @@ def setupDatabase(dbType = 'staging'):
         if conn:
             conn.close()
 
-    if dbType == "staging":
-        filename = "Staging_DataScience_Groep7.sql"
-    elif dbType == "final":
-        filename = "DataScience_Groep7.sql"
-
+    filename = "DataScience_Groep7.sql" if dbType == "final" else "Staging_DataScience_Groep7.sql"
     with open(f"../SQL/{filename}", "r") as f:
         try:    # Reads the setup script
             sqlFile = f.read()
@@ -94,8 +93,9 @@ def setupDatabase(dbType = 'staging'):
             raise(err)
 
     try:    # Execute all the commands in setup script
-        with connect(dbType) as connection:
-            with connection.cursor() as cur:
+        conn = connect(dbType)
+        with conn:
+            with conn.cursor() as cur:
                 for command in sqlCommands:
                     if not command.isspace():
                         try:
@@ -109,5 +109,5 @@ def setupDatabase(dbType = 'staging'):
     except Exception as err:
         raise err
     finally:
-        if connection:
-            connection.close()
+        if conn:
+            conn.close()
