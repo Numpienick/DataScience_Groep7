@@ -4,6 +4,8 @@ from psycopg2 import sql
 from configparser import ConfigParser
 from psycopg2.extensions import AsIs
 from psycopg2.sql import NULL
+from psycopg2.extras import execute_values
+from datetime import datetime
 
 
 def config(section='staging'):
@@ -68,7 +70,7 @@ def connect(dbType='staging'):
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
         return None
-    print('Connected to database')
+    print('Connected to ' + dbType + ' database')
     return conn
 
 
@@ -190,80 +192,96 @@ def fill_db(dbType='staging'):
 
 
 def convert_db(dbType="staging"):
+    FillShows("show", GetShows())
+    # InsertPerson(GetPerson("actors"))
+    # InsertPerson(GetPerson("actresses"))
+    # InsertPerson(GetPerson("cinematographers"))
+    # InsertPerson(GetPerson("directors"))
+
+
+def GetShows():
+    print("Getting shows")
     try:
-        connFinal = connect("final")
-
-        with connFinal.cursor() as cur:
-            command = "SELECT table_name FROM information_schema.tables WHERE (table_schema = 'public') ORDER BY table_name"
-            cur.execute(command)
-            finalTables = cur.fetchall()
-
-            for finalTable in finalTables:
-                # new_table = table[0]
-                # command = "SELECT * FROM {}".format(new_table)
-                # cur.execute(command)
-                # data = cur.fetchone()
-                # print(data)
-                command = "SELECT data_type, column_name FROM information_schema.columns WHERE TABLE_NAME = {};"
-                cur.execute(sql.SQL(command).format(sql.Literal(finalTable[0])))
-                finalColumns = cur.fetchall()
-                # print(finalTable)
-                # print(finalColumns)
-
-                try:
-                    connStaging = connect("staging")
-                    with connStaging.cursor() as stagingCur:
-                        command = "SELECT table_name FROM information_schema.tables WHERE (table_schema = 'public') ORDER BY table_name"
-                        stagingCur.execute(command)
-                        tables = stagingCur.fetchall()
-
-                        for table in tables:
-                            command = "SELECT data_type, column_name FROM information_schema.columns WHERE TABLE_NAME = {};"
-                            stagingCur.execute(sql.SQL(command).format(sql.Literal(table[0])))
-                            columns = stagingCur.fetchall()
-                            # print(table)
-                            # print(columns)
-                            for finalColumn in finalColumns:
-                                for column in columns:
-                                    if(finalColumn == column):
-                                        print("SAME")
-                                        print(finalColumn)
-                                        print(column)
-
-                                        command = "SELECT {} FROM %(table)s;"
-                                        stagingCur.execute(sql.SQL(command).format(sql.Identifier(column[1])), {
-                                            'table': AsIs(table[0])
-                                        })
-                                        data = stagingCur.fetchall()
-                                        i = 0
-                                        for row in data:
-                                            command = "INSERT INTO %(table)s ({}) VALUES (%(value)s)"
-                                            if(finalColumn[0] == 'boolean' and len(finalColumn[1]) != 0):
-                                                row = True
-                                            if (finalColumn[0] == 'boolean' and len(finalColumn[1]) == 0):
-                                                row = False
-
-                                            cur.execute(sql.SQL(command).format(sql.Literal(AsIs(finalColumn[1]))), {
-                                                'table': AsIs(finalTable[0]),
-                                                'value': row[0]
-                                            })
-                                            if(i % 10000 == 0):
-                                                print(i)
-                                                print("added " + finalColumn[1] + " to " + finalTable[0])
-                                                if(i == 10000):
-                                                    break
-
-                                            i = i + 1
-                except Exception as err:
-                    raise err
-                finally:
-                    if connStaging:
-                        connStaging.close()
-
+        conn = connect("staging")
+        with conn:
+            with conn.cursor() as cur:
+                command = "SELECT * FROM {}"
+                cur.execute(sql.SQL(command).format(sql.Literal(AsIs("movies"))))
+                data = cur.fetchmany(100)
+                print(data[0][9])
+                return data
 
     except Exception as err:
         raise err
     finally:
-        if connFinal:
-            connFinal.close()
+        if conn:
+            conn.close()
 
+
+def FillShows(table, show):
+    print("Inserting shows")
+
+    try:
+        conn = connect("final")
+        with conn:
+            with conn.cursor() as cur:
+                for tuple in show:
+                    print(tuple)
+                    if tuple[9] == '????':
+                        date = NULL
+                    else:
+                        #TODO: datetime werkend krijgen of naar int omzetten
+                        date = datetime.strptime(str(tuple[9]), "%Y")
+
+                    createCommand = "INSERT INTO {} (end_year) VALUES (%(owner)s);"
+                    cur.execute(sql.SQL(createCommand).format(sql.Identifier(table)), {
+                        'owner': date
+                    })
+                    # execute_values(cur, "INSERT INTO show (end_year) VALUES %s", show)
+                # command = "INSERT INTO {} (nick_name, last_name, first_name) VALUES %s"
+                # cur.execute_values(sql.SQL(command).format(sql.Literal(AsIs(table))), person)
+                print("did it")
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+def GetPerson(table):
+    print("Getting " + table)
+    try:
+        conn = connect("staging")
+        with conn:
+            with conn.cursor() as cur:
+                command = "SELECT nick_name, first_name, last_name FROM {} WHERE first_name IS NOT NULL"
+                cur.execute(sql.SQL(command).format(sql.Literal(AsIs(table))))
+                data = cur.fetchall()
+                return data
+
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+i = 0
+
+
+def InsertPerson(person):
+    print("Inserting person")
+
+    try:
+        conn = connect("final")
+        with conn:
+            with conn.cursor() as cur:
+                execute_values(cur, "INSERT INTO person (nick_name, last_name, first_name) VALUES %s", person)
+                # command = "INSERT INTO {} (nick_name, last_name, first_name) VALUES %s"
+                # cur.execute_values(sql.SQL(command).format(sql.Literal(AsIs(table))), person)
+                print("did it")
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
