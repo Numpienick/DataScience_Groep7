@@ -89,7 +89,8 @@ def writeCSV(data, dataType):
 def main():
     print("Welkom bij de IMDB-Parser van groep 7")
     print("Welke dataset wil je omzetten naar CSV?")
-    print("1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movie \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
+    print(
+        "1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movie \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
 
     dataSetChoice = input()
     startTime = time.perf_counter()
@@ -153,13 +154,9 @@ def main():
     endTime = time.perf_counter()
     print(f"\nDone! Finished parsing in {endTime - startTime:0.04f} seconds")
 
+# setupDatabase()
 
 # setupDatabase("final")
 convert_db()
 
 # main()
-# setupDatabase()
-
-
-
-

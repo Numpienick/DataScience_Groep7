@@ -182,6 +182,7 @@ def fill_db(dbType='staging'):
                         print(f"Finished transferring {filename} data to database ")
 
     except Exception as err:
+        print(err)
         raise err
 
     finally:
@@ -192,21 +193,30 @@ def fill_db(dbType='staging'):
 
 
 def convert_db(dbType="staging"):
-    FillShows("show", GetShows())
-    # InsertPerson(GetPerson("actors"))
+    # fill_shows("show", get_shows())
+    # InsertRole(GetActors())
+    # insert_genres(get_genres())
+    # insert_countries(get_countries())
+    insert_known_as(get_known_as("actors"))
+    # insert_person(get_persons("actors"), "actors")
+    # insert_plot(get_plot())
+    # insert_ratings(get_ratings())
+    # InsertCinematographers(GetCinematographers())
     # InsertPerson(GetPerson("actresses"))
     # InsertPerson(GetPerson("cinematographers"))
     # InsertPerson(GetPerson("directors"))
+    # InsertRole(GetRole("actors"))
+    # InsertPlot(GetPlot("plot"))
+    # InsertRatings(GetRatings("ratings"))
 
 
-def GetShows():
+def get_shows():
     print("Getting shows")
     try:
         conn = connect("staging")
         with conn:
             with conn.cursor() as cur:
-                command = "SELECT * FROM {}"
-                cur.execute(sql.SQL(command).format(sql.Literal(AsIs("movies"))))
+                cur.execute("SELECT * FROM movies")
                 data = cur.fetchmany(100)
                 print(data[0][9])
                 return data
@@ -218,7 +228,7 @@ def GetShows():
             conn.close()
 
 
-def FillShows(table, show):
+def fill_shows(table, show):
     print("Inserting shows")
 
     try:
@@ -229,13 +239,10 @@ def FillShows(table, show):
                     print(tuple)
                     if tuple[9] == '????':
                         date = NULL
-                    else:
-                        #TODO: datetime werkend krijgen of naar int omzetten
-                        date = datetime.strptime(str(tuple[9]), "%Y")
 
-                    createCommand = "INSERT INTO {} (end_year) VALUES (%(owner)s);"
-                    cur.execute(sql.SQL(createCommand).format(sql.Identifier(table)), {
-                        'owner': date
+                    insertCommand = "INSERT INTO {} (end_year) VALUES (%(data)s);"
+                    cur.execute(sql.SQL(insertCommand).format(sql.Identifier(table)), {
+                        'data': date
                     })
                     # execute_values(cur, "INSERT INTO show (end_year) VALUES %s", show)
                 # command = "INSERT INTO {} (nick_name, last_name, first_name) VALUES %s"
@@ -248,15 +255,88 @@ def FillShows(table, show):
             conn.close()
 
 
-def GetPerson(table):
-    print("Getting " + table)
+def get_persons(table):
+    print("Getting " + table + " from staging")
     try:
         conn = connect("staging")
         with conn:
             with conn.cursor() as cur:
-                command = "SELECT nick_name, first_name, last_name FROM {} WHERE first_name IS NOT NULL"
-                cur.execute(sql.SQL(command).format(sql.Literal(AsIs(table))))
-                data = cur.fetchall()
+                if table == "actors":
+                    cur.execute("SELECT * from role_actors")
+                    data = cur.fetchmany(100)
+                    return data
+                if table == "actresses":
+                    cur.execute("SELECT * from role_actresses")
+                    data = cur.fetchmany(100)
+                    return data
+                if table == "cinematographers":
+                    cur.execute("SELECT * from get_cinematographers")
+                    data = cur.fetchmany(100)
+                    return data
+                if table == "directors":
+                    cur.execute("SELECT * from get_directors")
+                    data = cur.fetchmany(100)
+                    return data
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+def get_known_as(table):
+    print("Getting " + table + " from staging")
+    try:
+        conn = connect("staging")
+        with conn:
+            with conn.cursor() as cur:
+                if table == "actors":
+                    cur.execute("SELECT * from get_known_as_actors")
+                    data = cur.fetchmany(100)
+                    return data
+                if table == "actresses":
+                    cur.execute("SELECT * from get_known_as_actresses")
+                    data = cur.fetchmany(100)
+                    return data
+                if table == "cinematographers":
+                    cur.execute("SELECT * from get_known_as_cinematographers")
+                    data = cur.fetchmany(100)
+                    return data
+                if table == "directors":
+                    cur.execute("SELECT * from get_known_as_directors")
+                    data = cur.fetchmany(100)
+                    return data
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+def get_plot():
+    print("Getting plot")
+    try:
+        conn = connect("staging")
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT plot, written_by FROM plot")
+                data = cur.fetchmany(100)
+                return data
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+def get_ratings():
+    print("Getting ratings")
+    try:
+        conn = connect("staging")
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT distribution, amount_of_votes, rating FROM ratings")
+                data = cur.fetchmany(100)
                 return data
 
     except Exception as err:
@@ -266,17 +346,156 @@ def GetPerson(table):
             conn.close()
 
 
-i = 0
+def get_countries():
+    print("Getting countries")
+    try:
+        conn = connect("staging")
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT DISTINCT countries_of_origin FROM countries")
+                data = cur.fetchmany(100)
+                return data
+
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
 
 
-def InsertPerson(person):
-    print("Inserting person")
+def get_genres():
+    print("Getting genres")
+    try:
+        conn = connect("staging")
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT DISTINCT genre FROM genres")
+                data = cur.fetchmany(100)
+                return data
+
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+def insert_ratings(ratings):
+    print("Inserting ratings")
 
     try:
         conn = connect("final")
         with conn:
             with conn.cursor() as cur:
-                execute_values(cur, "INSERT INTO person (nick_name, last_name, first_name) VALUES %s", person)
+                execute_values(cur, "INSERT INTO rating (distribution, amount_of_votes, rating) VALUES %s", ratings)
+                print("did it")
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+def insert_plot(plot):
+    print("Inserting plot")
+
+    try:
+        conn = connect("final")
+        with conn:
+            with conn.cursor() as cur:
+                execute_values(cur, "INSERT INTO plot (plot, written_by) VALUES %s", plot)
+                print("did it")
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+    """
+    Inserts person (actor, actress, director or cinematographer) to final db from staging db
+
+    :param person: is the list of tuples to be inserted
+    :param type: is the type of person, can be either: actors, actresses, cinematographers or directors
+    """
+
+
+def insert_person(person, type):
+    print("Inserting role")
+
+    try:
+        conn = connect("final")
+        with conn:
+            with conn.cursor() as cur:
+                # TODO: show_info_id
+                if type == "actors" or type == "actresses":
+                    execute_values(cur,
+                                   "INSERT INTO role (show_info_id, nick_name, last_name, first_name, character_name, segment, voice_actor, scenes_deleted, credit_only, archive_footage, uncredited, rumored, motion_capture, role_position) VALUES %s",
+                                   person)
+                if type == "cinematographers":
+                    execute_values(cur,
+                                   "INSERT INTO role (show_info_id, nick_name, last_name, first_name, type_of_cinematographer, segment, scenes_deleted, credit_only, archive_footage, uncredited, rumored) VALUES %s",
+                                   person)
+                if type == "directors":
+                    execute_values(cur,
+                                   "INSERT INTO role (show_info_id, nick_name, last_name, first_name, type_of_director, character_name, segment, voice_actor, scenes_deleted, credit_only, archive_footage, uncredited, rumored) VALUES %s",
+                                   person)
+                print("did it")
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+def insert_known_as(knownAs):
+    print("Inserting known_as")
+
+    try:
+        conn = connect("final")
+        with conn:
+            with conn.cursor() as cur:
+                execute_values(cur,
+                               "INSERT INTO also_known_as (also_known_as) VALUES %s RETURNING also_known_as_id;",
+                               knownAs)
+                test = cur.fetchall()
+                # command = "INSERT INTO {} (nick_name, last_name, first_name) VALUES %s"
+                # cur.execute_values(sql.SQL(command).format(sql.Literal(AsIs(table))), person)
+                print("did it")
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+def insert_countries(countries):
+    print("Inserting countries")
+
+    try:
+        conn = connect("final")
+        with conn:
+            with conn.cursor() as cur:
+                execute_values(cur,
+                               "INSERT INTO country (country_name) VALUES %s",
+                               countries)
+                print("did it")
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+def insert_genres(genres):
+    print("Inserting genres")
+
+    try:
+        conn = connect("final")
+        with conn:
+            with conn.cursor() as cur:
+                execute_values(cur,
+                               "INSERT INTO genre (genre_name) VALUES %s",
+                               genres)
                 # command = "INSERT INTO {} (nick_name, last_name, first_name) VALUES %s"
                 # cur.execute_values(sql.SQL(command).format(sql.Literal(AsIs(table))), person)
                 print("did it")
