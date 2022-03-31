@@ -42,7 +42,6 @@ CREATE TABLE "director" (
 
 CREATE TABLE "show_info" (
   "show_info_id" SERIAL PRIMARY KEY,
-  "rating_id" int,
   "show_title" varchar,
   "release_date" varchar,
   "release_year" date,
@@ -60,7 +59,7 @@ CREATE TABLE "episode" (
 
 CREATE TABLE "show" (
   "show_id" SERIAL PRIMARY KEY,
-  "end_year" date
+  "end_year" int
 );
 
 CREATE TABLE "country" (
@@ -90,6 +89,7 @@ CREATE TABLE "running_time" (
 
 CREATE TABLE "rating" (
   "rating_id" SERIAL PRIMARY KEY,
+  "show_info_id" int,
   "distribution" varchar,
   "amount_of_votes" int,
   "rating" float
@@ -143,7 +143,7 @@ ALTER TABLE "person_also_known_as" ADD FOREIGN KEY ("also_known_as_id") REFERENC
 
 ALTER TABLE "role" ADD FOREIGN KEY ("show_info_id") REFERENCES "show_info" ("show_info_id");
 
-ALTER TABLE "show_info" ADD FOREIGN KEY ("rating_id") REFERENCES "rating" ("rating_id");
+AlTER TABLE "rating" ADD FOREIGN KEY ("show_info_id") REFERENCES "show_info" ("show_info_id");
 
 ALTER TABLE "episode" ADD FOREIGN KEY ("show_id") REFERENCES "show" ("show_id");
 

@@ -75,7 +75,7 @@ def connect(dbType='staging'):
     return conn
 
 
-def setupDatabase(dbType='staging'):
+def setup_database(dbType='staging'):
     """
     Drops and recreates the database with tables provided by the corresponding setup script
 
@@ -194,18 +194,67 @@ def fill_db(dbType='staging'):
 
 
 def convert_db(dbType="staging"):
-    FillShows("show", GetShows())
-    # InsertPerson(GetPerson("actors"))
-    # InsertPerson(GetPerson("actresses"))
-    # InsertPerson(GetPerson("cinematographers"))
-    # InsertPerson(GetPerson("directors"))
+    print("")
+    # fill_shows("show", get_shows())
+    # insert_person(get_person("actors"))
+    # insert_person(get_person("actresses"))
+    # insert_person(get_person("cinematographers"))
+    # insert_person(get_person("directors"))
 
-        with connFinal.cursor() as cur:
-            command = "SELECT table_name FROM information_schema.tables WHERE (table_schema = 'public') ORDER BY table_name"
-            cur.execute(command)
-            finalTables = cur.fetchall()
+def get_rating():
+    print("")
 
-def GetShows():
+
+def fill_rating():
+    print("")
+
+
+def get_showinfo():
+    print("Getting show_info")
+    try:
+        conn = connect("staging")
+        with conn:
+            with conn.cursor() as cur:
+                command = "SELECT show_title, release_date, release_year, type_of_show, suspended FROM {}"
+                cur.execute(sql.SQL(command).format(sql.Literal(AsIs("movies"))))
+                data = cur.fetchmany(100)
+                print(data[0][9])
+                return data
+
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+def insert_showinfo(table, show_info):
+    print("Inserting show_info")
+
+    try:
+        conn = connect("final")
+        with conn:
+            with conn.cursor() as cur:
+                for tuple in show_info:
+                    print(tuple)
+                    if tuple[9] == '????':
+                        tuple[9] = NULL
+
+                    # create_command = "INSERT INTO {} (end_year) VALUES (%(owner)s);"
+                    # cur.execute(sql.SQL(create_command).format(sql.Identifier(table)), {
+                    #     'owner': date
+                    # })
+                # command = "INSERT INTO {} (nick_name, last_name, first_name) VALUES %s"
+                # cur.execute_values(sql.SQL(command).format(sql.Literal(AsIs(table))), show_info)
+                print("did it")
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+def get_shows():
     print("Getting shows")
     try:
         conn = connect("staging")
@@ -224,7 +273,7 @@ def GetShows():
             conn.close()
 
 
-def FillShows(table, show):
+def insert_shows(table, show):
     print("Inserting shows")
 
     try:
@@ -254,7 +303,7 @@ def FillShows(table, show):
             conn.close()
 
 
-def GetPerson(table):
+def get_person(table):
     print("Getting " + table)
     try:
         conn = connect("staging")
@@ -272,10 +321,7 @@ def GetPerson(table):
             conn.close()
 
 
-i = 0
-
-
-def InsertPerson(person):
+def insert_person(person):
     print("Inserting person")
 
     try:

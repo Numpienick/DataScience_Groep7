@@ -154,11 +154,11 @@ def main():
     print(f"\nDone! Finished parsing in {endTime - startTime:0.04f} seconds")
 
 
-# setupDatabase("final")
-convert_db()
+setup_database("final")
+# convert_db()
 
 # main()
-# setupDatabase()
+# setup_database()
 
 
 
