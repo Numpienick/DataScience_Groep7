@@ -2,6 +2,10 @@ import psycopg2
 import os
 from psycopg2 import sql
 from configparser import ConfigParser
+from psycopg2.extensions import AsIs
+from psycopg2.sql import NULL
+from psycopg2.extras import execute_values
+from datetime import datetime
 
 
 def config(section='staging'):
@@ -28,7 +32,7 @@ def config(section='staging'):
     return db
 
 
-def connect(dbType = 'staging'):
+def connect(dbType='staging'):
     """
     Connects to the database corresponding to dbType
 
@@ -44,7 +48,7 @@ def connect(dbType = 'staging'):
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
 
-        #Fill the Database
+        # Fill the Database
 
         # filename = "actors"
         # filepath = 'output/' + filename + '.csv'
@@ -56,7 +60,7 @@ def connect(dbType = 'staging'):
 
         # fill_db(conn)
 
-        #Empty The Database
+        # Empty The Database
         # cur.execute("DELETE FROM actors")
         # conn.commit()
         # empty_db(conn, dbType, "actors")
@@ -66,11 +70,11 @@ def connect(dbType = 'staging'):
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
         return None
-    print('Connected to database')
+    print('Connected to ' + dbType + ' database')
     return conn
 
 
-def setupDatabase(dbType = 'staging'):
+def setupDatabase(dbType='staging'):
     """
     Drops and recreates the database with tables provided by the corresponding setup script
 
@@ -85,7 +89,7 @@ def setupDatabase(dbType = 'staging'):
     dbName = params['database']
     owner = params['user']
     params["database"] = ""
-    try:    # Recreates the database
+    try:  # Recreates the database
         conn = psycopg2.connect(**params)
         conn.autocommit = True
         with conn.cursor() as cur:
@@ -110,13 +114,13 @@ def setupDatabase(dbType = 'staging'):
         filename = "DataScience_Groep7.sql"
 
     with open(f"../SQL/{filename}", "r") as f:
-        try:    # Reads the setup script
+        try:  # Reads the setup script
             sqlFile = f.read()
             sqlCommands = sqlFile.split(';')
         except Exception as err:
-            raise(err)
+            raise (err)
 
-    try:    # Execute all the commands in setup script
+    try:  # Execute all the commands in setup script
         with connect(dbType) as connection:
             with connection.cursor() as cur:
                 for command in sqlCommands:
@@ -124,7 +128,8 @@ def setupDatabase(dbType = 'staging'):
                         try:
                             cur.execute(command)
                         except Exception as err:
-                            print(f"Something went wrong: {err}\nThis happened with the following command: {command}\nClosing the transaction...")
+                            print(
+                                f"Something went wrong: {err}\nThis happened with the following command: {command}\nClosing the transaction...")
                             cur.close()
                             break
                 if not cur.closed:
@@ -139,7 +144,7 @@ def setupDatabase(dbType = 'staging'):
     fill_db()
 
 
-def fill_db(dbType = 'staging'):
+def fill_db(dbType='staging'):
     """
         Fills the staging database with data.
 
@@ -154,27 +159,27 @@ def fill_db(dbType = 'staging'):
         params = config(dbType)
         conn = psycopg2.connect(**params)
         conn.autocommit = True
+        if (dbType == 'staging'):
+            path = 'output'
+            files = os.listdir(path)
 
-        path = 'output'
-        files = os.listdir(path)
-
-        for file in files:
-            if file.endswith(".csv"):
-                with conn.cursor() as cur:
-                    filename = file.split(sep='.')[0]
-                    filepath = 'output/' + filename + '.csv'
-                    if filename == "running-times":
-                        filename = "running_times"
-                    print(f"Started transferring {filename} data to database ")
-                    with open(filepath, 'r', encoding="ANSI", newline="") as f:
-                        next(f)
-                        copy_sql = """
-                                        COPY {}
-                                        FROM stdin
-                                        CSV DELIMITER as ';'
-                                        """.format(filename)
-                        cur.copy_expert(sql=copy_sql, file=f)
-                    print(f"Finished transferring {filename} data to database ")
+            for file in files:
+                if file.endswith(".csv"):
+                    with conn.cursor() as cur:
+                        filename = file.split(sep='.')[0]
+                        filepath = 'output/' + filename + '.csv'
+                        if filename == "running-times":
+                            filename = "running_times"
+                        print(f"Started transferring {filename} data to database ")
+                        with open(filepath, 'r', encoding="ANSI", newline="") as f:
+                            next(f)
+                            copy_sql = """
+                                            COPY {}
+                                            FROM stdin
+                                            CSV DELIMITER as ';'
+                                            """.format(filename)
+                            cur.copy_expert(sql=copy_sql, file=f)
+                        print(f"Finished transferring {filename} data to database ")
 
     except Exception as err:
         raise err
@@ -186,6 +191,97 @@ def fill_db(dbType = 'staging'):
         return conn
 
 
+def convert_db(dbType="staging"):
+    FillShows("show", GetShows())
+    # InsertPerson(GetPerson("actors"))
+    # InsertPerson(GetPerson("actresses"))
+    # InsertPerson(GetPerson("cinematographers"))
+    # InsertPerson(GetPerson("directors"))
 
 
+def GetShows():
+    print("Getting shows")
+    try:
+        conn = connect("staging")
+        with conn:
+            with conn.cursor() as cur:
+                command = "SELECT * FROM {}"
+                cur.execute(sql.SQL(command).format(sql.Literal(AsIs("movies"))))
+                data = cur.fetchmany(100)
+                print(data[0][9])
+                return data
 
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+def FillShows(table, show):
+    print("Inserting shows")
+
+    try:
+        conn = connect("final")
+        with conn:
+            with conn.cursor() as cur:
+                for tuple in show:
+                    print(tuple)
+                    if tuple[9] == '????':
+                        date = NULL
+                    else:
+                        #TODO: datetime werkend krijgen of naar int omzetten
+                        date = datetime.strptime(str(tuple[9]), "%Y")
+
+                    createCommand = "INSERT INTO {} (end_year) VALUES (%(owner)s);"
+                    cur.execute(sql.SQL(createCommand).format(sql.Identifier(table)), {
+                        'owner': date
+                    })
+                    # execute_values(cur, "INSERT INTO show (end_year) VALUES %s", show)
+                # command = "INSERT INTO {} (nick_name, last_name, first_name) VALUES %s"
+                # cur.execute_values(sql.SQL(command).format(sql.Literal(AsIs(table))), person)
+                print("did it")
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+def GetPerson(table):
+    print("Getting " + table)
+    try:
+        conn = connect("staging")
+        with conn:
+            with conn.cursor() as cur:
+                command = "SELECT nick_name, first_name, last_name FROM {} WHERE first_name IS NOT NULL"
+                cur.execute(sql.SQL(command).format(sql.Literal(AsIs(table))))
+                data = cur.fetchall()
+                return data
+
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+i = 0
+
+
+def InsertPerson(person):
+    print("Inserting person")
+
+    try:
+        conn = connect("final")
+        with conn:
+            with conn.cursor() as cur:
+                execute_values(cur, "INSERT INTO person (nick_name, last_name, first_name) VALUES %s", person)
+                # command = "INSERT INTO {} (nick_name, last_name, first_name) VALUES %s"
+                # cur.execute_values(sql.SQL(command).format(sql.Literal(AsIs(table))), person)
+                print("did it")
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
