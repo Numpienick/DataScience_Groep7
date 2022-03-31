@@ -1,6 +1,7 @@
 import psycopg2
 import os
 from psycopg2 import sql
+from psycopg2.extensions import AsIs
 from configparser import ConfigParser
 from psycopg2.extensions import AsIs
 from psycopg2.sql import NULL
@@ -141,7 +142,8 @@ def setupDatabase(dbType='staging'):
         if connection:
             connection.close()
 
-    fill_db()
+    if dbType == "staging":
+        fill_db()
 
 
 def fill_db(dbType='staging'):
@@ -198,6 +200,10 @@ def convert_db(dbType="staging"):
     # InsertPerson(GetPerson("cinematographers"))
     # InsertPerson(GetPerson("directors"))
 
+        with connFinal.cursor() as cur:
+            command = "SELECT table_name FROM information_schema.tables WHERE (table_schema = 'public') ORDER BY table_name"
+            cur.execute(command)
+            finalTables = cur.fetchall()
 
 def GetShows():
     print("Getting shows")
