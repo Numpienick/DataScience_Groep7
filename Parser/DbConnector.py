@@ -192,7 +192,7 @@ def fill_db(dbType='staging'):
 
 
 def convert_db(dbType="staging"):
-    print("")
+    insert_showinfo(get_showinfo("movies"))
     # fill_shows("show", get_shows())
     # insert_person(get_person("actors"))
     # insert_person(get_person("actresses"))
@@ -207,16 +207,21 @@ def fill_rating():
     print("")
 
 
-def get_showinfo():
-    print("Getting show_info")
+def get_showinfo(table):
+    print("Getting " + table)
     try:
         conn = connect("staging")
         with conn:
             with conn.cursor() as cur:
-                command = "SELECT show_title, release_date, release_year, type_of_show, suspended FROM {}"
-                cur.execute(sql.SQL(command).format(sql.Literal(AsIs("movies"))))
-                data = cur.fetchmany(100)
-                print(data[0][9])
+                command = "UPDATE movies SET release_year = null WHERE release_year = '????'"
+                cur.execute(command)
+                command = "UPDATE movies SET suspended = true WHERE suspended is not NULL "
+                cur.execute(command)
+                command = "UPDATE movies SET suspended = false WHERE suspended is NULL "
+                cur.execute(command)
+                command = "SELECT show_title, release_date, release_year, type_of_show, suspended FROM {} WHERE episode_title is NULL AND season_number is NULL AND episode_number is NULL AND end_year is NULL"
+                cur.execute(sql.SQL(command).format(sql.Literal(AsIs(table))))
+                data = cur.fetchall()
                 return data
 
     except Exception as err:
@@ -226,24 +231,14 @@ def get_showinfo():
             conn.close()
 
 
-def insert_showinfo(table, show_info):
+def insert_showinfo(show_info):
     print("Inserting show_info")
 
     try:
         conn = connect("final")
         with conn:
             with conn.cursor() as cur:
-                for tuple in show_info:
-                    print(tuple)
-                    if tuple[9] == '????':
-                        tuple[9] = NULL
-
-                    # create_command = "INSERT INTO {} (end_year) VALUES (%(owner)s);"
-                    # cur.execute(sql.SQL(create_command).format(sql.Identifier(table)), {
-                    #     'owner': date
-                    # })
-                # command = "INSERT INTO {} (nick_name, last_name, first_name) VALUES %s"
-                # cur.execute_values(sql.SQL(command).format(sql.Literal(AsIs(table))), show_info)
+                execute_values(cur, "INSERT INTO show_info (show_title, release_date, release_year, type_of_show, suspended) VALUES %s", show_info)
                 print("did it")
     except Exception as err:
         raise err

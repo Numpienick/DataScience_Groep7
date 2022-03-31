@@ -60,7 +60,7 @@ CREATE TABLE "show_info" (
   "show_info_id" SERIAL UNIQUE PRIMARY KEY,
   "show_title" varchar NOT NULL,
   "release_date" varchar NOT NULL,
-  "release_year" date,
+  "release_year" int,
   "type_of_show" varchar,
   "suspended" bool
 );
@@ -104,10 +104,10 @@ CREATE TABLE "running_time" (
 
 CREATE TABLE "rating" (
   "rating_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
+  "show_info_id" int,
   "distribution" varchar NOT NULL,
   "amount_of_votes" int NOT NULL,
   "rating" float NOT NULL
-  "show_info_id" int,
 );
 
 CREATE TABLE "plot" (
