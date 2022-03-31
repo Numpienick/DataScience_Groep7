@@ -192,8 +192,13 @@ def fill_db(dbType='staging'):
 
 
 def convert_db(dbType="staging"):
-    insert_showinfo(get_showinfo("movies"))
+    # insert_showinfo(get_showinfo("movies"))
+    # insert_show(get_show("movies"))
+    insert_episode(get_episode("movies"))
+
+
     # fill_shows("show", get_shows())
+
     # insert_person(get_person("actors"))
     # insert_person(get_person("actresses"))
     # insert_person(get_person("cinematographers"))
@@ -205,6 +210,117 @@ def get_rating():
 
 def fill_rating():
     print("")
+
+
+def get_show(table):
+    print("Getting " + table)
+    try:
+        conn = connect("staging")
+        with conn:
+            with conn.cursor() as cur:
+                command = "UPDATE movies SET release_year = null WHERE release_year = '????'"
+                cur.execute(command)
+                command = "UPDATE movies SET suspended = true WHERE suspended is not NULL "
+                cur.execute(command)
+                command = "UPDATE movies SET suspended = false WHERE suspended is NULL "
+                cur.execute(command)
+                command = "SELECT show_title, release_date, release_year, type_of_show, suspended, end_year FROM {} WHERE end_year IS NOT NULL AND release_date <> '????'"
+                cur.execute(sql.SQL(command).format(sql.Literal(AsIs(table))))
+                data = cur.fetchall()
+                return data
+
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+def insert_show(show):
+    print("Inserting show")
+
+    try:
+        conn = connect("final")
+        with conn:
+            with conn.cursor() as cur:
+                execute_values(cur,
+                               "INSERT INTO show (show_title, release_date, release_year, type_of_show, suspended, end_year) VALUES %s",
+                               show)
+                print("did it")
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+def get_episode(table):
+    print("Getting " + table)
+    try:
+        conn = connect("staging")
+        with conn:
+            with conn.cursor() as cur:
+                command = "UPDATE movies SET release_year = null WHERE release_year = '????'"
+                cur.execute(command)
+                command = "UPDATE movies SET suspended = true WHERE suspended is not NULL "
+                cur.execute(command)
+                command = "UPDATE movies SET suspended = false WHERE suspended is NULL "
+                cur.execute(command)
+                command = "SELECT show_title, release_date, release_year, type_of_show, suspended, episode_title, season_number, episode_number FROM {} WHERE (end_year IS NULL) AND (release_date IS NOT NULL) AND ((episode_title IS NOT NULL OR season_number IS NOT NULL) OR episode_number IS NOT NULL)"
+                cur.execute(sql.SQL(command).format(sql.Literal(AsIs(table))))
+                data = cur.fetchall()
+                return data
+
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+def insert_episode(episode):
+    print("Inserting episode")
+
+    try:
+        conn = connect("final")
+        with conn:
+            with conn.cursor() as cur:
+                command = (
+                    """
+                    CREATE TABLE temp (
+                        show_title varchar,
+                        release_date varchar,
+                        release_year varchar,
+                        type_of_show varchar,
+                        "suspended" bool,
+                        "episode_name" varchar,
+                        "season_number" int,
+                        "episode_number" int
+                    )
+                    """
+                )
+                cur.execute(command)
+                execute_values(cur,
+                               "INSERT INTO temp (show_title, release_date, release_year, type_of_show, suspended, episode_name, season_number, episode_number) VALUES %s",
+                               episode)
+                command = """
+                          SELECT temp.show_title, temp.release_date, temp.release_year, temp.type_of_show, temp.suspended, show.show_id, temp.episode_name, temp.season_number, temp.episode_number 
+                          FROM temp
+                          LEFT JOIN show
+                          ON temp.show_title = show.show_title
+                          AND temp.release_date = show.release_date
+                          """
+                cur.execute(command)
+                data = cur.fetchall()
+                execute_values(cur, "INSERT INTO episode (show_title, release_date, release_year, type_of_show, suspended, show_id, episode_name, season_number, episode_number) VALUES %s", data)
+                command = "DROP TABLE temp"
+                cur.execute(command)
+                print("did it")
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
 
 
 def get_showinfo(table):
@@ -247,53 +363,53 @@ def insert_showinfo(show_info):
             conn.close()
 
 
-def get_shows():
-    print("Getting shows")
-    try:
-        conn = connect("staging")
-        with conn:
-            with conn.cursor() as cur:
-                command = "SELECT * FROM {}"
-                cur.execute(sql.SQL(command).format(sql.Literal(AsIs("movies"))))
-                data = cur.fetchmany(100)
-                print(data[0][9])
-                return data
-
-    except Exception as err:
-        raise err
-    finally:
-        if conn:
-            conn.close()
-
-
-def insert_shows(table, show):
-    print("Inserting shows")
-
-    try:
-        conn = connect("final")
-        with conn:
-            with conn.cursor() as cur:
-                for tuple in show:
-                    print(tuple)
-                    if tuple[9] == '????':
-                        date = NULL
-                    else:
-                        #TODO: datetime werkend krijgen of naar int omzetten
-                        date = datetime.strptime(str(tuple[9]), "%Y")
-
-                    createCommand = "INSERT INTO {} (end_year) VALUES (%(owner)s);"
-                    cur.execute(sql.SQL(createCommand).format(sql.Identifier(table)), {
-                        'owner': date
-                    })
-                    # execute_values(cur, "INSERT INTO show (end_year) VALUES %s", show)
-                # command = "INSERT INTO {} (nick_name, last_name, first_name) VALUES %s"
-                # cur.execute_values(sql.SQL(command).format(sql.Literal(AsIs(table))), person)
-                print("did it")
-    except Exception as err:
-        raise err
-    finally:
-        if conn:
-            conn.close()
+# def get_shows():
+#     print("Getting shows")
+#     try:
+#         conn = connect("staging")
+#         with conn:
+#             with conn.cursor() as cur:
+#                 command = "SELECT * FROM {}"
+#                 cur.execute(sql.SQL(command).format(sql.Literal(AsIs("movies"))))
+#                 data = cur.fetchmany(100)
+#                 print(data[0][9])
+#                 return data
+#
+#     except Exception as err:
+#         raise err
+#     finally:
+#         if conn:
+#             conn.close()
+#
+#
+# def insert_shows(table, show):
+#     print("Inserting shows")
+#
+#     try:
+#         conn = connect("final")
+#         with conn:
+#             with conn.cursor() as cur:
+#                 for tuple in show:
+#                     print(tuple)
+#                     if tuple[9] == '????':
+#                         date = NULL
+#                     else:
+#                         #TODO: datetime werkend krijgen of naar int omzetten
+#                         date = datetime.strptime(str(tuple[9]), "%Y")
+#
+#                     createCommand = "INSERT INTO {} (end_year) VALUES (%(owner)s);"
+#                     cur.execute(sql.SQL(createCommand).format(sql.Identifier(table)), {
+#                         'owner': date
+#                     })
+#                     # execute_values(cur, "INSERT INTO show (end_year) VALUES %s", show)
+#                 # command = "INSERT INTO {} (nick_name, last_name, first_name) VALUES %s"
+#                 # cur.execute_values(sql.SQL(command).format(sql.Literal(AsIs(table))), person)
+#                 print("did it")
+#     except Exception as err:
+#         raise err
+#     finally:
+#         if conn:
+#             conn.close()
 
 
 def get_person(table):

@@ -59,7 +59,7 @@ CREATE TABLE "director" (
 CREATE TABLE "show_info" (
   "show_info_id" SERIAL UNIQUE PRIMARY KEY,
   "show_title" varchar NOT NULL,
-  "release_date" varchar NOT NULL,
+  "release_date" varchar,
   "release_year" int,
   "type_of_show" varchar,
   "suspended" bool
@@ -75,7 +75,7 @@ CREATE TABLE "episode" (
 
 CREATE TABLE "show" (
   "show_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
-  "end_year" date
+  "end_year" varchar
 ) inherits ("show_info");
 
 CREATE TABLE "country" (
