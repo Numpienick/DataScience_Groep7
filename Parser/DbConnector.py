@@ -35,7 +35,8 @@ def config(section='staging'):
 
 def connect(dbType='staging'):
     """
-    Connects to the database corresponding to dbType
+    Connects to the database corresponding to dbType.
+    Autocommit is turned on.
 
     :param dbType: Is either "staging" or "final". Defines the database that will be connected to.
     If not defined defaults to "staging"
@@ -98,6 +99,7 @@ def setup_database(dbType='staging'):
             cur.execute(sql.SQL(dropCommand).format(sql.Identifier(dbName)))
             print(f"Database {dbName} has been successfully dropped")
 
+        with conn.cursor() as cur:
             createCommand = "CREATE DATABASE {} OWNER %(owner)s;"
             cur.execute(sql.SQL(createCommand).format(sql.Identifier(dbName)), {
                 'owner': owner
@@ -109,11 +111,7 @@ def setup_database(dbType='staging'):
         if conn:
             conn.close()
 
-    if dbType == "staging":
-        filename = "Staging_DataScience_Groep7.sql"
-    elif dbType == "final":
-        filename = "DataScience_Groep7.sql"
-
+    filename = "DataScience_Groep7.sql" if dbType == "final" else "Staging_DataScience_Groep7.sql"
     with open(f"../SQL/{filename}", "r") as f:
         try:  # Reads the setup script
             sqlFile = f.read()
@@ -139,8 +137,8 @@ def setup_database(dbType='staging'):
         raise err
 
     finally:
-        if connection:
-            connection.close()
+        if conn:
+            conn.close()
 
     if dbType == "staging":
         fill_db()
