@@ -77,8 +77,36 @@ def writeCSV(data, dataType):
     try:
         with open("output/" + name + '.csv', 'w', encoding="ANSI", newline='') as f:
             writer = csv.writer(f, dialect="excel", delimiter=';', quoting=csv.QUOTE_MINIMAL)
-            writer.writerow(headers)
-            writer.writerows(data)
+
+            # Adds female header to actors/actresses
+            if name == "actors" or name == "actresses":
+                list_headers = list(headers)
+                list_headers.insert(22, 'female')
+                writer.writerow(tuple(list_headers))
+            else:
+                writer.writerow(headers)
+
+            # With persons loops through every row, if all names are empty, uses the last filled one to fill it.
+            if name == "actors" or name == "actresses" or name == "cinematographers" or name == "directors":
+                for line in data:
+                    listed = list(line)
+                    if name == "actors":
+                        listed.insert(22, 0)
+                    if name == "actresses":
+                        listed.insert(22, 1)
+                    if line[0] == '' and line[1] == '' and line[2] == '':
+                        listed[0] = old_nickname
+                        listed[1] = old_lastname
+                        listed[2] = old_firstname
+                        tuple_line = tuple(listed)
+                    else:
+                        old_nickname = line[0]
+                        old_lastname = line[1]
+                        old_firstname = line[2]
+                        tuple_line = tuple(listed)
+                    writer.writerow(tuple_line)
+            else:
+                writer.writerows(data)
             endTime = time.perf_counter()
             print(f"Done writing to {name}.csv in {endTime - startTime:0.04f} seconds")
     except Exception as e:
@@ -154,9 +182,10 @@ def main():
     endTime = time.perf_counter()
     print(f"\nDone! Finished parsing in {endTime - startTime:0.04f} seconds")
 
+
 # setupDatabase()
 
 # setupDatabase("final")
-convert_db()
+# convert_db()
 
-# main()
+main()
