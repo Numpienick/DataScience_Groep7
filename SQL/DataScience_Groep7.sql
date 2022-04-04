@@ -107,7 +107,8 @@ CREATE TABLE "rating" (
   "show_info_id" int,
   "distribution" varchar NOT NULL,
   "amount_of_votes" int NOT NULL,
-  "rating" float NOT NULL
+  "rating" float NOT NULL,
+  FOREIGN KEY ("show_info_id") REFERENCES "show_info" ("show_info_id")
 );
 
 CREATE TABLE "plot" (
@@ -157,8 +158,6 @@ ALTER TABLE "person" ADD FOREIGN KEY ("show_info_id") REFERENCES "show_info" ("s
 ALTER TABLE "person_also_known_as" ADD FOREIGN KEY ("person_id") REFERENCES "person" ("person_id");
 
 ALTER TABLE "person_also_known_as" ADD FOREIGN KEY ("also_known_as_id") REFERENCES "also_known_as" ("also_known_as_id");
-
-AlTER TABLE "rating" ADD FOREIGN KEY ("show_info_id") REFERENCES "show_info" ("show_info_id");
 
 ALTER TABLE "episode" ADD FOREIGN KEY ("show_id") REFERENCES "show" ("show_id");
 

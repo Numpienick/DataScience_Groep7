@@ -4,7 +4,9 @@ import time
 import itertools as it
 
 from DbConnector import *
+from DbConverter import *
 from Regex import *
+
 
 
 # Reads IMDB .list file
@@ -156,7 +158,7 @@ def main():
 
 # main()
 # setup_database()
-setup_database("final")
+# setup_database("final")
 convert_db()
 
 
