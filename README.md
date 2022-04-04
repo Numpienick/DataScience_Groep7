@@ -49,7 +49,8 @@ Web interface made in Django(Python)
 2. Open terminal and type `python -m pip install Django`
 3. If you don't have psycopg2 installed, type `python -m pip install psycopg2`
 
-### Starting web interface with PyCharm
+## Running Django Interface
+### Option A: Starting web interface with PyCharm
 1. Next to the start button, open the dropdown, click edit configurations.
 2. Press the plus button and add a Django server.
 3. It will tell something about that it doesn't have the right configuration for it, click the FIX button.
@@ -59,8 +60,9 @@ Web interface made in Django(Python)
 7. Click the plus button.
 8. Add Django, it will install it in your environment now.
 9. Now you can start it with the start button in PyCharm.
+10. If this doesn't work, go to option B
 
-### Starting web interface without PyCharm
+### Option B: Starting web interface without PyCharm
 1. Open terminal in the first `IMDBInfo` folder.
 2. Run the following command: `python manage.py runserver`
 
