@@ -47,6 +47,7 @@ Web interface made in Django(Python)
 ### Installing Django
 1. Make sure you have installed Python, if not. Go to the instructions at the Parser
 2. Open terminal and type `python -m pip install Django`
+3. If you don't have psycopg2 installed, type `python -m pip install psycopg2`
 
 ### Starting web interface with PyCharm
 1. Next to the start button, open the dropdown, click edit configurations.
