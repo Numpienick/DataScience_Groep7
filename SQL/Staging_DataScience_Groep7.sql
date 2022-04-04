@@ -21,7 +21,8 @@ CREATE TABLE "actors"
     "character_name"  varchar,
     "segment"         varchar,
     "motion_capture"  varchar,
-    "role_position"   int
+    "role_position"   int,
+    "female" bool NOT NULL
 );
 
 CREATE TABLE "actresses"
@@ -47,7 +48,8 @@ CREATE TABLE "actresses"
     "character_name"  varchar,
     "segment"         varchar,
     "motion_capture"  varchar,
-    "role_position"   int
+    "role_position"   int,
+    "female" bool NOT NULL
 );
 
 CREATE TABLE "cinematographers"
@@ -197,76 +199,6 @@ CREATE TABLE "plot"
     "written_by"     varchar
 );
 
-CREATE VIEW role_actors
-            (nick_name, last_name, first_name, character_name, segment, voice_actor, scenes_deleted, credit_only,
-             archive_footage, uncredited, rumored, motion_capture, role_position)
-as
-SELECT actors.nick_name,
-       actors.first_name,
-       actors.last_name,
-       actors.character_name,
-       actors.segment,
-       actors.voice_actor,
-       actors.scenes_deleted,
-       actors.credit_only,
-       actors.archive_footage,
-       actors.uncredited,
-       actors.rumored,
-       actors.motion_capture,
-       actors.role_position
-FROM actors;
-
-CREATE VIEW role_actresses
-            (nick_name, last_name, first_name, character_name, segment, voice_actor, scenes_deleted, credit_only,
-             archive_footage, uncredited, rumored, motion_capture, role_position)
-as
-SELECT actresses.nick_name,
-       actresses.first_name,
-       actresses.last_name,
-       actresses.character_name,
-       actresses.segment,
-       actresses.voice_actor,
-       actresses.scenes_deleted,
-       actresses.credit_only,
-       actresses.archive_footage,
-       actresses.uncredited,
-       actresses.rumored,
-       actresses.motion_capture,
-       actresses.role_position
-FROM actresses;
-
-CREATE VIEW get_cinematographers
-            (nick_name, last_name, first_name, type_of_cinematographer, segment, scenes_deleted, credit_only,
-             archive_footage, uncredited, rumored)
-as
-SELECT cinematographers.nick_name,
-       cinematographers.last_name,
-       cinematographers.first_name,
-       cinematographers.type_of_cinematographer,
-       cinematographers.segment,
-       cinematographers.scenes_deleted,
-       cinematographers.credit_only,
-       cinematographers.archive_footage,
-       cinematographers.uncredited,
-       cinematographers.rumored
-FROM cinematographers;
-
-CREATE VIEW get_directors
-            (nick_name, last_name, first_name, type_of_director, segment, voice_actor, scenes_deleted, credit_only,
-             archive_footage, uncredited, rumored)
-as
-SELECT directors.nick_name,
-       directors.last_name,
-       directors.first_name,
-       directors.type_of_director,
-       directors.segment,
-       directors.voice_actor,
-       directors.scenes_deleted,
-       directors.credit_only,
-       directors.archive_footage,
-       directors.uncredited,
-       directors.rumored
-FROM directors;
 
 CREATE VIEW get_known_as_actors (also_known_as)
 as

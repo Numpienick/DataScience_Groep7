@@ -1,6 +1,5 @@
 CREATE TABLE "person" (
   "person_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
-  "show_info_id" int NOT NULL,
   "nick_name" varchar,
   "last_name" varchar,
   "first_name" varchar NOT NULL
@@ -19,6 +18,7 @@ CREATE TABLE "person_also_known_as" (
 
 CREATE TABLE "role" (
   "role_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
+  "show_info_id" int NOT NULL,
   "character_name" varchar,
   "segment" varchar,
   "voice_actor" varchar,
@@ -152,7 +152,7 @@ CREATE TABLE "show_info_plot" (
   PRIMARY KEY ("show_info_id", "plot_id")
 );
 
-ALTER TABLE "person" ADD FOREIGN KEY ("show_info_id") REFERENCES "show_info" ("show_info_id");
+ALTER TABLE "role" ADD FOREIGN KEY ("show_info_id") REFERENCES "show_info" ("show_info_id");
 
 ALTER TABLE "person_also_known_as" ADD FOREIGN KEY ("person_id") REFERENCES "person" ("person_id");
 
