@@ -1,8 +1,23 @@
 # DataScience IMDB Groep 7
 
-##Table of content
-- DataScience IMDB-Parser
-- DataScience IMDBInfo
+## Table of Contents
+- [DataScience IMDB-Parser](#datascience-imdb-parser)
+  * [Datasets parsing](#datasets-parsing)
+  * [Installation](#installation)
+    + [Installing Python](#installing-python)
+    + [Parsing data](#parsing-data)
+  * [Database converter](#database-converter)
+    + [Prerequirements](#prerequirements)
+    + [Config files](#config-files)
+- [DataScience IMDBInfo Web Interface](#datascience-imdbinfo-web-interface)
+  * [Features](#features)
+  * [Installation](#installation-1)
+    + [Installing Django](#installing-django)
+  * [Running Django Interface](#running-django-interface)
+    + [Option A: Starting web interface with PyCharm](#option-a--starting-web-interface-with-pycharm)
+    + [Option B: Starting web interface without PyCharm](#option-b--starting-web-interface-without-pycharm)
+  * [Development requirements](#development-requirements)
+
 
 # DataScience IMDB-Parser
 Parser made in Python
@@ -21,7 +36,7 @@ Parser made in Python
 ### Installing Python
 1. Head to [Python.org](https://www.python.org/downloads/)
 2. Download and install Python for the correct platform.
-#### Because of using certain functions, Python 3.10 is required
+> Because of using certain functions, Python 3.10 is required
 
 ### Parsing data
 1. Put all .list file datasets in the `data` folder.
@@ -34,9 +49,30 @@ Parser made in Python
 5. This will take a while, but it will tell you which datasets it has completed.
 6. The results (.csv files) will be output in the `output` folder.
 
+## Database converter
+### Prerequirements
+* Make sure you have Postgres installed, otherwise head to [Postgresql.org](https://www.postgresql.org/download/) and install it
+* Install psycopg2 with `python -m pip install psycopg2` in the terminal.
 
 
-# DataScience IMDBInfo
+### Config files
+1. First of all you need to add a database.ini in the root of the `Parser` folder
+2. Fill it with the correct database settings like this template (default user is postgres):
+```
+[staging]
+host=localhost
+database=
+user=
+password=
+
+[final]
+host=localhost
+database=
+user=
+password=
+```
+
+# DataScience IMDBInfo Web Interface
 Web interface made in Django(Python)
 
 ## Features
@@ -45,9 +81,10 @@ Web interface made in Django(Python)
 
 ## Installation
 ### Installing Django
-1. Make sure you have installed Python, if not. Go to the instructions at the Parser
-2. Open terminal and type `python -m pip install Django`
-3. If you don't have psycopg2 installed, type `python -m pip install psycopg2`
+1. Make sure you have installed Python, if not. Go to the instructions at the Parser instructions.
+2. Open terminal and type `python -m pip install Django`.
+3. If you don't have psycopg2 installed, type `python -m pip install psycopg2`.
+
 
 ## Running Django Interface
 ### Option A: Starting web interface with PyCharm
@@ -66,3 +103,9 @@ Web interface made in Django(Python)
 1. Open terminal in the first `IMDBInfo` folder.
 2. Run the following command: `python manage.py runserver`
 
+## Development requirements
+1. Go to settings in PyCharm. (shortcut: ctrl + alt + s)
+2. Go to Tools
+3. Go to File Watchers
+4. Click on the plus icon and add SCSS
+5. Scope should be 'project files' and click OK and after that Apply
