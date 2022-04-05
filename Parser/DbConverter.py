@@ -3,6 +3,7 @@ from DbConnector import *
 
 def convert_db():
     convert("ratings")
+    add_indices()
 
 
 def convert(table):
@@ -29,6 +30,26 @@ def convert(table):
             insert_rating(get_rating(table))
         case "running-times":
             print()
+
+
+def add_indices():
+    print("Creating indices")
+    try:
+        conn = connect("final")
+        with conn:
+            with conn.cursor() as cur:
+                command = "CREATE INDEX idx_rating ON rating(rating);"
+                cur.execute(command)
+                command = "CREATE INDEX idx_person_last_name ON person(last_name);"
+                cur.execute(command)
+                command = "CREATE INDEX idx_show_info_show_title ON show_info(show_title);"
+                cur.execute(command)
+                print("Finished creating indices")
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
 
 
 def get_rating(table):
