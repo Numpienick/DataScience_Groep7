@@ -8,23 +8,23 @@ def convert_db():
 def convert(table):
     match (table):
         case "actors":
-            insert_role(get_persons(table)) # TODO: under show_info
+            insert_role(get_persons(table))  # TODO: under show_info
         case "actresses":
             insert_role(get_persons(table))
         case "cinematographers":
             insert_cinematographer(get_persons(table))
         case "countries":
-            print()
+            insert_countries(get_countries(table))
         case "directors":
             insert_director(get_persons(table))
         case "genres":
-            print()
+            insert_genres(get_genres(table))
         case "movies":
             insert_showinfo(get_showinfo(table))
             insert_show(get_show(table))
             insert_episode(get_episode(table))
         case "plot":
-            print()
+            insert_plot(get_plot(table))
         case "ratings":
             insert_rating(get_rating(table))
         case "running-times":
@@ -312,19 +312,19 @@ def get_known_as(table):
             with conn.cursor() as cur:
                 if table == "actors":
                     cur.execute("SELECT * from get_known_as_actors")
-                    data = cur.fetchmany(100)
+                    data = cur.fetchall()
                     return data
                 if table == "actresses":
                     cur.execute("SELECT * from get_known_as_actresses")
-                    data = cur.fetchmany(100)
+                    data = cur.fetchall()
                     return data
                 if table == "cinematographers":
                     cur.execute("SELECT * from get_known_as_cinematographers")
-                    data = cur.fetchmany(100)
+                    data = cur.fetchall()
                     return data
                 if table == "directors":
                     cur.execute("SELECT * from get_known_as_directors")
-                    data = cur.fetchmany(100)
+                    data = cur.fetchall()
                     return data
     except Exception as err:
         raise err
@@ -339,8 +339,8 @@ def get_plot():
         conn = connect("staging")
         with conn:
             with conn.cursor() as cur:
-                cur.execute("SELECT plot, written_by FROM plot")
-                data = cur.fetchmany(100)
+                cur.execute("SELECT * FROM plot")
+                data = cur.fetchall()
                 return data
     except Exception as err:
         raise err
@@ -356,7 +356,7 @@ def get_ratings():
         with conn:
             with conn.cursor() as cur:
                 cur.execute("SELECT distribution, amount_of_votes, rating FROM ratings")
-                data = cur.fetchmany(100)
+                data = cur.fetchall()
                 return data
 
     except Exception as err:
@@ -372,8 +372,8 @@ def get_countries():
         conn = connect("staging")
         with conn:
             with conn.cursor() as cur:
-                cur.execute("SELECT DISTINCT countries_of_origin FROM countries")
-                data = cur.fetchmany(100)
+                cur.execute("SELECT countries_of_origin FROM countries")
+                data = cur.fetchall()
                 return data
 
     except Exception as err:
@@ -389,8 +389,8 @@ def get_genres():
         conn = connect("staging")
         with conn:
             with conn.cursor() as cur:
-                cur.execute("SELECT DISTINCT genre FROM genres")
-                data = cur.fetchmany(100)
+                cur.execute("SELECT * FROM genres")
+                data = cur.fetchall()
                 return data
 
     except Exception as err:
@@ -423,7 +423,49 @@ def insert_plot(plot):
         conn = connect("final")
         with conn:
             with conn.cursor() as cur:
-                execute_values(cur, "INSERT INTO plot (plot, written_by) VALUES %s", plot)
+                command = (
+                    """
+                    CREATE TABLE temp (
+                        show_title varchar,
+                        music_video varchar,
+                        release_date varchar,
+                        type_of_show varchar,
+                        episode_title varchar,
+                        season_number int,
+                        episode_number int,
+                        suspended varchar,
+                        plot varchar,
+                        written_by varchar
+                    )
+                    """
+                )
+                cur.execute(command)
+                execute_values(cur,
+                               "INSERT INTO temp (show_title, music_video, release_date, type_of_show, episode_title, season_number, episode_number, suspended, plot, written_by) VALUES %s",
+                               plot)
+
+                cur.execute("SELECT plot, written_by FROM temp")
+                data = cur.fetchall()
+
+                execute_values(cur,
+                               "INSERT INTO genre (genre_name) VALUES %s",
+                               data)
+
+                command = """
+                          SELECT show_info.show_info_id, plot.plot_id
+                          FROM temp
+                          LEFT JOIN show_info
+                          ON temp.show_title = show_info.show_title
+                          AND temp.release_date = show_info.release_date
+                          JOIN plot
+                          ON temp.plot = plot.plot
+                          AND temp.written_by = plot.written_by
+                          """
+                cur.execute(command)
+                link_table = cur.fetchall()
+                execute_values(cur,
+                               "INSERT INTO show_info_plot (show_info_id, genre_id) VALUES %s",
+                               link_table)
                 print("did it")
     except Exception as err:
         raise err
@@ -437,6 +479,8 @@ def insert_plot(plot):
     :param person: is the list of tuples to be inserted
     :param type: is the type of person, can be either: actors, actresses, cinematographers or directors
     """
+
+
 def insert_person(person, type):
     print("Inserting role")
 
@@ -711,9 +755,47 @@ def insert_countries(countries):
         conn = connect("final")
         with conn:
             with conn.cursor() as cur:
+                command = (
+                    """
+                    CREATE TABLE temp (
+                        show_title varchar,
+                        music_video varchar,
+                        release_date varchar,
+                        type_of_show varchar,
+                        episode_title varchar,
+                        season_number int,
+                        episode_number int,
+                        suspended varchar,
+                        countries_of_origin varchar
+                    )
+                    """
+                )
+                cur.execute(command)
                 execute_values(cur,
-                               "INSERT INTO country (country_name) VALUES %s",
+                               "INSERT INTO temp (show_title, music_video, release_date, type_of_show, episode_title, season_number, episode_number, suspended, countries_of_origin) VALUES %s",
                                countries)
+
+                cur.execute("SELECT DISTINCT countries_of_origin FROM temp")
+                data = cur.fetchall()
+
+                execute_values(cur,
+                               "INSERT INTO country (countries_of_origin) VALUES %s",
+                               data)
+
+                command = """
+                          SELECT show_info.show_info_id, country.country_id
+                          FROM temp
+                          LEFT JOIN show_info
+                          ON temp.show_title = show_info.show_title
+                          AND temp.release_date = show_info.release_date
+                          JOIN country
+                          ON temp.countries_of_origin = country.countries_of_origin
+                          """
+                cur.execute(command)
+                link_table = cur.fetchall()
+                execute_values(cur,
+                               "INSERT INTO show_info_country (show_info_id, country_id) VALUES %s",
+                               link_table)
                 print("did it")
     except Exception as err:
         raise err
@@ -729,11 +811,47 @@ def insert_genres(genres):
         conn = connect("final")
         with conn:
             with conn.cursor() as cur:
+                command = (
+                    """
+                    CREATE TABLE temp (
+                        show_title varchar,
+                        music_video varchar,
+                        release_date varchar,
+                        type_of_show varchar,
+                        episode_title varchar,
+                        season_number int,
+                        episode_number int,
+                        suspended varchar,
+                        genre varchar
+                    )
+                    """
+                )
+                cur.execute(command)
+                execute_values(cur,
+                               "INSERT INTO temp (show_title, music_video, release_date, type_of_show, episode_title, season_number, episode_number, suspended, genre) VALUES %s",
+                               genres)
+
+                cur.execute("SELECT DISTINCT genre FROM temp")
+                data = cur.fetchall()
+
                 execute_values(cur,
                                "INSERT INTO genre (genre_name) VALUES %s",
-                               genres)
-                # command = "INSERT INTO {} (nick_name, last_name, first_name) VALUES %s"
-                # cur.execute_values(sql.SQL(command).format(sql.Literal(AsIs(table))), person)
+                               data)
+
+                command = """
+                          SELECT show_info.show_info_id, genre.genre_id
+                          FROM temp
+                          LEFT JOIN show_info
+                          ON temp.show_title = show_info.show_title
+                          AND temp.release_date = show_info.release_date
+                          JOIN genre
+                          ON temp.genre = genre.genre
+                          """
+                cur.execute(command)
+                link_table = cur.fetchall()
+                execute_values(cur,
+                               "INSERT INTO show_info_genre (show_info_id, genre_id) VALUES %s",
+                               link_table)
                 print("did it")
     except Exception as err:
         raise err
