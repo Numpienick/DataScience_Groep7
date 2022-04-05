@@ -265,16 +265,16 @@ def get_persons(table):
         with conn:
             with conn.cursor() as cur:
                 if table == "actors":
-                    cur.execute("SELECT * from actors")
+                    cur.execute("SELECT DISTINCT * from actors")
                     data = cur.fetchmany(100)
                 if table == "actresses":
-                    cur.execute("SELECT * from actresses")
+                    cur.execute("SELECT DISTINCT * from actresses")
                     data = cur.fetchmany(100)
                 if table == "cinematographers":
-                    cur.execute("SELECT * from cinematographers")
+                    cur.execute("SELECT DISTINCT * from cinematographers")
                     data = cur.fetchmany(100)
                 if table == "directors":
-                    cur.execute("SELECT * from directors")
+                    cur.execute("SELECT DISTINCT * from directors")
                     data = cur.fetchmany(100)
                 return data
     except Exception as err:
