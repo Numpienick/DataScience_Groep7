@@ -1,6 +1,7 @@
 import psycopg2
 import os
 from psycopg2 import sql
+from psycopg2.extensions import AsIs
 from configparser import ConfigParser
 from psycopg2.extensions import AsIs
 from psycopg2.sql import NULL
@@ -34,7 +35,8 @@ def config(section='staging'):
 
 def connect(dbType='staging'):
     """
-    Connects to the database corresponding to dbType
+    Connects to the database corresponding to dbType.
+    Autocommit is turned on.
 
     :param dbType: Is either "staging" or "final". Defines the database that will be connected to.
     If not defined defaults to "staging"
@@ -74,7 +76,7 @@ def connect(dbType='staging'):
     return conn
 
 
-def setupDatabase(dbType='staging'):
+def setup_database(dbType='staging'):
     """
     Drops and recreates the database with tables provided by the corresponding setup script
 
@@ -97,6 +99,7 @@ def setupDatabase(dbType='staging'):
             cur.execute(sql.SQL(dropCommand).format(sql.Identifier(dbName)))
             print(f"Database {dbName} has been successfully dropped")
 
+        with conn.cursor() as cur:
             createCommand = "CREATE DATABASE {} OWNER %(owner)s;"
             cur.execute(sql.SQL(createCommand).format(sql.Identifier(dbName)), {
                 'owner': owner
@@ -108,11 +111,7 @@ def setupDatabase(dbType='staging'):
         if conn:
             conn.close()
 
-    if dbType == "staging":
-        filename = "Staging_DataScience_Groep7.sql"
-    elif dbType == "final":
-        filename = "DataScience_Groep7.sql"
-
+    filename = "DataScience_Groep7.sql" if dbType == "final" else "Staging_DataScience_Groep7.sql"
     with open(f"../SQL/{filename}", "r") as f:
         try:  # Reads the setup script
             sqlFile = f.read()
@@ -138,10 +137,11 @@ def setupDatabase(dbType='staging'):
         raise err
 
     finally:
-        if connection:
-            connection.close()
+        if conn:
+            conn.close()
 
-    fill_db()
+    if dbType == "staging":
+        fill_db()
 
 
 def fill_db(dbType='staging'):
@@ -182,7 +182,6 @@ def fill_db(dbType='staging'):
                         print(f"Finished transferring {filename} data to database ")
 
     except Exception as err:
-        print(err)
         raise err
 
     finally:
