@@ -105,8 +105,9 @@ Web interface made in Django(Python)
 
 ## Development requirements
 1. Make sure Nodejs is installed [Node.js](https://nodejs.org/en/download/)
-2. Go to settings in PyCharm. (shortcut: ctrl + alt + s)
-3. Go to Tools
-4. Go to File Watchers
-5. Click on the plus icon and add SCSS
-6. Scope should be 'project files' and click OK and after that Apply
+2. And install sass with `npm i sass -g`
+3. Go to settings in PyCharm. (shortcut: ctrl + alt + s)
+4. Go to Tools
+5. Go to File Watchers
+6. Click on the plus icon and add SCSS
+7. Scope should be 'project files' and click OK and after that Apply
