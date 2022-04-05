@@ -284,6 +284,7 @@ def insert_showinfo(show_info):
                 command = (
                     """
                     CREATE TABLE temp (
+                        "temp_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
                         "show_title" varchar,
                         "release_date" varchar,
                         "release_year" varchar,
@@ -307,7 +308,6 @@ def insert_showinfo(show_info):
                     """
                 )
                 cur.execute(command)
-                print("Altering the rating table")
                 command = (
                     """
                     ALTER table rating
@@ -315,24 +315,34 @@ def insert_showinfo(show_info):
                     """
                 )
                 cur.execute(command)
+                command = (
+                    """
+                    ALTER table rating
+                    ADD COLUMN "temp_id" int
+                    """
+                )
+                cur.execute(command)
+                command = (
+                    """
+                    ALTER table rating
+                    ADD FOREIGN KEY ("temp_id") REFERENCES "temp" ("temp_id")
+                    """
+                )
+                cur.execute(command)
                 print("Getting the data for the rating table")
-                command = "SELECT distribution, amount_of_votes, rating, show_title, release_date FROM temp"
+                command = "SELECT distribution, amount_of_votes, rating, show_title, release_date, temp_id  FROM temp"
                 cur.execute(command)
                 data = cur.fetchall()
                 print("Data Length: " + str(len(data)))
                 print("Inserting the data in the rating table")
-                execute_values(cur, "INSERT INTO rating (distribution, amount_of_votes, rating, show_title, release_date) VALUES %s", data)
+                execute_values(cur, "INSERT INTO rating (distribution, amount_of_votes, rating, show_title, release_date, temp_id) VALUES %s", data)
 
                 print("Getting data for show_info table")
                 command = """
                                 SELECT rating.rating_id, temp.show_title, temp.release_date, temp.release_year, temp.type_of_show, temp.suspended
                                 FROM temp
                                 INNER JOIN rating
-                                ON temp.show_title = rating.show_title
-                                AND temp.release_date = rating.release_date
-                                AND temp.amount_of_votes = rating.amount_of_votes
-                                AND temp.distribution = rating.distribution
-                                AND temp.rating = rating.rating
+                                ON rating.temp_id = temp.temp_id
                                 """
                 cur.execute(command)
                 data = cur.fetchall()
@@ -342,7 +352,7 @@ def insert_showinfo(show_info):
                 execute_values(cur,
                                "INSERT INTO show_info (rating_id, show_title, release_date,release_year, type_of_show, suspended) VALUES %s",
                                data)
-                print("Altering the table")
+                print("Altering the rating table")
                 command = (
                     """
                     ALTER TABLE rating
@@ -350,11 +360,24 @@ def insert_showinfo(show_info):
                     """
                 )
                 cur.execute(command)
-                print("Altering the table")
                 command = (
                     """
                     ALTER TABLE rating
                     DROP COLUMN "release_date"
+                    """
+                )
+                cur.execute(command)
+                command = (
+                    """
+                    ALTER TABLE rating
+                    DROP CONSTRAINT  "rating_temp_id_fkey"
+                    """
+                )
+                cur.execute(command)
+                command = (
+                    """
+                    ALTER table rating
+                    DROP COLUMN "temp_id"
                     """
                 )
                 cur.execute(command)
