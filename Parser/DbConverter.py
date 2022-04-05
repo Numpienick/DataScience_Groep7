@@ -1,8 +1,9 @@
 from DbConnector import *
-
+import psycopg2
+from psycopg2 import sql
 
 def convert_db():
-    convert("ratings")
+    convert("movies")
 
 
 def convert(table):
@@ -21,12 +22,13 @@ def convert(table):
             print()
         case "movies":
             insert_showinfo(get_showinfo(table))
-            insert_show(get_show(table))
-            insert_episode(get_episode(table))
+            # insert_show(get_show(table))
+            # insert_episode(get_episode(table))
         case "plot":
             print()
         case "ratings":
-            insert_rating(get_rating(table))
+            print()
+            # insert_rating(get_rating(table))
         case "running-times":
             print()
 
@@ -242,15 +244,27 @@ def get_showinfo(table):
         conn = connect("staging")
         with conn:
             with conn.cursor() as cur:
+                # command = "SELECT show_title, release_date, release_year, type_of_show, suspended FROM {} WHERE episode_title is NULL AND season_number is NULL AND episode_number is NULL AND end_year is NULL"
+                # cur.execute(sql.SQL(command).format(sql.Literal(AsIs(table))))
+                # data = cur.fetchall()
+                # return data
                 command = "UPDATE movies SET release_year = null WHERE release_year = '????'"
                 cur.execute(command)
                 command = "UPDATE movies SET suspended = true WHERE suspended is not NULL "
                 cur.execute(command)
                 command = "UPDATE movies SET suspended = false WHERE suspended is NULL "
                 cur.execute(command)
-                command = "SELECT show_title, release_date, release_year, type_of_show, suspended FROM {} WHERE episode_title is NULL AND season_number is NULL AND episode_number is NULL AND end_year is NULL"
-                cur.execute(sql.SQL(command).format(sql.Literal(AsIs(table))))
+                command = """
+                SELECT movies.show_title, movies.release_date, movies.release_year, movies.type_of_show, movies.suspended, ratings.distribution, ratings.amount_of_votes, ratings.rating
+                FROM movies 
+                LEFT JOIN ratings
+                ON movies.show_title = ratings.show_title
+                AND movies.release_date = ratings.release_date
+                WHERE movies.episode_title is NULL AND movies.season_number IS NULL AND movies.episode_number IS NULL
+                """
+                cur.execute(command)
                 data = cur.fetchall()
+                print("Data Length: " + str(len(data)))
                 return data
 
     except Exception as err:
@@ -262,14 +276,96 @@ def get_showinfo(table):
 
 def insert_showinfo(show_info):
     print("Inserting show_info")
-
     try:
         conn = connect("final")
         with conn:
             with conn.cursor() as cur:
+                print("Creating temporary table")
+                command = (
+                    """
+                    CREATE TABLE temp (
+                        "show_title" varchar,
+                        "release_date" varchar,
+                        "release_year" varchar,
+                        "type_of_show" varchar,
+                        "suspended" bool,
+                        "distribution" varchar,
+                        "amount_of_votes" int,
+                        "rating" float
+                    )
+                    """
+                )
+                #TODO: Try to link with primary key and foreign key
+                cur.execute(command)
+                print("Inserting data into temporary table")
+                execute_values(cur,"INSERT INTO temp (show_title, release_date, release_year, type_of_show, suspended, distribution, amount_of_votes, rating) VALUES %s", show_info)
+                print("Altering the rating table")
+                command = (
+                    """
+                    ALTER TABLE rating
+                    ADD COLUMN "show_title" varchar
+                    """
+                )
+                cur.execute(command)
+                print("Altering the rating table")
+                command = (
+                    """
+                    ALTER table rating
+                    ADD COLUMN "release_date" varchar
+                    """
+                )
+                cur.execute(command)
+                print("Getting the data for the rating table")
+                command = "SELECT distribution, amount_of_votes, rating, show_title, release_date FROM temp"
+                cur.execute(command)
+                data = cur.fetchall()
+                print("Data Length: " + str(len(data)))
+                print("Inserting the data in the rating table")
+                execute_values(cur, "INSERT INTO rating (distribution, amount_of_votes, rating, show_title, release_date) VALUES %s", data)
+
+                print("Getting data for show_info table")
+                command = """
+                                SELECT rating.rating_id, temp.show_title, temp.release_date, temp.release_year, temp.type_of_show, temp.suspended
+                                FROM temp
+                                INNER JOIN rating
+                                ON temp.show_title = rating.show_title
+                                AND temp.release_date = rating.release_date
+                                AND temp.amount_of_votes = rating.amount_of_votes
+                                AND temp.distribution = rating.distribution
+                                AND temp.rating = rating.rating
+                                """
+                cur.execute(command)
+                data = cur.fetchall()
+                print("Fetched the data")
+                print("Data Length: " + str(len(data)))
+                print("Inserting data in show_info table")
                 execute_values(cur,
-                               "INSERT INTO show_info (show_title, release_date, release_year, type_of_show, suspended) VALUES %s",
-                               show_info)
+                               "INSERT INTO show_info (rating_id, show_title, release_date,release_year, type_of_show, suspended) VALUES %s",
+                               data)
+                print("Altering the table")
+                command = (
+                    """
+                    ALTER TABLE rating
+                    DROP COLUMN "show_title"
+                    """
+                )
+                cur.execute(command)
+                print("Altering the table")
+                command = (
+                    """
+                    ALTER TABLE rating
+                    DROP COLUMN "release_date"
+                    """
+                )
+                cur.execute(command)
+
+                print("Dropping temporary table")
+                command = (
+                    """
+                    DROP TABLE temp
+                    """
+                )
+                cur.execute(command)
                 print("did it")
     except Exception as err:
         raise err

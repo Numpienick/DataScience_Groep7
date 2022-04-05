@@ -158,7 +158,7 @@ def main():
 
 # main()
 # setup_database()
-# setup_database("final")
+setup_database("final")
 convert_db()
 
 
