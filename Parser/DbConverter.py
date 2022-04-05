@@ -4,25 +4,25 @@ from psycopg2 import sql
 
 def convert_db():
     convert("movies")
-
+    # test()
 
 def convert(table):
     match (table):
         case "actors":
-            insert_person(get_person(table))
+            print()
         case "actresses":
-            insert_person(get_person(table))
+            print()
         case "cinematographers":
-            insert_person(get_person(table))
+            print()
         case "countries":
             print()
         case "directors":
-            insert_person(get_person(table))
+            print()
         case "genres":
             print()
         case "movies":
-            insert_showinfo(get_showinfo(table))
-            # insert_show(get_show(table))
+            # insert_showinfo(get_showinfo(table))
+            insert_show(get_show(table))
             # insert_episode(get_episode(table))
         case "plot":
             print()
@@ -137,9 +137,47 @@ def get_show(table):
                 cur.execute(command)
                 command = "UPDATE movies SET suspended = false WHERE suspended is NULL "
                 cur.execute(command)
-                command = "SELECT show_title, release_date, release_year, type_of_show, suspended, end_year FROM {} WHERE end_year IS NOT NULL AND release_date <> '????'"
-                cur.execute(sql.SQL(command).format(sql.Literal(AsIs(table))))
+                command = "SELECT * FROM movies WHERE end_year IS NOT NULL AND release_date <> '????'"
+                cur.execute(command)
                 data = cur.fetchall()
+                cur.execute(command)
+                command = (
+                    """
+                    CREATE TABLE "temp" (
+                      "show_title" varchar,
+                      "music_video" varchar,
+                      "release_date" varchar,
+                      "type_of_show" varchar,
+                      "episode_title" varchar,
+                      "season_number" int,
+                      "episode_number" int,
+                      "suspended" varchar,
+                      "release_year" varchar,
+                      "end_year" varchar
+                    );
+                    """
+                )
+                cur.execute(command)
+                print("Data Length: " + str(len(data)))
+                execute_values(cur,
+                               "INSERT INTO temp (show_title, music_video, release_date, type_of_show, episode_title, season_number, episode_number, suspended, release_year, end_year) VALUES %s",
+                               data)
+                command = """
+                                SELECT DISTINCT temp.show_title, temp.release_date, temp.release_year, temp.type_of_show, temp.suspended, temp.end_year, ratings.distribution, ratings.amount_of_votes, ratings.rating
+                                FROM temp
+                                LEFT JOIN ratings
+                                ON temp.show_title = ratings.show_title
+                                AND temp.release_date = ratings.release_date
+                                WHERE temp.end_year IS NOT NULL AND temp.release_date <> '????' AND ratings.episode_title IS NULL AND ratings.season_number IS NULL AND ratings.episode_number IS NULL
+                                """
+                cur.execute(command)
+                data = cur.fetchall()
+                command = (
+                    """
+                    DROP TABLE temp
+                    """
+                )
+                cur.execute(command)
                 return data
 
     except Exception as err:
@@ -151,14 +189,119 @@ def get_show(table):
 
 def insert_show(show):
     print("Inserting show")
-
     try:
         conn = connect("final")
         with conn:
             with conn.cursor() as cur:
+                print("Creating temporary table")
+                command = (
+                    """
+                    CREATE TABLE temp (
+                        "temp_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
+                        "show_title" varchar,
+                        "release_date" varchar,
+                        "release_year" varchar,
+                        "type_of_show" varchar,
+                        "suspended" bool,
+                        "end_year" varchar,
+                        "distribution" varchar,
+                        "amount_of_votes" int,
+                        "rating" float
+                    )
+                    """
+                )
+                cur.execute(command)
+                print("Inserting data into temporary table")
+                execute_values(cur,"INSERT INTO temp (show_title, release_date, release_year, type_of_show, suspended, end_year, distribution, amount_of_votes, rating) VALUES %s", show)
+                print("Altering the rating table")
+                command = (
+                    """
+                    ALTER TABLE rating
+                    ADD COLUMN "show_title" varchar
+                    """
+                )
+                cur.execute(command)
+                command = (
+                    """
+                    ALTER table rating
+                    ADD COLUMN "release_date" varchar
+                    """
+                )
+                cur.execute(command)
+                command = (
+                    """
+                    ALTER table rating
+                    ADD COLUMN "temp_id" int
+                    """
+                )
+                cur.execute(command)
+                command = (
+                    """
+                    ALTER table rating
+                    ADD FOREIGN KEY ("temp_id") REFERENCES "temp" ("temp_id")
+                    """
+                )
+                cur.execute(command)
+                print("Getting the data for the rating table")
+                command = "SELECT distribution, amount_of_votes, rating, show_title, release_date, temp_id  FROM temp"
+                cur.execute(command)
+                data = cur.fetchall()
+                print("Data Length: " + str(len(data)))
+                print("Inserting the data in the rating table")
+                execute_values(cur, "INSERT INTO rating (distribution, amount_of_votes, rating, show_title, release_date, temp_id) VALUES %s", data)
+
+                print("Getting data for show table")
+                command = """
+                                SELECT rating.rating_id, temp.show_title, temp.release_date, temp.release_year, temp.type_of_show, temp.suspended, temp.end_year
+                                FROM temp
+                                INNER JOIN rating
+                                ON rating.temp_id = temp.temp_id
+                                """
+                cur.execute(command)
+                data = cur.fetchall()
+                print("Fetched the data")
+                print("Data Length: " + str(len(data)))
+                print("Inserting data in show table")
                 execute_values(cur,
-                               "INSERT INTO show (show_title, release_date, release_year, type_of_show, suspended, end_year) VALUES %s",
-                               show)
+                               "INSERT INTO show (rating_id, show_title, release_date,release_year, type_of_show, suspended, end_year) VALUES %s",
+                               data)
+                # print("Altering the rating table")
+                # command = (
+                #     """
+                #     ALTER TABLE rating
+                #     DROP COLUMN "show_title"
+                #     """
+                # )
+                # cur.execute(command)
+                # command = (
+                #     """
+                #     ALTER TABLE rating
+                #     DROP COLUMN "release_date"
+                #     """
+                # )
+                # cur.execute(command)
+                # command = (
+                #     """
+                #     ALTER TABLE rating
+                #     DROP CONSTRAINT  "rating_temp_id_fkey"
+                #     """
+                # )
+                # cur.execute(command)
+                # command = (
+                #     """
+                #     ALTER table rating
+                #     DROP COLUMN "temp_id"
+                #     """
+                # )
+                # cur.execute(command)
+                #
+                # print("Dropping temporary table")
+                # command = (
+                #     """
+                #     DROP TABLE temp
+                #     """
+                # )
+                # cur.execute(command)
                 print("did it")
     except Exception as err:
         raise err
@@ -244,10 +387,6 @@ def get_showinfo(table):
         conn = connect("staging")
         with conn:
             with conn.cursor() as cur:
-                # command = "SELECT show_title, release_date, release_year, type_of_show, suspended FROM {} WHERE episode_title is NULL AND season_number is NULL AND episode_number is NULL AND end_year is NULL"
-                # cur.execute(sql.SQL(command).format(sql.Literal(AsIs(table))))
-                # data = cur.fetchall()
-                # return data
                 command = "UPDATE movies SET release_year = null WHERE release_year = '????'"
                 cur.execute(command)
                 command = "UPDATE movies SET suspended = true WHERE suspended is not NULL "
@@ -260,7 +399,7 @@ def get_showinfo(table):
                 LEFT JOIN ratings
                 ON movies.show_title = ratings.show_title
                 AND movies.release_date = ratings.release_date
-                WHERE movies.episode_title is NULL AND movies.season_number IS NULL AND movies.episode_number IS NULL
+                WHERE movies.episode_title is NULL AND movies.season_number IS NULL AND movies.episode_number IS NULL AND movies.end_year IS NULL 
                 """
                 cur.execute(command)
                 data = cur.fetchall()
@@ -397,16 +536,39 @@ def insert_showinfo(show_info):
             conn.close()
 
 
-def get_person(table):
-    print("Getting " + table)
+def test():
+    print("Getting test data")
     try:
         conn = connect("staging")
         with conn:
             with conn.cursor() as cur:
-                command = "SELECT nick_name, first_name, last_name FROM {} WHERE first_name IS NOT NULL"
-                cur.execute(sql.SQL(command).format(sql.Literal(AsIs(table))))
+                command = "UPDATE movies SET release_year = null WHERE release_year = '????'"
+                cur.execute(command)
+                command = "UPDATE movies SET suspended = true WHERE suspended is not NULL "
+                cur.execute(command)
+                command = "UPDATE movies SET suspended = false WHERE suspended is NULL "
+                cur.execute(command)
+                command = "SELECT * FROM movies WHERE end_year IS NOT NULL AND release_date <> '????'"
+                cur.execute(command)
                 data = cur.fetchall()
-                return data
+                command = (
+                    """
+                    CREATE TABLE "temp" (
+                      "show_title" varchar,
+                      "music_video" varchar,
+                      "release_date" varchar,
+                      "type_of_show" varchar,
+                      "episode_title" varchar,
+                      "season_number" int,
+                      "episode_number" int,
+                      "suspended" varchar,
+                      "release_year" varchar,
+                      "end_year" varchar
+                    );
+                    """
+                )
+                cur.execute(command)
+                execute_values(cur, "INSERT INTO temp (show_title, music_video, release_date, type_of_show, episode_title, season_number, episode_number, suspended, release_year, end_year) VALUES %s", data)
 
     except Exception as err:
         raise err
@@ -414,20 +576,3 @@ def get_person(table):
         if conn:
             conn.close()
 
-
-def insert_person(person):
-    print("Inserting person")
-
-    try:
-        conn = connect("final")
-        with conn:
-            with conn.cursor() as cur:
-                execute_values(cur, "INSERT INTO person (nick_name, last_name, first_name) VALUES %s", person)
-                # command = "INSERT INTO {} (nick_name, last_name, first_name) VALUES %s"
-                # cur.execute_values(sql.SQL(command).format(sql.Literal(AsIs(table))), person)
-                print("did it")
-    except Exception as err:
-        raise err
-    finally:
-        if conn:
-            conn.close()

@@ -189,3 +189,5 @@ def fill_db(dbType='staging'):
             conn.close()
         print('Connected to database')
         return conn
+
+
