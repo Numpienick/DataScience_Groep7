@@ -11,37 +11,6 @@ class Plot(DataSet):
         self.file = "plot"
         self.seperator = "-------------------------------------------------------------------------------"
 
-    def section_data(self, file):
-        # works, but takes ages to parse so for now it's disabled
-        return ""
-        # startTime = time.perf_counter()
-        # print(f"\nStarting sectioning of {self.file}'s data")
-        # titleRegex = r"(?:MV:\s)(?:\")?(?P<ShowTitle>.+?)(?:\")?\s\((?P<ReleaseDateOrder>\d{4}(?:[^)]+?)?|\?{4}(?:.+?)?)\)\s+?(?:\((?P<ShowType>(?:TV)|(?:V)|(?:VG))\))?(?:\{(?P<EpisodeTitle>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s)?(?:\(\#(?P<SeasonNumber>\d+?)\.(?P<EpisodeNumber>\d+?)\)\})?"
-        # bodyRegex = r"PL: (?P<Plot>[\s\S]+?)(?=(?:\nBY:|\n-{79})|\n\nPL: )\n(?P<By>BY:\s.+)"
-        # sections = list()
-        # txt = str()
-        # for key, group in it.groupby(file, lambda line: line.startswith(self.seperator)):
-        #     if not key:
-        #         section = str()
-        #         for line in group:
-        #             section += line
-        #         sections.append(section)
-        # for section in sections:
-        #     title = re.search(titleRegex, section, re.M)
-        #     bodies = re.findall(bodyRegex, section, re.M)
-        #     for body in bodies:
-        #         txt += f"{self.seperator}\n{title.group()}\nPL: {''.join(body)}\n\n"
-        #     # FOR getMatches IF NEEDED IN FUTURE
-        #     # txt = txt.split(seperator)
-        #     # for section in txt:
-        #     #     if section != "":
-        #     #         match = re.search(dataType.regex, section, re.M)
-        #     #         if match is not None:
-        #     #             matches.append(match)
-        # endTime = time.perf_counter()
-        # print(f"Done sectioning {self.file} in {endTime - startTime:0.04f} seconds")
-        # return txt
-
     def get_table(self):
         print("Getting plot from staging")
         try:

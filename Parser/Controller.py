@@ -18,7 +18,7 @@ from Parser.classes.RunningTime import RunningTime
 
 # Calls the correct csv files with a choice menu
 def csv_caller():
-    print("Welke dataset wil je omzetten naar CSV?")
+    print("Welke dataset wilt u omzetten naar een CSV bestand?")
     print(
         "1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movie \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
 
@@ -87,10 +87,10 @@ def csv_caller():
 
 def db_converter_caller():
     print("We gaan aan de slag met het omzetten van de staging database naar de final database!\n")
-    print("Welke tabel wil je omzetten naar de Final database?")
+    print("Welke tabel wilt u omzetten naar de Final database?")
     print("Note: Zorg ervoor dat de films eerst bestaan en dat de rest dan wordt uitgevoerd, indien je de volgorde niet weet kunt u voor 0 kiezen. Dit werkt altijd.")
     print(
-        "1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movie \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
+        "1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movies \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
 
     data_set_choice = input()
     start_time = time.perf_counter()

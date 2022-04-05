@@ -10,12 +10,6 @@ class DataSet:
         self.clean_file_regex = self.clean_file_regex
         self.seperator = self.seperator
 
-    def print(self):
-        print(self.regex, self.file)
-
-    def section_data(self, file):
-        return ""
-
     def get_table(self):
         return ""
 

@@ -3,24 +3,25 @@ CREATE TABLE "actors" (
   "last_name" varchar,
   "first_name" varchar,
   "show_title" varchar,
-  "music_video" varchar,
+  "music_video" bool,
   "release_date" varchar,
   "type_of_show" varchar,
   "episode_title" varchar,
   "season_number" int,
   "episode_number" int,
-  "suspended" varchar,
+  "suspended" bool,
   "character_name" varchar,
   "also_known_as" varchar,
   "segment" varchar,
   "voice_actor" varchar,
-  "scenes_deleted" varchar,
-  "credit_only" varchar,
-  "archive_footage" varchar,
-  "uncredited" varchar,
-  "rumored" varchar,
+  "scenes_deleted" bool,
+  "credit_only" bool,
+  "archive_footage" bool,
+  "uncredited" bool,
+  "rumored" bool,
   "motion_capture" varchar,
-  "role_position" int
+  "role_position" int,
+  "female" bool
 );
 
 CREATE TABLE "actresses" (
@@ -28,7 +29,7 @@ CREATE TABLE "actresses" (
   "last_name" varchar,
   "first_name" varchar,
   "show_title" varchar,
-  "music_video" varchar,
+  "music_video" bool,
   "release_date" varchar,
   "type_of_show" varchar,
   "episode_title" varchar,
@@ -39,13 +40,14 @@ CREATE TABLE "actresses" (
   "also_known_as" varchar,
   "segment" varchar,
   "voice_actor" varchar,
-  "scenes_deleted" varchar,
-  "credit_only" varchar,
-  "archive_footage" varchar,
-  "uncredited" varchar,
-  "rumored" varchar,
+  "scenes_deleted" bool,
+  "credit_only" bool,
+  "archive_footage" bool,
+  "uncredited" bool,
+  "rumored" bool,
   "motion_capture" varchar,
-  "role_position" int
+  "role_position" int,
+  "female" bool
 );
 
 CREATE TABLE "cinematographers" (
@@ -53,35 +55,33 @@ CREATE TABLE "cinematographers" (
   "last_name" varchar,
   "first_name" varchar,
   "show_title" varchar,
-  "music_video" varchar,
+  "music_video" bool,
   "release_date" varchar,
   "type_of_show" varchar,
   "episode_title" varchar,
   "season_number" int,
   "episode_number" int,
-  "suspended" varchar,
+  "suspended" bool,
   "type_of_cinematographer" varchar,
-  "video" varchar,
+  "type_of_director" varchar,
   "also_known_as" varchar,
   "segment" varchar,
-  "voice_actor" varchar,
-  "scenes_deleted" varchar,
-  "credit_only" varchar,
-  "archived_footage" varchar,
-  "uncredited" varchar,
-  "rumored" varchar,
-  "motion_capture" varchar
+  "scenes_deleted" bool,
+  "credit_only" bool,
+  "archive_footage" bool,
+  "uncredited" bool,
+  "rumored" bool
 );
 
 CREATE TABLE "countries" (
   "show_title" varchar,
-  "music_video" varchar,
+  "music_video" bool,
   "release_date" varchar,
   "type_of_show" varchar,
   "episode_title" varchar,
   "season_number" int,
   "episode_number" int,
-  "suspended" varchar,
+  "suspended" bool,
   "countries_of_origin" varchar
 );
 
@@ -90,48 +90,46 @@ CREATE TABLE "directors" (
   "last_name" varchar,
   "first_name" varchar,
   "show_title" varchar,
-  "music_video" varchar,
+  "music_video" bool,
   "release_date" varchar,
   "type_of_show" varchar,
   "episode_title" varchar,
   "season_number" int,
   "episode_number" int,
-  "suspended" varchar,
+  "suspended" bool,
   "type_of_director" varchar,
-  "video" varchar,
   "also_known_as" varchar,
   "segment" varchar,
   "voice_actor" varchar,
-  "scenes_deleted" varchar,
-  "credit_only" varchar,
-  "archived_footage" varchar,
-  "uncredited" varchar,
-  "rumored" varchar,
-  "motion_capture" varchar
+  "scenes_deleted" bool,
+  "credit_only" bool,
+  "archive_footage" bool,
+  "uncredited" bool,
+  "rumored" bool
 );
 
 CREATE TABLE "genres" (
   "show_title" varchar,
-  "music_video" varchar,
+  "music_video" bool,
   "release_date" varchar,
   "type_of_show" varchar,
   "episode_title" varchar,
   "season_number" int,
   "episode_number" int,
-  "suspended" varchar,
+  "suspended" bool,
   "genre" varchar
 );
 
 CREATE TABLE "movies" (
   "show_title" varchar,
-  "music_video" varchar,
+  "music_video" bool,
   "release_date" varchar,
   "type_of_show" varchar,
   "episode_title" varchar,
   "season_number" int,
   "episode_number" int,
-  "suspended" varchar,
-  "release_year" varchar,
+  "suspended" bool,
+  "release_year" int,
   "end_year" varchar
 );
 
@@ -140,26 +138,26 @@ CREATE TABLE "ratings" (
   "amount_of_votes" int,
   "rating" float,
   "show_title" varchar,
-  "music_video" varchar,
+  "music_video" bool,
   "release_date" varchar,
   "type_of_show" varchar,
   "episode_title" varchar,
   "season_number" int,
   "episode_number" int,
-  "suspended" varchar
+  "suspended" bool
 );
 
 CREATE TABLE "running_times" (
   "show_title" varchar,
-  "music_video" varchar,
+  "music_video" bool,
   "release_date" varchar,
   "type_of_show" varchar,
   "episode_title" varchar,
   "season_number" int,
   "episode_number" int,
-  "suspended" varchar,
+  "suspended" bool,
   "country" varchar,
-  "running_time" int,
+  "running_times" int,
   "including_commercials" varchar,
   "amount_of_episodes" varchar,
   "season" varchar,
@@ -170,23 +168,21 @@ CREATE TABLE "running_times" (
   "cut" varchar,
   "market" varchar,
   "print" varchar,
-  "approximated" varchar
-
+  "approximated" bool
 );
 
 CREATE TABLE "plot" (
   "show_title" varchar,
-  "music_video" varchar,
+  "music_video" bool,
   "release_date" varchar,
   "type_of_show" varchar,
   "episode_title" varchar,
   "season_number" int,
   "episode_number" int,
-  "suspended" varchar,
+  "suspended" bool,
   "plot" varchar,
   "written_by" varchar
 );
-
 
 CREATE VIEW get_known_as_actors (also_known_as)
 as

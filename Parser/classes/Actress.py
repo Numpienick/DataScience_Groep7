@@ -9,7 +9,7 @@ class Actress(DataSet):
         super().__init__()
         self.regex = r"(?:, )?(?P<nick_name>\'[\S ]+?\'|^\"[\S ]+?\")?(?:,)?(?: )?(?:(?:(?P<last_name>[\S ]+?)?, )?(?P<first_name>[\S ]+?)[^ \S]+|(?:\t\t\t))\"?(?P<show_title>.+(?= \(Music Video\) \([\d?])|.+(?=\")|.+(?= \([\d?]))\"?\s\((?:(?P<music_video>Music Video)?\)\s\()?(?P<release_date>.+?)\)(?:\s+?\((?P<type_of_show>TV|V|VG)\))?(?:\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s\{\{?(?P<suspended>SUSPENDED)\}\})?(?:(?:(?:(?:\s+)?\[(?:(?P<character_name>[^\[{()}\]]+?))(?:(?=\(|\{)|\)|\}|\])+)|(?:(?:\s+)?(?:\(|\{|\[)(?:(?:as (?P<also_known_as>[^)}\]]+?))|(?P<segment>segment[^)}\]]*?)|(?P<voice_actor>voice[^)}\]]*?)|(?P<scenes_deleted>scenes deleted)|(?P<credit_only>credit only)|(?P<archive_footage>archive footage)|(?P<uncredited>uncredited)|(?P<rumored>rumored)|(?P<motion_capture>motion capture)|(?:[^)}\]]+?))(?:\)|\}|\])+))+)?(?:\s+<(?P<role_position>[0-9]{1,})\>)?"
         self.file = "actresses"
-        self.cleanFileRegex = r"-{4}\s+?-{6}\s+(?P<data>[\s\S]+?(?=-{77}))"
+        self.clean_file_regex = r"-{4}\s+?-{6}\s+(?P<data>[\s\S]+?(?=-{77}))"
 
     def get_table(self):
         print("Getting actresses from staging")

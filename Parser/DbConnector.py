@@ -48,26 +48,6 @@ def connect(db_type='staging'):
     try:
         params = config(db_type)
         conn = psycopg2.connect(**params)
-        cur = conn.cursor()
-
-        # Fill the Database
-
-        # filename = "actors"
-        # filepath = 'output/' + filename + '.csv'
-        # print(filepath)
-        # with open(filepath, 'r', encoding="ANSI", newline='') as f:
-        #     next(f)
-        #     cur.copy_from(f, filename, sep=';', null="")
-        # conn.commit()
-
-        # fill_db(conn)
-
-        # Empty The Database
-        # cur.execute("DELETE FROM actors")
-        # conn.commit()
-        # empty_db(conn, dbType, "actors")
-
-        cur.close()
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
@@ -141,51 +121,43 @@ def setup_database(db_type='staging'):
             conn.close()
 
     if db_type == "staging":
-        fill_db()
+        fill_staging_db()
 
 
-def fill_db(db_type='staging'):
+def fill_staging_db():
     """
         Fills the staging database with data.
-
-        :param db_type: Is either "staging" or "final". Defines the database that needs to be set up.
-        If not defined defaults to "staging"
-        """
-    while db_type not in ["staging", "final"]:
-        print(f'Wrong dbType: {db_type}\nIt should be either "staging" or "final"')
-        return
+    """
 
     try:  # Retrieves the data from files and puts it in the correct table.
-        params = config(db_type)
+        params = config("staging")
         conn = psycopg2.connect(**params)
         conn.autocommit = True
-        if (db_type == 'staging'):
-            path = 'output'
-            files = os.listdir(path)
+        path = 'output'
+        files = os.listdir(path)
 
-            for file in files:
-                if file.endswith(".csv"):
-                    with conn.cursor() as cur:
-                        filename = file.split(sep='.')[0]
-                        filepath = 'output/' + filename + '.csv'
-                        if filename == "running-times":
-                            filename = "running_times"
-                        print(f"Started transferring {filename} data to database ")
-                        with open(filepath, 'r', encoding="ANSI", newline="") as f:
-                            next(f)
-                            copy_sql = """
-                                            COPY {}
-                                            FROM stdin
-                                            CSV DELIMITER as ';'
-                                            """.format(filename)
-                            cur.copy_expert(sql=copy_sql, file=f)
-                        print(f"Finished transferring {filename} data to database ")
+        for file in files:
+            if file.endswith(".csv"):
+                with conn.cursor() as cur:
+                    filename = file.split(sep='.')[0]
+                    filepath = 'output/' + filename + '.csv'
+                    if filename == "running-times":
+                        filename = "running_times"
+                    print(f"Started transferring {filename} data to database ")
+                    with open(filepath, 'r', encoding="ANSI", newline="") as f:
+                        next(f)
+                        copy_sql = """
+                        COPY {}
+                        FROM stdin
+                        CSV DELIMITER as ';'
+                                    """.format(filename)
+                        cur.copy_expert(sql=copy_sql, file=f)
+                    print(f"Finished transferring {filename} data to database ")
 
     except Exception as err:
+        print(f"Something went wrong trying to copy {filename} to the database!")
         raise err
 
     finally:
         if conn:
             conn.close()
-        print('Connected to database')
-        return conn

@@ -9,10 +9,6 @@ def read_file(data_type):
     startTime = time.perf_counter()
     try:
         with open("data/" + data_type.file + ".list", "r", encoding="ANSI") as f:
-            data = data_type.section_data(f)
-            if data != "":
-                data = re.findall(data_type.regex, data)
-                return data
             txt = f.read()
             txt = re.sub(';', ':', txt)
             txt = re.sub('\\\\', ' ', txt)
