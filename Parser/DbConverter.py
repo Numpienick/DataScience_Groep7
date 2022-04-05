@@ -10,14 +10,18 @@ def convert(table):
     match (table):
         case "actors":
             insert_role(get_persons(table))  # TODO: under show_info
+            insert_known_as(get_known_as(table))
         case "actresses":
             insert_role(get_persons(table))
+            insert_known_as(get_known_as(table))
         case "cinematographers":
             insert_cinematographer(get_persons(table))
-        case "countries":
-            insert_countries(get_countries(table))
+            insert_known_as(get_known_as(table))
         case "directors":
             insert_director(get_persons(table))
+            insert_known_as(get_known_as(table))
+        case "countries":
+            insert_countries(get_countries(table))
         case "genres":
             insert_genres(get_genres(table))
         case "movies":
@@ -748,7 +752,7 @@ def insert_cinematographer(cinematographer):
             conn.close()
 
 
-def insert_known_as(knownAs):
+def insert_known_as(known_as):
     print("Inserting known_as")
 
     try:
@@ -757,7 +761,7 @@ def insert_known_as(knownAs):
             with conn.cursor() as cur:
                 execute_values(cur,
                                "INSERT INTO also_known_as (also_known_as) VALUES %s RETURNING also_known_as_id;",
-                               knownAs)
+                               known_as)
                 test = cur.fetchall()
                 # command = "INSERT INTO {} (nick_name, last_name, first_name) VALUES %s"
                 # cur.execute_values(sql.SQL(command).format(sql.Literal(AsIs(table))), person)

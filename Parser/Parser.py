@@ -8,33 +8,32 @@ from DbConverter import *
 from Regex import *
 
 
-
 # Reads IMDB .list file
-def readFile(dataType):
-    print(f"\nStarts reading {dataType.file}")
+def read_file(data_type):
+    print(f"\nStarts reading {data_type.file}")
     startTime = time.perf_counter()
     try:
-        with open("data/" + dataType.file + ".list", "r", encoding="ANSI") as f:
-            data = dataType.sectionData(f)
+        with open("data/" + data_type.file + ".list", "r", encoding="ANSI") as f:
+            data = data_type.sectionData(f)
             if data != "":
-                data = re.findall(dataType.regex, data)
+                data = re.findall(data_type.regex, data)
                 return data
             txt = f.read()
             txt = re.sub(';', ':', txt)
             txt = re.sub('\\\\', ' ', txt)
 
             # Some files needs a cleanup step before the regex, this if statement will trigger
-            if len(dataType.cleanFileRegex.strip()) > 0:
-                print(f"\nStarts cleaning {dataType.file}")
-                cleaned = re.search(dataType.cleanFileRegex, str(txt))
+            if len(data_type.cleanFileRegex.strip()) > 0:
+                print(f"\nStarts cleaning {data_type.file}")
+                cleaned = re.search(data_type.cleanFileRegex, str(txt))
                 txt = str(cleaned.group("data"))
-                endTimeClean = time.perf_counter()
-                print(f"Done cleaning {dataType.file} in {endTimeClean - startTime:0.04f} seconds")
-                print(f"\nContinuing reading {dataType.file}")
+                end_time_clean = time.perf_counter()
+                print(f"Done cleaning {data_type.file} in {end_time_clean - startTime:0.04f} seconds")
+                print(f"\nContinuing reading {data_type.file}")
 
-            data = re.findall(dataType.regex, str(txt))
-            endTime = time.perf_counter()
-            print(f"Done reading {dataType.file} in {endTime - startTime:0.04f} seconds")
+            data = re.findall(data_type.regex, str(txt))
+            end_time = time.perf_counter()
+            print(f"Done reading {data_type.file} in {end_time - startTime:0.04f} seconds")
             return data
     except Exception as e:
         print(e)
@@ -42,36 +41,36 @@ def readFile(dataType):
 
 # Can loop through regexxed data line by line
 # At the moment unused
-def getMatches(dataType):
-    print(f"\nStarts getting matches from {dataType.file}")
-    startTime = time.perf_counter()
+def get_matches(data_type):
+    print(f"\nStarts getting matches from {data_type.file}")
+    start_time = time.perf_counter()
     try:
-        with open("data/" + dataType.file + ".list", "r", encoding="ANSI") as f:
+        with open("data/" + data_type.file + ".list", "r", encoding="ANSI") as f:
             txt = f.read()
-            cleanfileRegex = dataType.cleanFileRegex
-            if cleanfileRegex != r"":
-                cleaned = re.search(cleanfileRegex, str(txt))
+            cleanfile_regex = data_type.cleanFileRegex
+            if cleanfile_regex != r"":
+                cleaned = re.search(cleanfile_regex, str(txt))
                 dataStr = str(cleaned.group("data"))
                 lines = dataStr.splitlines()
             else:
                 lines = f.readlines()
             matches = list()
             for line in lines:
-                match = re.search(dataType.regex, line, re.M)
+                match = re.search(data_type.regex, line, re.M)
                 if match is not None:
                     matches.append(match)
-            endTime = time.perf_counter()
-            print(f"Done getting matches from {dataType.file} in {endTime - startTime:0.04f} seconds")
+            end_time = time.perf_counter()
+            print(f"Done getting matches from {data_type.file} in {end_time - start_time:0.04f} seconds")
             return matches
     except Exception as e:
         print(e)
 
 
 # Writes csv from read file
-def writeCSV(data, dataType):
-    startTime = time.perf_counter()
-    name = dataType.file
-    pattern = re.compile(dataType.regex)
+def write_csv(data, data_type):
+    start_time = time.perf_counter()
+    name = data_type.file
+    pattern = re.compile(data_type.regex)
     groups = str(pattern.groupindex)
     headers = re.findall(r"([_a-z]+)", groups, re.M | re.I)
     print(f"\nStarts writing {name}")
@@ -109,8 +108,8 @@ def writeCSV(data, dataType):
                     writer.writerow(tuple_line)
             else:
                 writer.writerows(data)
-            endTime = time.perf_counter()
-            print(f"Done writing to {name}.csv in {endTime - startTime:0.04f} seconds")
+            end_time = time.perf_counter()
+            print(f"Done writing to {name}.csv in {end_time - start_time:0.04f} seconds")
     except Exception as e:
         print(e)
 
@@ -119,76 +118,73 @@ def writeCSV(data, dataType):
 def main():
     print("Welkom bij de IMDB-Parser van groep 7")
     print("Welke dataset wil je omzetten naar CSV?")
-    print("1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movie \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
+    print(
+        "1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movie \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
 
-    dataSetChoice = input()
-    startTime = time.perf_counter()
+    data_set_choice = input()
+    start_time = time.perf_counter()
 
-    match (dataSetChoice):
+    match data_set_choice:
         case "0":
             data = Actor()
-            writeCSV(readFile(data), data)
+            write_csv(read_file(data), data)
             data = Actress()
-            writeCSV(readFile(data), data)
+            write_csv(read_file(data), data)
             data = Cinematographer()
-            writeCSV(readFile(data), data)
+            write_csv(read_file(data), data)
             data = Country()
-            writeCSV(readFile(data), data)
+            write_csv(read_file(data), data)
             data = Director()
-            writeCSV(readFile(data), data)
+            write_csv(read_file(data), data)
             data = Genre()
-            writeCSV(readFile(data), data)
+            write_csv(read_file(data), data)
             data = Movie()
-            writeCSV(readFile(data), data)
+            write_csv(read_file(data), data)
             data = Plot()
-            writeCSV(readFile(data), data)
+            write_csv(read_file(data), data)
             data = Rating()
-            writeCSV(readFile(data), data)
+            write_csv(read_file(data), data)
             data = RunningTime()
-            writeCSV(readFile(data), data)
+            write_csv(read_file(data), data)
         case "1":
             actor = Actor()
-            writeCSV(readFile(actor), actor)
+            write_csv(read_file(actor), actor)
         case "2":
             actress = Actress()
-            writeCSV(readFile(actress), actress)
+            write_csv(read_file(actress), actress)
         case "3":
             cinematographer = Cinematographer()
-            writeCSV(readFile(cinematographer), cinematographer)
+            write_csv(read_file(cinematographer), cinematographer)
         case "4":
             country = Country()
-            writeCSV(readFile(country), country)
+            write_csv(read_file(country), country)
         case "5":
             director = Director()
-            writeCSV(readFile(director), director)
+            write_csv(read_file(director), director)
         case "6":
             genre = Genre()
-            writeCSV(readFile(genre), genre)
+            write_csv(read_file(genre), genre)
         case "7":
             movie = Movie()
-            writeCSV(readFile(movie), movie)
+            write_csv(read_file(movie), movie)
         case "8":
             plot = Plot()
-            writeCSV(readFile(plot), plot)
+            write_csv(read_file(plot), plot)
         case "9":
             rating = Rating()
-            writeCSV(readFile(rating), rating)
+            write_csv(read_file(rating), rating)
         case "10":
-            runningTime = RunningTime()
-            writeCSV(readFile(runningTime), runningTime)
+            running_time = RunningTime()
+            write_csv(read_file(running_time), running_time)
         case _:
             print("\n" * 100)
             print("Dat is geen optie. Probeer het opnieuw\n\n")
             main()
-    endTime = time.perf_counter()
-    print(f"\nDone! Finished parsing in {endTime - startTime:0.04f} seconds")
+    end_time = time.perf_counter()
+    print(f"\nDone! Finished parsing in {end_time - start_time:0.04f} seconds")
 
 
 # main()
 # setup_database()
 # setup_database("final")
 convert_db()
-
-
-
-
