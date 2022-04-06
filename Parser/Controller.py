@@ -169,6 +169,8 @@ def main():
             setup_database()
             setup_database("final")
             db_converter_caller()
+            convert_to_loggable()
+            add_indices()
 
 
 # Calls the main function (at the bottom to ensure all functions are available)
