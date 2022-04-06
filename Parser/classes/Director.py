@@ -18,7 +18,7 @@ class Director(DataSet):
             with conn:
                 with conn.cursor() as cur:
                     cur.execute("SELECT DISTINCT * from directors")
-                    data = cur.fetchmany(100)
+                    data = cur.fetchall()
                 return data
         except Exception as err:
             raise err

@@ -35,7 +35,7 @@ class Actor(DataSet):
                 with conn.cursor() as cur:
                     command = (
                         """
-                        CREATE TABLE temp (
+                        CREATE TEMP TABLE temp (
                             nick_name varchar,
                             last_name varchar,
                             first_name varchar,
@@ -73,9 +73,11 @@ class Actor(DataSet):
                     command = """
                               SELECT show_info.show_info_id, temp.nick_name, temp.last_name, temp.first_name, temp.character_name, temp.segment, temp.voice_actor, temp.scenes_deleted, temp.credit_only, temp.archive_footage, temp.uncredited, temp.rumored, temp.motion_capture, temp.role_position, temp.female
                               FROM temp
-                              LEFT JOIN show_info
+                              INNER JOIN show_info
                               ON temp.show_title = show_info.show_title
                               AND temp.release_date = show_info.release_date
+                              AND temp.type_of_show = show_info.type_of_show
+                              AND temp.suspended = show_info.suspended
                               """
                     cur.execute(command)
                     data = cur.fetchall()

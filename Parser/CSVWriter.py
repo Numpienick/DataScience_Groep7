@@ -51,13 +51,6 @@ def write_csv(data, data_type):
             else:
                 writer.writerow(headers)
 
-            # credit_only = headers.index("credit_only")
-            # uncredited = headers.index("uncredited")
-            # suspended = headers.index("suspended")
-            # music_video = headers.index("music_video")
-            # scenes_deleted = headers.index("scenes_deleted")
-            # rumored = headers.index("rumored")
-            # approximated = headers.index("approximated")
 
             # With persons loops through every row, if all names are empty, uses the last filled one to fill it.
             if name == "actors" or name == "actresses" or name == "cinematographers" or name == "directors" or "credit_only" in headers or "uncredited" in headers or "suspended" in headers or "music_video" in headers or "scenes_deleted" in headers or "rumored" in headers or "approximated" in headers or "archive_footage" in headers:
@@ -77,12 +70,11 @@ def write_csv(data, data_type):
                             old_nickname = line[0]
                             old_lastname = line[1]
                             old_firstname = line[2]
-
                     if "credit_only" in headers or "uncredited" in headers or "suspended" in headers or "music_video" in headers or "scenes_deleted" in headers or "rumored" in headers or "approximated" in headers or "archive_footage" in headers:
                         # Loops through every column that is a boolean and puts true if it's not empty
                         if "credit_only" in headers:
                             credit_only = headers.index("credit_only")
-                            listed[credit_only] = len(line[credit_only]) > 0 # Fill the field of the column in the current line with a bool if the column field is empty or not
+                            listed[credit_only] = len(line[credit_only]) > 0  # Fill the field of the column in the current line with a bool if the column field is empty or not
                         if "uncredited" in headers:
                             uncredited = headers.index("uncredited")
                             listed[uncredited] = len(line[uncredited]) > 0

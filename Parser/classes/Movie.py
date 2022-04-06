@@ -20,7 +20,7 @@ class Movie(DataSet):
                     # Selects the data of all the shows in the movies.csv file.
                     command = "SELECT * FROM movies WHERE end_year IS NOT NULL AND release_date <> '????'"
                     cur.execute(command)
-                    data = cur.fetchmany(100)
+                    data = cur.fetchall()
                     cur.execute(command)
                     # A temporary table used for executing a join.
                     command = (
@@ -185,7 +185,7 @@ class Movie(DataSet):
                                     WHERE (movies.end_year IS NULL) AND (movies.release_date IS NOT NULL) AND ((movies.episode_title IS NOT NULL OR movies.season_number IS NOT NULL) OR movies.episode_number IS NOT NULL)
                                     """
                     cur.execute(command)
-                    data = cur.fetchmany(100)
+                    data = cur.fetchall()
                     print("Got all the data needed for the episode table")
                     return data
 
@@ -350,7 +350,7 @@ class Movie(DataSet):
                     WHERE movies.episode_title is NULL AND movies.season_number IS NULL AND movies.episode_number IS NULL AND movies.end_year IS NULL 
                     """
                     cur.execute(command)
-                    data = cur.fetchmany(100)
+                    data = cur.fetchall()
                     print("Got all the data needed for the show_info table")
                     return data
 

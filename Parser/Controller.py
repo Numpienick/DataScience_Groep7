@@ -1,4 +1,7 @@
+import os
 import time
+
+from playsound import playsound
 
 from Parser.CSVWriter import write_csv, read_file
 from Parser.DbConnector import setup_database
@@ -15,12 +18,10 @@ from Parser.classes.Plot import Plot
 from Parser.classes.Rating import Rating
 from Parser.classes.RunningTime import RunningTime
 
-
 # Calls the correct csv files with a choice menu
 def csv_caller():
     print("Welke dataset wilt u omzetten naar een CSV bestand?")
-    print(
-        "1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movie \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
+    print("1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movie \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
 
     data_set_choice = input()
     start_time = time.perf_counter()
@@ -83,6 +84,7 @@ def csv_caller():
             main()
     end_time = time.perf_counter()
     print(f"\nDone! Finished parsing in {end_time - start_time:0.04f} seconds")
+    playsound(os.path.abspath('./assets/success.wav'))
 
 
 def db_converter_caller():
@@ -133,14 +135,14 @@ def db_converter_caller():
             main()
     end_time = time.perf_counter()
     print(f"\nDone! Finished converting in {end_time - start_time:0.04f} seconds")
+    playsound(os.path.abspath("./assets/success.wav"))
 
 
 # Main function, provides info and choice
 def main():
     print("Welkom bij de IMDB Data-Parser van groep 7")
     print("Wat wilt u doen?")
-    print(
-        "1. Dataset omzetten naar CSV?\n2. Database opzetten?\n3. Staging database omzetten naar Final database?\n4. Allemaal, in goede volgorde")
+    print("1. Dataset omzetten naar CSV?\n2. Database opzetten?\n3. Staging database omzetten naar Final database?\n4. Allemaal, in goede volgorde")
     menu_choice = input()
     match menu_choice:
         case "1":  # CSV_Caller

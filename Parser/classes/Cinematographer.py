@@ -18,7 +18,7 @@ class Cinematographer(DataSet):
             with conn:
                 with conn.cursor() as cur:
                     cur.execute("SELECT DISTINCT * from cinematographers")
-                    data = cur.fetchmany(100)
+                    data = cur.fetchall()
                 return data
         except Exception as err:
             raise err
