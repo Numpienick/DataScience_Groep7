@@ -60,7 +60,7 @@ CREATE TABLE "show_info" (
   "show_info_id" SERIAL UNIQUE PRIMARY KEY,
   "rating_id" int NOT NULL,
   "show_title" varchar NOT NULL,
-  "release_date" varchar NOT NULL,
+  "release_date" varchar,
   "release_year" int,
   "type_of_show" varchar,
   "suspended" bool
