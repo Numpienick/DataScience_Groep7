@@ -1,36 +1,37 @@
 from DbConnector import *
+from Parser.classes.Plot import Plot
 import psycopg2
 from psycopg2 import sql
 
 
 def convert_db():
     convert("movies")
+    convert("plot")
+    # add_indices()
 
 
 def convert(table):
-    match (table):
-        case "actors":
-            print()
-        case "actresses":
-            print()
-        case "cinematographers":
-            print()
-        case "countries":
-            print()
-        case "directors":
-            print()
-        case "genres":
-            print()
-        case "movies":
-            insert_showinfo(get_showinfo(table))
-            insert_show(get_show(table))
-            insert_episode(get_episode(table))
-        case "plot":
-            print()
-        case "ratings":
-            print()
-        case "running-times":
-            print()
+    table.insert_table(table.get_table())
+
+
+def add_indices():
+    print("Creating indices")
+    try:
+        conn = connect("final")
+        with conn:
+            with conn.cursor() as cur:
+                command = "CREATE INDEX idx_rating ON rating(rating);"
+                cur.execute(command)
+                command = "CREATE INDEX idx_person_last_name ON person(last_name);"
+                cur.execute(command)
+                command = "CREATE INDEX idx_show_info_show_title ON show_info(show_title);"
+                cur.execute(command)
+                print("Finished creating indices")
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
 
 
 def get_show(table):
@@ -481,6 +482,127 @@ def insert_showinfo(show_info):
                 )
                 cur.execute(command)
                 print("Inserted data in the show_info and rating table")
+                               "INSERT INTO show_info (show_title, release_date, release_year, type_of_show, suspended) VALUES %s",
+                               show_info)
+                print("did it")
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+def get_known_as(table):
+    print("Getting " + table + " from staging")
+    try:
+        conn = connect("staging")
+        with conn:
+            with conn.cursor() as cur:
+                if table == "actors":
+                    cur.execute("SELECT * from get_known_as_actors")
+                    data = cur.fetchall()
+                    return data
+                if table == "actresses":
+                    cur.execute("SELECT * from get_known_as_actresses")
+                    data = cur.fetchall()
+                    return data
+                if table == "cinematographers":
+                    cur.execute("SELECT * from get_known_as_cinematographers")
+                    data = cur.fetchall()
+                    return data
+                if table == "directors":
+                    cur.execute("SELECT * from get_known_as_directors")
+                    data = cur.fetchall()
+                    return data
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+def get_ratings():
+    print("Getting ratings")
+    try:
+        conn = connect("staging")
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT distribution, amount_of_votes, rating FROM ratings")
+                data = cur.fetchall()
+                return data
+
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+def insert_ratings(ratings):
+    print("Inserting ratings")
+
+    try:
+        conn = connect("final")
+        with conn:
+            with conn.cursor() as cur:
+                execute_values(cur, "INSERT INTO rating (distribution, amount_of_votes, rating) VALUES %s", ratings)
+                print("did it")
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+    """
+    Inserts person (actor, actress, director or cinematographer) to final db from staging db
+
+    :param person: is the list of tuples to be inserted
+    :param type: is the type of person, can be either: actors, actresses, cinematographers or directors
+    """
+
+
+def insert_person(person, type):
+    print("Inserting role")
+
+    try:
+        conn = connect("final")
+        with conn:
+            with conn.cursor() as cur:
+                # TODO: show_info_id
+                if type == "actors" or type == "actresses":
+                    execute_values(cur,
+                                   "INSERT INTO role (show_info_id, nick_name, last_name, first_name, character_name, segment, voice_actor, scenes_deleted, credit_only, archive_footage, uncredited, rumored, motion_capture, role_position) VALUES %s",
+                                   person)
+                if type == "cinematographers":
+                    execute_values(cur,
+                                   "INSERT INTO role (show_info_id, nick_name, last_name, first_name, type_of_cinematographer, segment, scenes_deleted, credit_only, archive_footage, uncredited, rumored) VALUES %s",
+                                   person)
+                if type == "directors":
+                    execute_values(cur,
+                                   "INSERT INTO role (show_info_id, nick_name, last_name, first_name, type_of_director, character_name, segment, voice_actor, scenes_deleted, credit_only, archive_footage, uncredited, rumored) VALUES %s",
+                                   person)
+                print("did it")
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
+def insert_known_as(known_as):
+    print("Inserting known_as")
+
+    try:
+        conn = connect("final")
+        with conn:
+            with conn.cursor() as cur:
+                execute_values(cur,
+                               "INSERT INTO also_known_as (also_known_as) VALUES %s RETURNING also_known_as_id;",
+                               known_as)
+                test = cur.fetchall()
+                # command = "INSERT INTO {} (nick_name, last_name, first_name) VALUES %s"
+                # cur.execute_values(sql.SQL(command).format(sql.Literal(AsIs(table))), person)
+                print("did it")
     except Exception as err:
         raise err
     finally:

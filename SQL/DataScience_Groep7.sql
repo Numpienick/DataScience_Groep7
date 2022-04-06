@@ -1,6 +1,5 @@
 CREATE TABLE "person" (
   "person_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
-  "show_info_id" int NOT NULL,
   "nick_name" varchar,
   "last_name" varchar,
   "first_name" varchar NOT NULL
@@ -19,6 +18,7 @@ CREATE TABLE "person_also_known_as" (
 
 CREATE TABLE "role" (
   "role_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
+  "show_info_id" int NOT NULL,
   "character_name" varchar,
   "segment" varchar,
   "voice_actor" varchar,
@@ -60,7 +60,7 @@ CREATE TABLE "show_info" (
   "show_info_id" SERIAL UNIQUE PRIMARY KEY,
   "rating_id" int NOT NULL,
   "show_title" varchar NOT NULL,
-  "release_date" varchar,
+  "release_date" varchar NOT NULL,
   "release_year" int,
   "type_of_show" varchar,
   "suspended" bool
@@ -76,7 +76,7 @@ CREATE TABLE "episode" (
 
 CREATE TABLE "show" (
   "show_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
-  "end_year" varchar
+  "end_year" int
 ) inherits ("show_info");
 
 CREATE TABLE "country" (
@@ -89,10 +89,10 @@ CREATE TABLE "genre" (
   "genre_name" varchar NOT NULL
 );
 
-CREATE TABLE "running_time" (
-  "running_time_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
+CREATE TABLE "running_times" (
+  "running_times_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
   "country_id" int,
-  "running_time" int NOT NULL,
+  "running_times" int NOT NULL,
   "including_commercials" bool,
   "amount_of_episodes" int,
   "fps" int,
@@ -128,10 +128,10 @@ CREATE TABLE "show_info_genre" (
   PRIMARY KEY ("show_info_id", "genre_id")
 );
 
-CREATE TABLE "show_info_running_time" (
+CREATE TABLE "show_info_running_times" (
   "show_info_id" int NOT NULL,
-  "running_time_id" int NOT NULL,
-  PRIMARY KEY ("show_info_id", "running_time_id")
+  "running_times_id" int NOT NULL,
+  PRIMARY KEY ("show_info_id", "running_times_id")
 );
 
 CREATE TABLE "show_info_cinematographer" (
@@ -152,17 +152,17 @@ CREATE TABLE "show_info_plot" (
   PRIMARY KEY ("show_info_id", "plot_id")
 );
 
-ALTER TABLE "person" ADD FOREIGN KEY ("show_info_id") REFERENCES "show_info" ("show_info_id");
-
 ALTER TABLE "person_also_known_as" ADD FOREIGN KEY ("person_id") REFERENCES "person" ("person_id");
 
 ALTER TABLE "person_also_known_as" ADD FOREIGN KEY ("also_known_as_id") REFERENCES "also_known_as" ("also_known_as_id");
+
+ALTER TABLE "role" ADD FOREIGN KEY ("show_info_id") REFERENCES "show_info" ("show_info_id");
 
 ALTER TABLE "show_info" ADD FOREIGN KEY ("rating_id") REFERENCES "rating" ("rating_id");
 
 ALTER TABLE "episode" ADD FOREIGN KEY ("show_id") REFERENCES "show" ("show_id");
 
-ALTER TABLE "running_time" ADD FOREIGN KEY ("country_id") REFERENCES "country" ("country_id");
+ALTER TABLE "running_times" ADD FOREIGN KEY ("country_id") REFERENCES "country" ("country_id");
 
 ALTER TABLE "show_info_country" ADD FOREIGN KEY ("show_info_id") REFERENCES "show_info" ("show_info_id");
 
@@ -172,9 +172,9 @@ ALTER TABLE "show_info_genre" ADD FOREIGN KEY ("show_info_id") REFERENCES "show_
 
 ALTER TABLE "show_info_genre" ADD FOREIGN KEY ("genre_id") REFERENCES "genre" ("genre_id");
 
-ALTER TABLE "show_info_running_time" ADD FOREIGN KEY ("show_info_id") REFERENCES "show_info" ("show_info_id");
+ALTER TABLE "show_info_running_times" ADD FOREIGN KEY ("show_info_id") REFERENCES "show_info" ("show_info_id");
 
-ALTER TABLE "show_info_running_time" ADD FOREIGN KEY ("running_time_id") REFERENCES "running_time" ("running_time_id");
+ALTER TABLE "show_info_running_times" ADD FOREIGN KEY ("running_times_id") REFERENCES "running_times" ("running_times_id");
 
 ALTER TABLE "show_info_cinematographer" ADD FOREIGN KEY ("show_info_id") REFERENCES "show_info" ("show_info_id");
 
@@ -188,3 +188,17 @@ ALTER TABLE "show_info_plot" ADD FOREIGN KEY ("show_info_id") REFERENCES "show_i
 
 ALTER TABLE "show_info_plot" ADD FOREIGN KEY ("plot_id") REFERENCES "plot" ("plot_id");
 
+
+COMMENT ON TABLE "person" IS 'Master of role, cinematographer and director';
+
+COMMENT ON TABLE "role" IS 'Detail of person';
+
+COMMENT ON TABLE "cinematographer" IS 'Detail of person';
+
+COMMENT ON TABLE "director" IS 'Detail of person';
+
+COMMENT ON TABLE "show_info" IS 'Master of show and episode';
+
+COMMENT ON TABLE "episode" IS 'Detail of show_info';
+
+COMMENT ON TABLE "show" IS 'Detail of show_info';
