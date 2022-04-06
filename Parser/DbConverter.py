@@ -32,6 +32,24 @@ def add_indices():
             conn.close()
 
 
+def convert_to_loggable():
+    print("Converting to loggable")
+    try:
+        conn = connect("final")
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT table_name AS full_rel_name FROM information_schema.tables WHERE table_schema = 'public';")
+                tables = cur.fetchall()
+                for table in tables:
+                    cur.execute("ALTER TABLE %s SET LOGGED", table)
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
 def get_known_as(table):
     print("Getting " + table + " from staging")
     try:
@@ -80,4 +98,3 @@ def insert_known_as(known_as):
     finally:
         if conn:
             conn.close()
-

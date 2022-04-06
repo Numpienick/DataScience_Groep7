@@ -5,7 +5,7 @@ from playsound import playsound
 
 from Parser.CSVWriter import write_csv, read_file
 from Parser.DbConnector import setup_database
-from Parser.DbConverter import convert_db, convert
+from Parser.DbConverter import convert_db, convert, add_indices, convert_to_loggable
 
 from Parser.classes.Actor import Actor
 from Parser.classes.Actress import Actress
@@ -142,7 +142,7 @@ def db_converter_caller():
 def main():
     print("Welkom bij de IMDB Data-Parser van groep 7")
     print("Wat wilt u doen?")
-    print("1. Dataset omzetten naar CSV?\n2. Database opzetten?\n3. Staging database omzetten naar Final database?\n4. Allemaal, in goede volgorde")
+    print("1. Dataset omzetten naar CSV?\n2. Database opzetten?\n3. Staging database omzetten naar Final database?\n4. De afsluiting, indices creeëren, tables omzetten naar LOGGABLE etc.\n5. Allemaal, in goede volgorde")
     menu_choice = input()
     match menu_choice:
         case "1":  # CSV_Caller
@@ -161,7 +161,10 @@ def main():
                     setup_database("final")
         case "3":  # DB Converter
             db_converter_caller()
-        case "4":  # All
+        case "4":  # Finalize
+            convert_to_loggable()
+            add_indices()
+        case "5":  # All
             csv_caller()
             setup_database()
             setup_database("final")

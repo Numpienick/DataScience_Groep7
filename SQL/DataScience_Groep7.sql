@@ -1,22 +1,22 @@
-CREATE TABLE "person" (
+CREATE UNLOGGED TABLE "person" (
   "person_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
   "nick_name" varchar,
   "last_name" varchar,
   "first_name" varchar NOT NULL
 );
 
-CREATE TABLE "also_known_as" (
+CREATE UNLOGGED TABLE "also_known_as" (
   "also_known_as_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
   "also_known_as" varchar UNIQUE NOT NULL
 );
 
-CREATE TABLE "person_also_known_as" (
+CREATE UNLOGGED TABLE "person_also_known_as" (
   "person_id" int NOT NULL,
   "also_known_as_id" int NOT NULL,
   PRIMARY KEY ("person_id", "also_known_as_id")
 );
 
-CREATE TABLE "role" (
+CREATE UNLOGGED TABLE "role" (
   "role_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
   "show_info_id" int NOT NULL,
   "character_name" varchar,
@@ -32,7 +32,7 @@ CREATE TABLE "role" (
   "female" bool NOT NULL
 ) inherits ("person");
 
-CREATE TABLE "cinematographer" (
+CREATE UNLOGGED TABLE "cinematographer" (
   "cinematographer_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
   "type_of_cinematographer" varchar,
   "type_of_director" varchar,
@@ -44,7 +44,7 @@ CREATE TABLE "cinematographer" (
   "rumored" bool
 ) inherits ("person");
 
-CREATE TABLE "director" (
+CREATE UNLOGGED TABLE "director" (
   "director_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
   "type_of_director" varchar,
   "segment" varchar,
@@ -56,7 +56,7 @@ CREATE TABLE "director" (
   "rumored" varchar
 ) inherits ("person");
 
-CREATE TABLE "show_info" (
+CREATE UNLOGGED TABLE "show_info" (
   "show_info_id" SERIAL UNIQUE PRIMARY KEY,
   "rating_id" int NOT NULL,
   "show_title" varchar NOT NULL,
@@ -66,7 +66,7 @@ CREATE TABLE "show_info" (
   "suspended" bool
 );
 
-CREATE TABLE "episode" (
+CREATE UNLOGGED TABLE "episode" (
   "episode_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
   "show_id" int NOT NULL,
   "episode_name" varchar,
@@ -74,22 +74,22 @@ CREATE TABLE "episode" (
   "episode_number" int
 ) inherits ("show_info");
 
-CREATE TABLE "show" (
+CREATE UNLOGGED TABLE "show" (
   "show_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
   "end_year" int
 ) inherits ("show_info");
 
-CREATE TABLE "country" (
+CREATE UNLOGGED TABLE "country" (
   "country_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
   "country_name" varchar NOT NULL
 );
 
-CREATE TABLE "genre" (
+CREATE UNLOGGED TABLE "genre" (
   "genre_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
   "genre_name" varchar NOT NULL
 );
 
-CREATE TABLE "running_times" (
+CREATE UNLOGGED TABLE "running_times" (
   "running_times_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
   "country_id" int,
   "running_times" int NOT NULL,
@@ -103,50 +103,50 @@ CREATE TABLE "running_times" (
   "approximated" bool
 );
 
-CREATE TABLE "rating" (
+CREATE UNLOGGED TABLE "rating" (
   "rating_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
   "distribution" varchar,
   "amount_of_votes" int,
   "rating" float
 );
 
-CREATE TABLE "plot" (
+CREATE UNLOGGED TABLE "plot" (
   "plot_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
   "plot" varchar NOT NULL,
   "written_by" varchar
 );
 
-CREATE TABLE "show_info_country" (
+CREATE UNLOGGED TABLE "show_info_country" (
   "show_info_id" int NOT NULL,
   "country_id" int NOT NULL,
   PRIMARY KEY ("show_info_id", "country_id")
 );
 
-CREATE TABLE "show_info_genre" (
+CREATE UNLOGGED TABLE "show_info_genre" (
   "show_info_id" int NOT NULL,
   "genre_id" int NOT NULL,
   PRIMARY KEY ("show_info_id", "genre_id")
 );
 
-CREATE TABLE "show_info_running_times" (
+CREATE UNLOGGED TABLE "show_info_running_times" (
   "show_info_id" int NOT NULL,
   "running_times_id" int NOT NULL,
   PRIMARY KEY ("show_info_id", "running_times_id")
 );
 
-CREATE TABLE "show_info_cinematographer" (
+CREATE UNLOGGED TABLE "show_info_cinematographer" (
   "show_info_id" int NOT NULL,
   "cinematographer_id" int NOT NULL,
   PRIMARY KEY ("show_info_id", "cinematographer_id")
 );
 
-CREATE TABLE "show_info_director" (
+CREATE UNLOGGED TABLE "show_info_director" (
   "show_info_id" int NOT NULL,
   "director_id" int NOT NULL,
   PRIMARY KEY ("show_info_id", "director_id")
 );
 
-CREATE TABLE "show_info_plot" (
+CREATE UNLOGGED TABLE "show_info_plot" (
   "show_info_id" int NOT NULL,
   "plot_id" int NOT NULL,
   PRIMARY KEY ("show_info_id", "plot_id")
