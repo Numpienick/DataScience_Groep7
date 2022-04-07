@@ -69,7 +69,7 @@ class RunningTime(DataSet):
                                    "%s",
                                    running_times)
                     cur.execute("SELECT country.country_id running_times, including_commercials, amount_of_episodes, fps, festival, cut, market, print, approximated from temp "
-                                "INNER JOIN country ON temp.country_name = country.country_name")
+                                "INNER JOIN country ON temp.country = country.country_name")
                     temp = cur.fetchall()
                     execute_values(cur,
                                    "INSERT INTO running_times (running_times, including_commercials, amount_of_episodes, fps, festival, cut, market, print, approximated) VALUES %s",
