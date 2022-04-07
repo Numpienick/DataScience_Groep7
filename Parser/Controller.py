@@ -142,7 +142,7 @@ def db_converter_caller():
 def main():
     print("Welkom bij de IMDB Data-Parser van groep 7")
     print("Wat wilt u doen?")
-    print("1. Dataset omzetten naar CSV?\n2. Database opzetten?\n3. Staging database omzetten naar Final database?\n4. De afsluiting, indices creeëren, tables omzetten naar LOGGABLE etc.\n5. Allemaal, in goede volgorde\n6. Haal data tigo op")
+    print("1. Dataset omzetten naar CSV?\n2. Database opzetten?\n3. Staging database omzetten naar Final database?\n4. De afsluiting, indices creeëren, tables omzetten naar LOGGABLE etc.\n5. Allemaal, in goede volgorde\n6. Haal data voor r-modellen op")
     menu_choice = input()
     match menu_choice:
         case "1":  # CSV_Caller
@@ -173,6 +173,7 @@ def main():
             add_indices()
         case "6":
             write_csv_from_table("movie_rating_actrice_count")
+            write_csv_from_table("plot_rating")
 
 
 # Calls the main function (at the bottom to ensure all functions are available)
