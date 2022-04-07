@@ -3,7 +3,7 @@ import time
 
 from playsound import playsound
 
-from Parser.CSVWriter import write_csv, read_file
+from Parser.CSVWriter import write_csv, read_file, write_csv_from_table
 from Parser.DbConnector import setup_database
 from Parser.DbConverter import convert_db, convert, add_indices, convert_to_loggable
 
@@ -142,7 +142,7 @@ def db_converter_caller():
 def main():
     print("Welkom bij de IMDB Data-Parser van groep 7")
     print("Wat wilt u doen?")
-    print("1. Dataset omzetten naar CSV?\n2. Database opzetten?\n3. Staging database omzetten naar Final database?\n4. De afsluiting, indices creeëren, tables omzetten naar LOGGABLE etc.\n5. Allemaal, in goede volgorde")
+    print("1. Dataset omzetten naar CSV?\n2. Database opzetten?\n3. Staging database omzetten naar Final database?\n4. De afsluiting, indices creeëren, tables omzetten naar LOGGABLE etc.\n5. Allemaal, in goede volgorde\n6. Haal data tigo op")
     menu_choice = input()
     match menu_choice:
         case "1":  # CSV_Caller
@@ -171,6 +171,8 @@ def main():
             db_converter_caller()
             convert_to_loggable()
             add_indices()
+        case "6":
+            write_csv_from_table("movie_rating_actrice_count")
 
 
 # Calls the main function (at the bottom to ensure all functions are available)

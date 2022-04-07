@@ -94,7 +94,11 @@ def setup_database(db_type='staging'):
         if conn:
             conn.close()
 
-    filename = "DataScience_Groep7.sql" if db_type == "final" else "Staging_DataScience_Groep7.sql"
+    if db_type == "final":
+        filename = "DataScience_Groep7.sql"
+    else:
+        filename = "Staging_DataScience_Groep7.sql"
+
     with open(f"../SQL/{filename}", "r") as f:
         try:  # Reads the setup script
             sql_file = f.read()
