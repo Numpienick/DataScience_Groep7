@@ -32,6 +32,24 @@ def add_indices():
             conn.close()
 
 
+def convert_to_loggable():
+    print("Converting to loggable")
+    try:
+        conn = connect("final")
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT table_name AS full_rel_name FROM information_schema.tables WHERE table_schema = 'public';")
+                tables = cur.fetchall()
+                for table in tables:
+                    cur.execute("ALTER TABLE %s SET LOGGED", table)
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+
+
 def get_known_as(table):
     print("Getting " + table + " from staging")
     try:
@@ -68,9 +86,7 @@ def insert_known_as(known_as):
         conn = connect("final")
         with conn:
             with conn.cursor() as cur:
-                execute_values(cur,
-                               "INSERT INTO also_known_as (also_known_as) VALUES %s RETURNING also_known_as_id;",
-                               known_as)
+                execute_values(cur, "INSERT INTO also_known_as (also_known_as) VALUES %s RETURNING also_known_as_id;", known_as)
                 test = cur.fetchall()
                 # command = "INSERT INTO {} (nick_name, last_name, first_name) VALUES %s"
                 # cur.execute_values(sql.SQL(command).format(sql.Literal(AsIs(table))), person)
@@ -80,4 +96,3 @@ def insert_known_as(known_as):
     finally:
         if conn:
             conn.close()
-

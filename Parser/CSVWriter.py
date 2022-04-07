@@ -1,3 +1,4 @@
+import os
 import re
 import csv
 import time
@@ -7,6 +8,9 @@ from psycopg2.extras import execute_values
 
 
 # Reads IMDB .list file
+from playsound import playsound
+
+
 def read_file(data_type):
     print(f"\nStarts reading {data_type.file}")
     startTime = time.perf_counter()
@@ -30,6 +34,7 @@ def read_file(data_type):
             print(f"Done reading {data_type.file} in {end_time - startTime:0.04f} seconds")
             return data
     except Exception as e:
+        playsound(os.path.abspath("./assets/fail.wav"))
         print(e)
 
 
@@ -54,13 +59,6 @@ def write_csv(data, data_type):
             else:
                 writer.writerow(headers)
 
-            # credit_only = headers.index("credit_only")
-            # uncredited = headers.index("uncredited")
-            # suspended = headers.index("suspended")
-            # music_video = headers.index("music_video")
-            # scenes_deleted = headers.index("scenes_deleted")
-            # rumored = headers.index("rumored")
-            # approximated = headers.index("approximated")
 
             # With persons loops through every row, if all names are empty, uses the last filled one to fill it.
             if name == "actors" or name == "actresses" or name == "cinematographers" or name == "directors" or "credit_only" in headers or "uncredited" in headers or "suspended" in headers or "music_video" in headers or "scenes_deleted" in headers or "rumored" in headers or "approximated" in headers or "archive_footage" in headers:
@@ -80,12 +78,11 @@ def write_csv(data, data_type):
                             old_nickname = line[0]
                             old_lastname = line[1]
                             old_firstname = line[2]
-
                     if "credit_only" in headers or "uncredited" in headers or "suspended" in headers or "music_video" in headers or "scenes_deleted" in headers or "rumored" in headers or "approximated" in headers or "archive_footage" in headers:
                         # Loops through every column that is a boolean and puts true if it's not empty
                         if "credit_only" in headers:
                             credit_only = headers.index("credit_only")
-                            listed[credit_only] = len(line[credit_only]) > 0 # Fill the field of the column in the current line with a bool if the column field is empty or not
+                            listed[credit_only] = len(line[credit_only]) > 0  # Fill the field of the column in the current line with a bool if the column field is empty or not
                         if "uncredited" in headers:
                             uncredited = headers.index("uncredited")
                             listed[uncredited] = len(line[uncredited]) > 0
@@ -115,6 +112,7 @@ def write_csv(data, data_type):
             end_time = time.perf_counter()
             print(f"Done writing to {name}.csv in {end_time - start_time:0.04f} seconds")
     except Exception as e:
+        playsound(os.path.abspath("./assets/fail.wav"))
         print(e)
 
 

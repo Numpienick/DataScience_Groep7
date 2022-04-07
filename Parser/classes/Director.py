@@ -1,6 +1,10 @@
+import os
+
+from playsound import playsound
 from psycopg2.extras import execute_values
 
 from Parser.DbConnector import connect
+from Parser.classes.Actor import Actor
 from Parser.classes.Dataset import DataSet
 
 
@@ -18,7 +22,7 @@ class Director(DataSet):
             with conn:
                 with conn.cursor() as cur:
                     cur.execute("SELECT DISTINCT * from directors WHERE episode_title IS NULL AND episode_number IS NULL AND season_number IS NULL")
-                    data = cur.fetchmany(100)
+                    data = cur.fetchall()
                 return data
         except Exception as err:
             raise err
@@ -92,12 +96,39 @@ class Director(DataSet):
                     execute_values(cur,
                                    "INSERT INTO show_info_director (show_info_id, director_id) VALUES %s",
                                    data)
+                    Director.insert_also_known_as(cur)
 
                     command = "DROP TABLE temp"
                     cur.execute(command)
                     print("did it")
         except Exception as err:
+            playsound(os.path.abspath("./assets/fail.wav"))
             raise err
         finally:
             if conn:
                 conn.close()
+
+    @classmethod
+    def insert_also_known_as(cls, cur):
+        print("Inserting known as")
+
+        command = """
+                  SELECT DISTINCT temp.also_known_as
+                  FROM temp
+                  """
+        cur.execute(command)
+        also_known_as = cur.fetchall()
+        execute_values(cur, "INSERT INTO also_known_as (also_known_as) VALUES %s", also_known_as)
+
+        command = """
+                  SELECT role.person_id, also_known_as.also_known_as_id
+                  FROM temp
+                  INNER JOIN also_known_as
+                  ON temp.also_known_as = also_known_as.also_known_as
+                  INNER JOIN director
+                  ON temp.last_name = director.last_name
+                  AND temp.first_name = director.first_name                              
+                  """
+        cur.execute(command)
+        also_known_as_link = cur.fetchall()
+        execute_values(cur, "INSERT INTO person_also_known_as (person_id, also_known_as_id) VALUES %s", also_known_as_link)

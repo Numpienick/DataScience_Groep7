@@ -1,3 +1,6 @@
+import os
+
+from playsound import playsound
 from psycopg2.extras import execute_values
 from Parser.DbConnector import connect
 from Parser.classes.Dataset import DataSet
@@ -31,6 +34,7 @@ class Movie(DataSet):
                     return data
 
         except Exception as err:
+            playsound(os.path.abspath("./assets/fail.wav"))
             raise err
         finally:
             if conn:
@@ -124,6 +128,7 @@ class Movie(DataSet):
                     cur.execute(command)
                     print("Inserted data in the show_info and rating table")
         except Exception as err:
+            playsound(os.path.abspath("./assets/fail.wav"))
             raise err
         finally:
             if conn:
