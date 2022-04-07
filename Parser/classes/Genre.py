@@ -86,6 +86,7 @@ class Genre(DataSet):
                                    link_table)
                     print("did it")
         except Exception as err:
+            playsound(os.path.abspath('./assets/fail.wav'))
             raise err
         finally:
             if conn:

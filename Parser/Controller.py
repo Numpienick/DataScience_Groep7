@@ -84,14 +84,14 @@ def csv_caller():
             main()
     end_time = time.perf_counter()
     print(f"\nDone! Finished parsing in {end_time - start_time:0.04f} seconds")
+    # playsound(os.path.abspath('./assets/success.wav'))
 
 
 def db_converter_caller():
     print("We gaan aan de slag met het omzetten van de staging database naar de final database!\n")
     print("Welke tabel wilt u omzetten naar de Final database?")
     print("Note: Zorg ervoor dat de films eerst bestaan en dat de rest dan wordt uitgevoerd, indien je de volgorde niet weet kunt u voor 0 kiezen. Dit werkt altijd.")
-    print(
-        "1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movies \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
+    print("1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movies \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
 
     data_set_choice = input()
     start_time = time.perf_counter()
@@ -134,6 +134,7 @@ def db_converter_caller():
             main()
     end_time = time.perf_counter()
     print(f"\nDone! Finished converting in {end_time - start_time:0.04f} seconds")
+    # playsound(os.path.abspath('./assets/success.wav'))
 
 
 # Main function, provides info and choice

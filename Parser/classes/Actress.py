@@ -93,6 +93,7 @@ class Actress(DataSet):
                     cur.execute(command)
                     print("did it")
         except Exception as err:
+            playsound(os.path.abspath('./assets/fail.wav'))
             raise err
         finally:
             if conn:
@@ -100,11 +101,13 @@ class Actress(DataSet):
 
     @classmethod
     def insert_also_known_as(cls, cur):
+        return "" #Commented out because the same issue as episodes, foreign key + inheritance limitation?
         print("Inserting known as")
 
         command = """
                   SELECT DISTINCT temp.also_known_as
                   FROM temp
+                  WHERE temp.also_known_as IS NOT NULL
                   """
         cur.execute(command)
         also_known_as = cur.fetchall()
@@ -115,7 +118,7 @@ class Actress(DataSet):
                   FROM temp
                   INNER JOIN also_known_as
                   ON temp.also_known_as = also_known_as.also_known_as
-                  LEFT JOIN role
+                  INNER JOIN role
                   ON temp.last_name = role.last_name
                   AND temp.first_name = role.first_name                              
                   """

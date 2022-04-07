@@ -64,7 +64,7 @@ class Plot(DataSet):
                     command = """
                               SELECT DISTINCT show_info.show_info_id, plot.plot_id
                               FROM temp
-                              INNER JOIN ONLY show_info
+                              INNER JOIN show_info
                               ON temp.show_title = show_info.show_title
                               AND temp.release_date = show_info.release_date
                               INNER JOIN plot
@@ -78,6 +78,7 @@ class Plot(DataSet):
                     cur.execute(command)
                     print("did it")
         except Exception as err:
+            playsound(os.path.abspath('./assets/fail.wav'))
             raise err
         finally:
             if conn:

@@ -18,6 +18,7 @@ class Movie(DataSet):
             conn = connect("staging")
             with conn:
                 with conn.cursor() as cur:
+
                     print("Getting all data needed for the show_info table from staging database")
                     command = """
                                                 SELECT DISTINCT(movies.show_title), movies.release_date, movies.release_year, movies.type_of_show, movies.suspended, ratings.distribution, ratings.amount_of_votes, ratings.rating
@@ -34,6 +35,7 @@ class Movie(DataSet):
                     return data
 
         except Exception as err:
+            playsound(os.path.abspath('./assets/fail.wav'))
             raise err
         finally:
             if conn:
@@ -127,6 +129,7 @@ class Movie(DataSet):
                     cur.execute(command)
                     print("Inserted data in the show_info and rating table")
         except Exception as err:
+            playsound(os.path.abspath('./assets/fail.wav'))
             raise err
         finally:
             if conn:

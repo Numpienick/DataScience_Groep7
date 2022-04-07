@@ -84,7 +84,7 @@ class Director(DataSet):
                               INNER JOIN show_info
                               ON temp.show_title = show_info.show_title
                               AND temp.release_date = show_info.release_date
-                              JOIN director
+                              INNER JOIN director
                               ON temp.first_name = director.first_name
                               AND temp.last_name = director.last_name
                               AND temp.nick_name = director.nick_name
@@ -92,16 +92,14 @@ class Director(DataSet):
                     cur.execute(command)
                     data = cur.fetchall()
 
-                    execute_values(cur,
-                                   "INSERT INTO show_info_director (show_info_id, director_id) VALUES %s",
-                                   data)
+                    execute_values(cur, "INSERT INTO show_info_director (show_info_id, director_id) VALUES %s", data)
                     Director.insert_also_known_as(cur)
 
                     command = "DROP TABLE temp"
                     cur.execute(command)
                     print("did it")
         except Exception as err:
-
+            playsound(os.path.abspath('./assets/fail.wav'))
             raise err
         finally:
             if conn:
@@ -109,24 +107,26 @@ class Director(DataSet):
 
     @classmethod
     def insert_also_known_as(cls, cur):
+        return "" #Commented out because the same issue as episodes, foreign key + inheritance limitation?
         print("Inserting known as")
 
         command = """
                   SELECT DISTINCT temp.also_known_as
                   FROM temp
+                  WHERE temp.also_known_as IS NOT NULL
                   """
         cur.execute(command)
         also_known_as = cur.fetchall()
         execute_values(cur, "INSERT INTO also_known_as (also_known_as) VALUES %s", also_known_as)
 
         command = """
-                  SELECT role.person_id, also_known_as.also_known_as_id
+                  SELECT DISTINCT director.person_id, also_known_as.also_known_as_id
                   FROM temp
                   INNER JOIN also_known_as
                   ON temp.also_known_as = also_known_as.also_known_as
                   INNER JOIN director
                   ON temp.last_name = director.last_name
-                  AND temp.first_name = director.first_name                              
+                  AND temp.first_name = director.first_name                         
                   """
         cur.execute(command)
         also_known_as_link = cur.fetchall()

@@ -34,6 +34,7 @@ def read_file(data_type):
             print(f"Done reading {data_type.file} in {end_time - startTime:0.04f} seconds")
             return data
     except Exception as e:
+        playsound(os.path.abspath('./assets/fail.wav'))
         print(e)
 
 
@@ -100,6 +101,9 @@ def write_csv(data, data_type):
                         if "approximated" in headers:
                             approximated = headers.index("approximated")
                             listed[approximated] = len(line[approximated]) > 0
+                        if "commercial" in headers:
+                            commercial = headers.index("commercial")
+                            listed[commercial] = len(line[commercial]) > 0
                         if "archive_footage" in headers:
                             archive_footage = headers.index("archive_footage")
                             listed[archive_footage] = len(line[archive_footage]) > 0
@@ -111,6 +115,7 @@ def write_csv(data, data_type):
             end_time = time.perf_counter()
             print(f"Done writing to {name}.csv in {end_time - start_time:0.04f} seconds")
     except Exception as e:
+        playsound(os.path.abspath('./assets/fail.wav'))
         print(e)
 
 
@@ -157,6 +162,7 @@ def write_csv_from_table(view):
                 command = "DROP TABLE temp"
                 cur.execute(command)
     except Exception as err:
+        playsound(os.path.abspath('./assets/fail.wav'))
         raise err
     finally:
         if conn:

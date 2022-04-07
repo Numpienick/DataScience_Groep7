@@ -87,6 +87,7 @@ def setup_database(db_type='staging'):
                 'owner': owner
             })
             print(f"Database {db_name} has been successfully created and is owned by {owner}")
+            playsound(os.path.abspath('./assets/success.wav'))
     except Exception as err:
         raise err
     finally:
@@ -159,6 +160,7 @@ def fill_staging_db():
                                     """.format(filename)
                         cur.copy_expert(sql=copy_sql, file=f)
                     print(f"Finished transferring {filename} data to database ")
+                    # playsound(os.path.abspath('./assets/success.wav'))
 
     except Exception as err:
         raise err
