@@ -21,7 +21,7 @@ class Director(DataSet):
             conn = connect("staging")
             with conn:
                 with conn.cursor() as cur:
-                    cur.execute("SELECT DISTINCT * from directors WHERE episode_title IS NULL AND episode_number IS NULL AND season_number IS NULL")
+                    cur.execute("SELECT * from directors WHERE episode_title IS NULL AND episode_number IS NULL AND season_number IS NULL")
                     data = cur.fetchall()
                 return data
         except Exception as err:
@@ -52,7 +52,6 @@ class Director(DataSet):
                             episode_number int,
                             suspended varchar,
                             type_of_director varchar,
-                            video varchar,
                             also_known_as varchar,
                             segment varchar,
                             voice_actor varchar,
@@ -68,7 +67,7 @@ class Director(DataSet):
                     execute_values(cur,
                                    "INSERT INTO temp (nick_name, last_name, first_name, show_title, music_video, "
                                    "release_date, type_of_show, episode_title, season_number, episode_number, suspended, "
-                                   "type_of_director, video, also_known_as, segment, voice_actor, scenes_deleted, "
+                                   "type_of_director, also_known_as, segment, voice_actor, scenes_deleted, "
                                    "credit_only, archive_footage, uncredited, rumored) VALUES "
                                    "%s",
                                    director)
@@ -80,9 +79,9 @@ class Director(DataSet):
                                    temp)
 
                     command = """
-                              SELECT show_info.show_info_id, director.director_id
+                              SELECT DISTINCT show_info.show_info_id, director.director_id
                               FROM temp
-                              LEFT JOIN show_info
+                              INNER JOIN show_info
                               ON temp.show_title = show_info.show_title
                               AND temp.release_date = show_info.release_date
                               JOIN director
@@ -102,7 +101,7 @@ class Director(DataSet):
                     cur.execute(command)
                     print("did it")
         except Exception as err:
-            playsound(os.path.abspath("./assets/fail.wav"))
+
             raise err
         finally:
             if conn:

@@ -19,8 +19,9 @@ class Genre(DataSet):
             conn = connect("staging")
             with conn:
                 with conn.cursor() as cur:
-                    cur.execute("SELECT * FROM genres")
+                    cur.execute("SELECT * FROM genres WHERE episode_title IS NULL AND episode_number IS NULL AND season_number IS NULL")
                     data = cur.fetchall()
+                    print("Data Length: " + str(len(data)))
                     return data
 
         except Exception as err:
@@ -58,20 +59,26 @@ class Genre(DataSet):
 
                     cur.execute("SELECT DISTINCT genre FROM temp")
                     data = cur.fetchall()
-
+                    print("Data Length: " + str(len(data)))
                     execute_values(cur,
                                    "INSERT INTO genre (genre_name) VALUES %s",
                                    data)
 
                     command = """
-                              SELECT show_info.show_info_id, genre.genre_id
+                              SELECT DISTINCT show_info.show_info_id, genre.genre_id
                               FROM temp
-                              LEFT JOIN show_info
+                              INNER JOIN show_info
                               ON temp.show_title = show_info.show_title
                               AND temp.release_date = show_info.release_date
                               JOIN genre
-                              ON temp.genre = genre.genre
+                              ON temp.genre = genre.genre_name
                               """
+                    cur.execute(command)
+                    command = (
+                        """
+                        DROP TABLE temp
+                        """
+                    )
                     cur.execute(command)
                     link_table = cur.fetchall()
                     execute_values(cur,
@@ -79,7 +86,6 @@ class Genre(DataSet):
                                    link_table)
                     print("did it")
         except Exception as err:
-            playsound(os.path.abspath("./assets/fail.wav"))
             raise err
         finally:
             if conn:

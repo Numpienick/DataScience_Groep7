@@ -94,7 +94,6 @@ class Actor(DataSet):
                     cur.execute(command)
                     print("did it")
         except Exception as err:
-            playsound(os.path.abspath("./assets/fail.wav"))
             raise err
         finally:
             if conn:

@@ -34,7 +34,6 @@ def read_file(data_type):
             print(f"Done reading {data_type.file} in {end_time - startTime:0.04f} seconds")
             return data
     except Exception as e:
-        playsound(os.path.abspath("./assets/fail.wav"))
         print(e)
 
 
@@ -112,7 +111,6 @@ def write_csv(data, data_type):
             end_time = time.perf_counter()
             print(f"Done writing to {name}.csv in {end_time - start_time:0.04f} seconds")
     except Exception as e:
-        playsound(os.path.abspath("./assets/fail.wav"))
         print(e)
 
 
@@ -153,8 +151,6 @@ def write_csv_from_table(view):
                 data = cur.fetchall()
                 execute_values(cur, "INSERT INTO temp VALUES %s", data)
                 with open(filepath, 'x', encoding="utf-8", newline='') as f:
-                    abs_filepath = os.path.abspath(filepath)
-                    # command = "COPY (SELECT * FROM {}) TO '{}' CSV DELIMITER AS ';';".format('temp', abs_filepath)
                     cur.copy_to(f, 'temp', sep=';')
 
                     f.close()

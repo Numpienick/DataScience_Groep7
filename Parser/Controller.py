@@ -84,7 +84,6 @@ def csv_caller():
             main()
     end_time = time.perf_counter()
     print(f"\nDone! Finished parsing in {end_time - start_time:0.04f} seconds")
-    playsound(os.path.abspath('./assets/success.wav'))
 
 
 def db_converter_caller():
@@ -135,7 +134,6 @@ def db_converter_caller():
             main()
     end_time = time.perf_counter()
     print(f"\nDone! Finished converting in {end_time - start_time:0.04f} seconds")
-    playsound(os.path.abspath("./assets/success.wav"))
 
 
 # Main function, provides info and choice
@@ -174,7 +172,7 @@ def main():
         case "6":
             write_csv_from_table("movie_rating_actrice_count")
             write_csv_from_table("plot_rating")
-
+    playsound(os.path.abspath("assets/success.wav"))
 
 # Calls the main function (at the bottom to ensure all functions are available)
 main()
