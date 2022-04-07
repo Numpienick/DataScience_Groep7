@@ -1,12 +1,11 @@
 import psycopg2
-import os
 from psycopg2 import sql
 from psycopg2.extensions import AsIs
 from configparser import ConfigParser
 from psycopg2.extensions import AsIs
 from psycopg2.sql import NULL
 from psycopg2.extras import execute_values
-from datetime import datetime
+
 
 
 def config(section='staging'):
@@ -17,7 +16,7 @@ def config(section='staging'):
     If not defined defaults to "staging"
     """
     while section not in ["staging", "final"]:
-        print(f'Wrong dbType: {section}\nIt should be either "staging" or "final"')
+        print(f'\033[1;31mWrong dbType: {section}\nIt should be either "staging" or "final"\033[1;37m')
         return
 
     parser = ConfigParser()
@@ -42,7 +41,7 @@ def connect(db_type='staging'):
     If not defined defaults to "staging"
     """
     while db_type not in ["staging", "final"]:
-        print(f'Wrong dbType: {db_type}\nIt should be either "staging" or "final"')
+        print(f'\033[1;31mWrong dbType: {db_type}\nIt should be either "staging" or "final"\033[1;37m')
         return
 
     try:
@@ -64,7 +63,7 @@ def setup_database(db_type='staging'):
     If not defined defaults to "staging"
     """
     while db_type not in ["staging", "final"]:
-        print(f'Wrong dbType: {db_type}\nIt should be either "staging" or "final"')
+        print(f'\033[1;31mWrong dbType: {db_type}\nIt should be either "staging" or "final"\033[1;37m')
         return
 
     params = config(db_type)
@@ -77,14 +76,14 @@ def setup_database(db_type='staging'):
         with conn.cursor() as cur:
             drop_command = "DROP DATABASE IF EXISTS {} WITH (FORCE);"
             cur.execute(sql.SQL(drop_command).format(sql.Identifier(db_name)))
-            print(f"Database {db_name} has been successfully dropped")
+            print(f"\033[1;32m\nDatabase {db_name} has been successfully dropped\033[1;37m")
 
         with conn.cursor() as cur:
             create_command = "CREATE DATABASE {} OWNER %(owner)s;"
             cur.execute(sql.SQL(create_command).format(sql.Identifier(db_name)), {
                 'owner': owner
             })
-            print(f"Database {db_name} has been successfully created and is owned by {owner}")
+            print(f"\033[1;32m\nDatabase {db_name} has been successfully created and is owned by {owner}\033[1;37m")
     except Exception as err:
         raise err
     finally:
@@ -108,58 +107,14 @@ def setup_database(db_type='staging'):
                             cur.execute(command)
                         except Exception as err:
                             print(
-                                f"Something went wrong: {err}\nThis happened with the following command: {command}\nClosing the transaction...")
+                                f"\033[1;31mSomething went wrong: {err}\nThis happened with the following command: {command}\nClosing the transaction...\033[1;37m")
                             cur.close()
                             break
                 if not cur.closed:
-                    print("Finished creating all the tables")
+                    print("\033[1;32mFinished creating all the tables\033[1;37m")
     except Exception as err:
         raise err
 
     finally:
         if conn:
             conn.close()
-
-    if db_type == "staging":
-        fill_staging_db()
-
-
-def fill_staging_db():
-    """
-        Fills the staging database with data.
-    """
-
-    try:  # Retrieves the data from files and puts it in the correct table.
-        params = config("staging")
-        conn = psycopg2.connect(**params)
-        conn.autocommit = True
-        path = 'output'
-        files = os.listdir(path)
-
-        for file in files:
-            if file.endswith(".csv"):
-                with conn.cursor() as cur:
-                    filename = file.split(sep='.')[0]
-                    filepath = 'output/' + filename + '.csv'
-                    if filename == "running-times":
-                        filename = "running_times"
-                    print(f"Started transferring {filename} data to database ")
-                    with open(filepath, 'r', encoding="ANSI", newline="") as f:
-                        next(f)
-                        copy_sql = """
-                        COPY {}
-                        FROM stdin
-                        CSV DELIMITER as ';'
-                                    """.format(filename)
-                        cur.copy_expert(sql=copy_sql, file=f)
-                    print(f"Finished transferring {filename} data to database ")
-
-    except Exception as err:
-        print(f"Something went wrong trying to copy {filename} to the database!")
-        raise err
-
-    finally:
-        if conn:
-            conn.close()
-
-

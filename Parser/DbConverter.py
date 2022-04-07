@@ -1,3 +1,7 @@
+import os
+import multiprocessing as mp
+import time
+
 from DbConnector import *
 from Parser.classes.Plot import Plot
 import psycopg2
@@ -12,6 +16,61 @@ def convert_db():
 
 def convert(table):
     table.insert_table(table.get_table())
+
+
+def copy_csv_to_staging(filename):
+    """
+    Copies the given csv file to the staging database
+    :param filename: The name of the csv file
+    """
+    print(f"\nStarted transferring {filename} data to database")
+    try:
+        conn = connect("staging")
+        with conn:
+            with conn.cursor() as cur:
+                with open('output/' + filename + '.csv', 'r', encoding="ANSI", newline="") as f:
+                    if filename == "running-times":
+                        filename = "running_times"
+                    next(f)
+                    copy_sql = """
+                              COPY {}
+                              FROM stdin
+                              CSV DELIMITER as ';'
+                                          """.format(filename)
+                    cur.copy_expert(sql=copy_sql, file=f)
+    except Exception as err:
+        print(f"\033[1;31m\nSomething went wrong trying to transfer {filename} to the staging database\033[1;37m")
+        raise err
+    finally:
+        if conn:
+            conn.close()
+    print(f"\nFinished transferring {filename} to the staging database\033[1;37m")
+
+
+def fill_staging_db():
+    """
+    Copies all the .csv files located in /output to the staging database
+    """
+    print("\nStarting filling of the staging database!")
+    start_time = time.perf_counter()
+    try:  # Retrieves the data from files and puts it in the correct table.
+        path = 'output'
+        files = os.listdir(path)
+        filenames = []
+        for file in files:
+            if file.endswith(".csv"):
+                filename = file.split(sep='.')[0]
+                filenames.append(filename)
+        pool = mp.Pool(mp.cpu_count())
+        pool.map(copy_csv_to_staging, [*filenames])
+        pool.close()
+        pool.join()
+
+    except Exception as err:
+        print(f"\n\033[1;31mSomething went wrong trying to transfer {filename} to the staging database\033[1;37m")
+        raise err
+    end_time = time.perf_counter()
+    print(f"\033[1;32m\nDone!! Finished filling the staging database in {end_time - start_time:0.04f} seconds\033[1;37m")
 
 
 def add_indices():
@@ -482,8 +541,6 @@ def insert_showinfo(show_info):
                 )
                 cur.execute(command)
                 print("Inserted data in the show_info and rating table")
-                               "INSERT INTO show_info (show_title, release_date, release_year, type_of_show, suspended) VALUES %s",
-                               show_info)
                 print("did it")
     except Exception as err:
         raise err
