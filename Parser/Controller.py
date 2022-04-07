@@ -18,10 +18,12 @@ from Parser.classes.Plot import Plot
 from Parser.classes.Rating import Rating
 from Parser.classes.RunningTime import RunningTime
 
+
 # Calls the correct csv files with a choice menu
 def csv_caller():
     print("Welke dataset wilt u omzetten naar een CSV bestand?")
-    print("1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movie \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
+    print(
+        "1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movie \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
 
     data_set_choice = input()
     start_time = time.perf_counter()
@@ -90,8 +92,10 @@ def csv_caller():
 def db_converter_caller():
     print("We gaan aan de slag met het omzetten van de staging database naar de final database!\n")
     print("Welke tabel wilt u omzetten naar de Final database?")
-    print("Note: Zorg ervoor dat de films eerst bestaan en dat de rest dan wordt uitgevoerd, indien je de volgorde niet weet kunt u voor 0 kiezen. Dit werkt altijd.")
-    print("1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movies \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
+    print(
+        "Note: Zorg ervoor dat de films eerst bestaan en dat de rest dan wordt uitgevoerd, indien je de volgorde niet weet kunt u voor 0 kiezen. Dit werkt altijd.")
+    print(
+        "1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movies \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal")
 
     data_set_choice = input()
     start_time = time.perf_counter()
@@ -139,9 +143,17 @@ def db_converter_caller():
 
 # Main function, provides info and choice
 def main():
-    print("Welkom bij de IMDB Data-Parser van groep 7")
+    print("  _____ __  __ _____  ____    _____        __        _____        _\n"
+          "|_   _|  \/  |  __ \|  _ \  |_   _|      / _|      |  __ \      | |                                     \n"
+          "  | | | \  / | |  | | |_) |   | |  _ __ | |_ ___   | |  | | __ _| |_ __ _ _ __ ___   _____   _____ _ __ \n"
+          "  | | | |\/| | |  | |  _ <    | | | '_ \|  _/ _ \  | |  | |/ _` | __/ _` | '_ ` _ \ / _ \ \ / / _ \ '__|\n"
+          " _| |_| |  | | |__| | |_) |  _| |_| | | | || (_) | | |__| | (_| | || (_| | | | | | | (_) \ V /  __/ |   \n"
+          "|_____|_|  |_|_____/|____/  |_____|_| |_|_| \___/  |_____/ \__,_|\__\__,_|_| |_| |_|\___/ \_/ \___|_|   \n")
+
+    print("Welkom bij de IMDB Datamover van groep 7")
     print("Wat wilt u doen?")
-    print("1. Dataset omzetten naar CSV?\n2. Database opzetten?\n3. Staging database omzetten naar Final database?\n4. De afsluiting, indices creeëren, tables omzetten naar LOGGABLE etc.\n5. Allemaal, in goede volgorde\n6. Haal data voor r-modellen op")
+    print(
+        "1. Dataset omzetten naar CSV?\n2. Database opzetten?\n3. Staging database omzetten naar Final database?\n4. De afsluiting, indices creeëren, tables omzetten naar LOGGABLE etc.\n5. Allemaal, in goede volgorde\n6. Haal data voor r-modellen op")
     menu_choice = input()
     match menu_choice:
         case "1":  # CSV_Caller
@@ -173,7 +185,8 @@ def main():
         case "6":
             write_csv_from_table("movie_rating_actrice_count")
             write_csv_from_table("plot_rating")
-    playsound(os.path.abspath("assets/success.wav"))
+    # playsound(os.path.abspath("assets/success.wav"))
+
 
 # Calls the main function (at the bottom to ensure all functions are available)
 main()

@@ -87,7 +87,7 @@ def setup_database(db_type='staging'):
                 'owner': owner
             })
             print(f"Database {db_name} has been successfully created and is owned by {owner}")
-            playsound(os.path.abspath('./assets/success.wav'))
+            # playsound(os.path.abspath('./assets/success.wav'))
     except Exception as err:
         raise err
     finally:

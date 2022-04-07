@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from .models import Rating
+# from .models import Rating
+from django.db import connection
 
 
 def home(request):
@@ -17,14 +18,18 @@ def chart(request):
     labels = []
     data = []
 
-    queryset = Rating.objects.all()
-    for rating in queryset:
-        labels.append(rating.id)
-        data.append(rating.rating)
+    cursor = connection.cursor()
+    cursor.execute("SELECT rating FROM rating WHERE rating IS NOT NULL GROUP BY rating")
+    data = cursor.fetchall()
+    # queryset = Rating.objects.all()
+    test = ''.join(data)
+    for rating in data:
+        # labels.append(rating.id)
+        test.append(rating)
 
     return render(request, 'info/chart.html', {
         'labels': labels,
-        'data': data,
+        'data': test,
     })
 
 
