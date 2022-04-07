@@ -1,9 +1,13 @@
+import os
 import re
 import csv
 import time
 
 
 # Reads IMDB .list file
+from playsound import playsound
+
+
 def read_file(data_type):
     print(f"\nStarts reading {data_type.file}")
     startTime = time.perf_counter()
@@ -27,6 +31,7 @@ def read_file(data_type):
             print(f"Done reading {data_type.file} in {end_time - startTime:0.04f} seconds")
             return data
     except Exception as e:
+        playsound(os.path.abspath("./assets/fail.wav"))
         print(e)
 
 
@@ -104,4 +109,5 @@ def write_csv(data, data_type):
             end_time = time.perf_counter()
             print(f"Done writing to {name}.csv in {end_time - start_time:0.04f} seconds")
     except Exception as e:
+        playsound(os.path.abspath("./assets/fail.wav"))
         print(e)

@@ -1,3 +1,6 @@
+import os
+
+from playsound import playsound
 from psycopg2.extras import execute_values
 
 from Parser.DbConnector import connect
@@ -17,7 +20,7 @@ class Plot(DataSet):
             conn = connect("staging")
             with conn:
                 with conn.cursor() as cur:
-                    cur.execute("SELECT * FROM plot")
+                    cur.execute("SELECT * FROM plot WHERE episode_title IS NULL AND episode_number IS NULL AND season_number IS NULL")
                     data = cur.fetchall()
                     return data
         except Exception as err:
@@ -33,11 +36,9 @@ class Plot(DataSet):
             conn = connect("final")
             with conn:
                 with conn.cursor() as cur:
-                    command = "DROP TABLE temp"
-                    cur.execute(command)
                     command = (
                         """
-                        CREATE TABLE temp (
+                        CREATE TEMP TABLE temp (
                             show_title varchar,
                             music_video varchar,
                             release_date varchar,
@@ -59,29 +60,26 @@ class Plot(DataSet):
                     cur.execute("SELECT plot, written_by FROM temp")
                     data = cur.fetchall()
 
-                    execute_values(cur,
-                                   "INSERT INTO genre (genre_name) VALUES %s",
-                                   data)
+                    execute_values(cur, "INSERT INTO plot (plot, written_by) VALUES %s", data)
 
                     command = """
-                              SELECT show_info.show_info_id, plot.plot_id
+                              SELECT DISTINCT show_info.show_info_id, plot.plot_id
                               FROM temp
-                              LEFT JOIN show_info
+                              INNER JOIN ONLY show_info
                               ON temp.show_title = show_info.show_title
                               AND temp.release_date = show_info.release_date
-                              JOIN plot
+                              INNER JOIN plot
                               ON temp.plot = plot.plot
                               AND temp.written_by = plot.written_by
                               """
                     cur.execute(command)
                     link_table = cur.fetchall()
-                    execute_values(cur,
-                                   "INSERT INTO show_info_plot (show_info_id, genre_id) VALUES %s",
-                                   link_table)
+                    execute_values(cur, "INSERT INTO show_info_plot (show_info_id, plot_id) VALUES %s", link_table)
                     command = "DROP TABLE temp"
                     cur.execute(command)
                     print("did it")
         except Exception as err:
+            playsound(os.path.abspath("./assets/fail.wav"))
             raise err
         finally:
             if conn:

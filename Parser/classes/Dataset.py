@@ -1,3 +1,6 @@
+from psycopg2.extras import execute_values
+
+
 class DataSet:
     clean_file_regex = r""
     regex = r""
@@ -15,3 +18,7 @@ class DataSet:
 
     def insert_table(self, data):
         return ""
+
+
+
+
