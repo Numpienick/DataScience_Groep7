@@ -21,7 +21,11 @@ def config(section='staging'):
         return
 
     parser = ConfigParser()
-    parser.read('database.ini')
+    cwd = os.getcwd()
+    if cwd[-1] == 'o':
+        parser.read('../Parser/database.ini')
+    else: parser.read('database.ini')
+
 
     db = {}
     if parser.has_section(section):
