@@ -74,11 +74,8 @@ class Genre(DataSet):
                               ON temp.genre = genre.genre_name
                               """
                     cur.execute(command)
-                    command = (
-                        """
-                        DROP TABLE temp
-                        """
-                    )
+
+                    command = "DROP TABLE temp"
                     cur.execute(command)
                     link_table = cur.fetchall()
                     execute_values(cur,

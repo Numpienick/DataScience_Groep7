@@ -25,8 +25,8 @@ CREATE UNLOGGED TABLE "role" (
   "scenes_deleted" varchar,
   "credit_only" varchar,
   "archive_footage" varchar,
-  "uncredited" varchar,
-  "rumored" varchar,
+  "uncredited" bool,
+  "rumored" bool,
   "motion_capture" varchar,
   "role_position" int,
   "female" bool NOT NULL
@@ -50,10 +50,10 @@ CREATE UNLOGGED TABLE "director" (
   "segment" varchar,
   "voice_actor" varchar,
   "scenes_deleted" varchar,
-  "credit_only" varchar,
-  "archive_footage" varchar,
-  "uncredited" varchar,
-  "rumored" varchar
+  "credit_only" bool,
+  "archive_footage" bool,
+  "uncredited" bool,
+  "rumored" bool
 ) inherits ("person");
 
 CREATE UNLOGGED TABLE "show_info" (

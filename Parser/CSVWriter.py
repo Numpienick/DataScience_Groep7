@@ -17,24 +17,24 @@ def read_file(data_type):
     try:
         with open("data/" + data_type.file + ".list", "r", encoding="ANSI") as f:
             txt = f.read()
-            txt = re.sub(';', ':', txt)
-            txt = re.sub('\\\\', ' ', txt)
+        txt = re.sub(';', ':', txt)
+        txt = re.sub('\\\\', ' ', txt)
 
-            # Some files needs a cleanup step before the regex, this if statement will trigger
-            if len(data_type.clean_file_regex.strip()) > 0:
-                print(f"\nStarts cleaning {data_type.file}")
-                cleaned = re.search(data_type.clean_file_regex, str(txt))
-                txt = str(cleaned.group("data"))
-                end_time_clean = time.perf_counter()
-                print(f"Done cleaning {data_type.file} in {end_time_clean - startTime:0.04f} seconds")
-                print(f"\nContinuing reading {data_type.file}")
+        # Some files needs a cleanup step before the regex, this if statement will trigger
+        if len(data_type.clean_file_regex.strip()) > 0:
+            print(f"\nStarts cleaning {data_type.file}")
+            cleaned = re.search(data_type.clean_file_regex, str(txt))
+            txt = str(cleaned.group("data"))
+            end_time_clean = time.perf_counter()
+            print(f"\033[1;32mDone cleaning {data_type.file} in {end_time_clean - startTime:0.04f} seconds\033[1;37m")
+            print(f"\nContinuing reading {data_type.file}")
 
-            data = re.findall(data_type.regex, str(txt))
-            end_time = time.perf_counter()
-            print(f"Done reading {data_type.file} in {end_time - startTime:0.04f} seconds")
-            return data
+        data = re.findall(data_type.regex, str(txt))
+        end_time = time.perf_counter()
+        print(f"\033[1;32mDone reading {data_type.file} in {end_time - startTime:0.04f} seconds\033[1;37m")
+        return data
     except Exception as e:
-        playsound(os.path.abspath('./assets/fail.wav'))
+        #playsound(os.path.abspath('./assets/fail.wav'))
         print(e)
 
 
@@ -42,10 +42,10 @@ def read_file(data_type):
 def write_csv(data, data_type):
     start_time = time.perf_counter()
     name = data_type.file
+    print(f"\nStarts writing {name}")
     pattern = re.compile(data_type.regex)
     groups = str(pattern.groupindex)
     headers = re.findall(r"([_a-z]+)", groups, re.M | re.I)
-    print(f"\nStarts writing {name}")
 
     try:
         with open("output/" + name + '.csv', 'w', encoding="ANSI", newline='') as f:
@@ -113,9 +113,10 @@ def write_csv(data, data_type):
                 writer.writerows(data)
 
             end_time = time.perf_counter()
-            print(f"Done writing to {name}.csv in {end_time - start_time:0.04f} seconds")
+            print(f"\033[1;32mDone writing to {name}.csv in {end_time - start_time:0.04f} seconds\033[1;37m")
     except Exception as e:
-        playsound(os.path.abspath('./assets/fail.wav'))
+        print(f"\033[1;31mSomething went wrong trying to write to {data_type.file}!\033[1;37m")
+        #playsound(os.path.abspath('./assets/fail.wav'))
         print(e)
 
 
@@ -162,7 +163,7 @@ def write_csv_from_table(view):
                 command = "DROP TABLE temp"
                 cur.execute(command)
     except Exception as err:
-        playsound(os.path.abspath('./assets/fail.wav'))
+        # playsound(os.path.abspath('./assets/fail.wav'))
         raise err
     finally:
         if conn:

@@ -21,7 +21,7 @@ class Director(DataSet):
             conn = connect("staging")
             with conn:
                 with conn.cursor() as cur:
-                    cur.execute("SELECT * from directors WHERE episode_title IS NULL AND episode_number IS NULL AND season_number IS NULL")
+                    cur.execute("SELECT DISTINCT * from directors WHERE episode_title IS NULL AND episode_number IS NULL AND season_number IS NULL")
                     data = cur.fetchall()
                 return data
         except Exception as err:
@@ -99,7 +99,7 @@ class Director(DataSet):
                     cur.execute(command)
                     print("did it")
         except Exception as err:
-            playsound(os.path.abspath('./assets/fail.wav'))
+            # playsound(os.path.abspath('./assets/fail.wav'))
             raise err
         finally:
             if conn:
