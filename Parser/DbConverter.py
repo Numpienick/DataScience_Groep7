@@ -101,7 +101,10 @@ def convert_to_loggable():
                     "SELECT table_name AS full_rel_name FROM information_schema.tables WHERE table_schema = 'public';")
                 tables = cur.fetchall()
                 for table in tables:
-                    cur.execute("ALTER TABLE %s SET LOGGED", table)
+                    table_name = str(table)
+                    table_name = table_name.translate({ord(i): None for i in '()\','})
+                    cur.execute(sql.SQL("ALTER TABLE {} SET LOGGED").format(sql.Identifier(table_name)))
+                    print()
     except Exception as err:
         raise err
     finally:

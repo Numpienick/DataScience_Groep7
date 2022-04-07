@@ -101,8 +101,8 @@ def write_csv(data, data_type):
                         if "approximated" in headers:
                             approximated = headers.index("approximated")
                             listed[approximated] = len(line[approximated]) > 0
-                        if "commercial" in headers:
-                            commercial = headers.index("commercial")
+                        if "including_commercials" in headers:
+                            commercial = headers.index("including_commercials")
                             listed[commercial] = len(line[commercial]) > 0
                         if "archive_footage" in headers:
                             archive_footage = headers.index("archive_footage")

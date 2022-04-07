@@ -107,15 +107,15 @@ def csv_caller(data_set_choice):
     # playsound(os.path.abspath('./assets/success.wav'))
 
 
-def db_converter_caller():
-    print("\033[1;34mWe gaan aan de slag met het omzetten van de staging database naar de final database!\n")
-    print("\033[1;34mWelke tabel wilt u omzetten naar de Final database?")
-    print(
-        "\033[1;33mNote: Zorg ervoor dat de films eerst bestaan en dat de rest dan wordt uitgevoerd, indien je de volgorde niet weet kunt u voor 0 kiezen. Dit werkt altijd.")
-    print(
-        "\033[1;34m1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movies \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal\033[1;37m")
-
-    data_set_choice = input()
+def db_converter_caller(data_set_choice="default"):
+    if data_set_choice == "default":
+        print("\033[1;34mWe gaan aan de slag met het omzetten van de staging database naar de final database!\n")
+        print("\033[1;34mWelke tabel wilt u omzetten naar de Final database?")
+        print(
+            "\033[1;33mNote: Zorg ervoor dat de films eerst bestaan en dat de rest dan wordt uitgevoerd, indien je de volgorde niet weet kunt u voor 0 kiezen. Dit werkt altijd.")
+        print(
+            "\033[1;34m1. Actors\n2. Actresses \n3. Cinematographers \n4. Countries \n5. Directors \n6. Genres \n7. Movies \n8. Plot \n9. Ratings \n10. Running Times \n0. Allemaal\033[1;37m")
+        data_set_choice = input()
     start_time = time.perf_counter()
 
     match data_set_choice:
@@ -195,15 +195,13 @@ def main():
         case "3":  # DB Converter
             db_converter_caller()
         case "4":  # Finalize
-            convert_to_loggable()
+            #convert_to_loggable()
             add_indices()
         case "5":  # All
-            choice = ask_for_dataset()
-
             processes = [
                 Process(target=setup_database, args=()),
                 Process(target=setup_database, args=(["final"])),
-                Process(target=csv_caller, args=([choice]))
+                Process(target=csv_caller, args=([0]))
             ]
             for p in processes:
                 p.start()
@@ -212,7 +210,7 @@ def main():
                 p.join()
 
             fill_staging_db()
-            db_converter_caller()
+            db_converter_caller("0")
             convert_to_loggable()
             add_indices()
         case "6":

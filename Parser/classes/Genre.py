@@ -12,6 +12,7 @@ class Genre(DataSet):
         super().__init__()
         self.regex = r"\"?(?P<show_title>.+(?= \(Music Video\) \([\d?])|(?<=\").+?(?=\")|.+(?= \([\d?]))\"?(?:\s\((?P<music_video>Music Video)?\))?(?:\s\((?P<release_date>\d[^?]+?)\)|\?{4}(?:.+?)?\))?(?:\s\((?P<type_of_show>TV|V|VG)\))?(?:\s\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \(#)|(?!\(\#|\{).+?(?=\}))?))?(?:\})?\s?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s\{\{?(?P<suspended>SUSPENDED)\}\})?\0*?\s+?(?P<Genre>\w.+)"
         self.file = "genres"
+        self.clean_file_regex = r"LIST\s+?={18}\s+(?P<data>[\s\S]+)"
 
     def get_table(self):
         print("Getting genres")
@@ -75,15 +76,15 @@ class Genre(DataSet):
                               """
                     cur.execute(command)
 
-                    command = "DROP TABLE temp"
-                    cur.execute(command)
                     link_table = cur.fetchall()
                     execute_values(cur,
                                    "INSERT INTO show_info_genre (show_info_id, genre_id) VALUES %s",
                                    link_table)
+                    command = "DROP TABLE temp"
+                    cur.execute(command)
                     print("did it")
         except Exception as err:
-            playsound(os.path.abspath('./assets/fail.wav'))
+            #playsound(os.path.abspath('./assets/fail.wav'))
             raise err
         finally:
             if conn:

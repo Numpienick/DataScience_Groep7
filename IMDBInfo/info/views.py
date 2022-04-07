@@ -8,11 +8,44 @@ def home(request):
 
 
 def data(request):
-    context = {
-        'ratings': Rating.objects.all()
-    }
-    return render(request, 'info/data.html', context)
+    # context = {
+    #     'ratings': Rating.objects.all()
+    # }
+    return render(request, 'info/data.html')
 
+def popularity_chart(request):
+    with connection.cursor() as cur:
+        cur.execute("""
+        SELECT show_info.release_year, genre.genre_name, count(*)
+        FROM show_info
+        INNER JOIN show_info_genre ON show_info.show_info_id = show_info_genre.show_info_id
+        INNER JOIN genre ON show_info_genre.genre_id = genre.genre_id
+        WHERE show_info.release_year = 2016
+        GROUP BY show_info.release_year, genre.genre_name
+        """)
+        fetched = cur.fetchall()
+    xdata = []
+    ydata = []
+    genres = []
+    chartdata = []
+    for fetch in fetched:
+        year = fetch[0]
+        genre = fetch[1]
+        number = fetch[2]
+        if year not in xdata:
+            xdata.append(year)
+        if genre not in genres:
+            genres.append(genre)
+        if number not in ydata:
+            ydata.append(number)
+        chartdata.append(number)
+
+    data = {
+        'chartdata': chartdata,
+        'labels': genres
+    }
+
+    return render(request, 'info/chart.html', data)
 
 def chart(request):
     labels = []
