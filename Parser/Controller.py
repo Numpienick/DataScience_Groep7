@@ -3,8 +3,6 @@ import time
 import multiprocessing as mp
 from multiprocessing import Process
 
-from playsound import playsound
-
 from Parser.CSVWriter import write_csv, read_file, write_csv_from_table
 from Parser.DbConnector import setup_database
 from Parser.DbConverter import convert_db, convert, add_indices, convert_to_loggable, fill_staging_db
@@ -218,7 +216,6 @@ def main():
         case "6":
             write_csv_from_table("movie_rating_actrice_count")
             write_csv_from_table("plot_rating")
-    #playsound(os.path.abspath("assets/success.wav"))
 
 # Calls the main function (at the bottom to ensure all functions are available)
 if __name__ == "__main__":
