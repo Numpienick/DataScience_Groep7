@@ -1,13 +1,10 @@
 from django.shortcuts import render
-from .models import Post, Rating, City
+from .models import Rating
 
 
 def home(request):
-    context = {
-        'posts': Post.objects.all(),
-        'ratings': Rating.objects.all()
-    }
-    return render(request, 'info/home.html', context)
+    return render(request, 'info/home.html')
+
 
 def data(request):
     context = {
@@ -15,11 +12,8 @@ def data(request):
     }
     return render(request, 'info/data.html', context)
 
-def about(request):
-    return render(request, 'info/about.html', {'title': 'About'})
 
-
-def pie_chart(request):
+def chart(request):
     labels = []
     data = []
 
@@ -28,22 +22,15 @@ def pie_chart(request):
         labels.append(rating.id)
         data.append(rating.rating)
 
-    return render(request, 'info/pie_chart.html', {
+    return render(request, 'info/chart.html', {
         'labels': labels,
         'data': data,
     })
 
 
-def line_chart(request):
-    labels = []
-    data = []
+def rscript(request):
+    return render(request, 'info/rscript.html', {'title': 'rscript'})
 
-    queryset = Rating.objects.all()
-    for rating in queryset:
-        labels.append(rating.id)
-        data.append(rating.rating)
 
-    return render(request, 'info/line_chart.html', {
-        'labels': labels,
-        'data': data,
-    })
+def hypothese(request):
+    return render(request, 'info/hypothese.html', {'title': 'hypothese'})

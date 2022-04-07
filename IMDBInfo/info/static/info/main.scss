@@ -6,7 +6,7 @@ body {
 }
 
 .btn-primary {
-  background-color: #dd2879 !important;
+  background-color: #3AAFA9 !important;
 }
 
 .btn {
@@ -14,27 +14,27 @@ body {
 }
 
 .btn:hover {
-  background-color: darken(#dd2879, 20%) !important;
+  background-color: darken(#3AAFA9, 20%) !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color: #444444;
+  color: #3AAFA9;
 }
 
 ul {
   margin: 0;
 }
 
-.bg-steel {
-  background-color: #5f788a;
+.bg-primary {
+  background-color: #3AAFA9;
 }
 
 .site-header .navbar-nav .nav-link {
-  color: #cbd5db;
+  color: #FEFFFF;
 }
 
 .site-header .navbar-nav .nav-link:hover {
-  color: #ffffff;
+  color: #DEF2F1;
 }
 
 .site-header .navbar-nav .nav-link.active {
@@ -50,7 +50,7 @@ ul {
 }
 
 .article-title {
-  color: #444444;
+  color: #17252A;
 }
 
 a.article-title:hover {
@@ -59,7 +59,7 @@ a.article-title:hover {
 }
 
 .article-content {
-  white-space: pre-line;
+  color: #FEFFFF;
 }
 
 .article-img {
@@ -69,8 +69,8 @@ a.article-title:hover {
 }
 
 .article-metadata {
+  color: #DEF2F1;
   padding-bottom: 1px;
-  margin-bottom: 4px;
   border-bottom: 1px solid #e3e3e3
 }
 
@@ -94,4 +94,11 @@ a.article-title:hover {
 
 .account-heading {
   font-size: 2.5rem;
+}
+
+.magicimg {
+  width: 100%;
+  height: auto;
+  /* Magic! */
+  max-width: 50vw;
 }
