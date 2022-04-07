@@ -212,4 +212,29 @@ INNER JOIN rating
 INNER JOIN role
     ON show_info.show_info_id = role.show_info_id
     WHERE role.female = true AND rating.rating IS NOT NULL
-GROUP BY show_info.show_title, rating.rating
+GROUP BY show_info.show_title, rating.rating;
+
+CREATE VIEW plot_rating
+AS
+SELECT plot.plot, rating.rating
+    FROM show_info
+INNER JOIN rating
+    ON show_info.rating_id = rating.rating_id
+INNER JOIN show_info_plot
+    ON show_info.show_info_id = show_info_plot.show_info_id
+INNER JOIN plot
+    ON show_info_plot.plot_id = plot.plot_id
+WHERE rating.rating > 8 AND rating.rating IS NOT NULL
+GROUP BY plot.plot, rating.rating;
+
+CREATE VIEW running_times_rating
+AS
+SELECT running_times.running_times, rating.rating
+    FROM show_info
+INNER JOIN rating
+    ON show_info.rating_id = rating.rating_id
+INNER JOIN show_info_running_times
+    ON show_info.show_info_id = show_info_running_times.show_info_id
+INNER JOIN running_times
+    ON show_info_running_times.running_times_id = running_times.running_times_id
+GROUP BY running_times.running_times, rating.rating;

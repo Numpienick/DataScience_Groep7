@@ -125,13 +125,28 @@ def write_csv_from_table(view):
         conn = connect("final")
         with conn:
             with conn.cursor() as cur:
-                command = """
-                CREATE TABLE "temp" (
-                    "show_title" varchar,
-                    "rating" float,
-                    "total_roles" int
-                ) 
-                """
+                if view == 'movie_rating_actrice_count':
+                    command = """
+                    CREATE TABLE "temp" (
+                        "show_title" varchar,
+                        "rating" float,
+                        "total_roles" int
+                    ) 
+                    """
+                if view == 'plot_rating':
+                    command = """
+                    CREATE TABLE "temp" (
+                        "plot" varchar,
+                        "rating" float
+                    ) 
+                    """
+                if view == 'running_times_rating':
+                    command = """
+                    CREATE TABLE "temp" (
+                        "running_times" int,
+                        "rating" float
+                    ) 
+                    """
                 cur.execute(command)
                 command = "SELECT * FROM {}".format(view)
                 cur.execute(command)
