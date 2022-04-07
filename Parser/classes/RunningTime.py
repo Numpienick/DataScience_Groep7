@@ -68,11 +68,11 @@ class RunningTime(DataSet):
                                    "INSERT INTO temp (show_title, music_video, release_date, type_of_show, episode_title, season_number, episode_number, suspended, country, running_times, including_commercials, amount_of_episodes, season, release_year, end_year, fps, festival, cut, market, print, approximated) VALUES "
                                    "%s",
                                    running_times)
-                    cur.execute("SELECT country.country_id running_times, including_commercials, amount_of_episodes, fps, festival, cut, market, print, approximated from temp "
-                                "INNER JOIN country ON temp.country = country.country_name")
+                    cur.execute("SELECT country.country_id, running_times, including_commercials, amount_of_episodes, fps, festival, cut, market, print, approximated from temp "
+                                "LEFT JOIN country ON temp.country = country.country_name")
                     temp = cur.fetchall()
                     execute_values(cur,
-                                   "INSERT INTO running_times (running_times, including_commercials, amount_of_episodes, fps, festival, cut, market, print, approximated) VALUES %s",
+                                   "INSERT INTO running_times (country_id, running_times, including_commercials, amount_of_episodes, fps, festival, cut, market, print, approximated) VALUES %s",
                                    temp)
 
                     command = """
