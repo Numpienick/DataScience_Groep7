@@ -41,10 +41,9 @@
       data: {
         datasets: [{
           data: {{ data|safe }},
-          backgroundColor: [
-            '#3AAFA9', '#2B7A78', '#17252A', '#DEF2F1', '#FEFFFF'
-          ],
-          label: 'Rating'
+          backgroundColor: "#3AAFA9",
+          pointBorderColor: "#4c9760",
+          label: 'Aantal stemmen'
         }],
         labels: {{ labels|safe }}
       },

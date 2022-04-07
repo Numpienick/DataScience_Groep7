@@ -19,17 +19,15 @@ def chart(request):
     data = []
 
     cursor = connection.cursor()
-    cursor.execute("SELECT rating FROM rating WHERE rating IS NOT NULL GROUP BY rating")
-    data = cursor.fetchall()
-    # queryset = Rating.objects.all()
-    test = ''.join(data)
-    for rating in data:
-        # labels.append(rating.id)
-        test.append(rating)
+    cursor.execute("SELECT rating, COUNT(show_info.show_info_id) as count FROM show_info WHERE rating > 8 GROUP BY rating")
+    returned_data = cursor.fetchall()
 
+    for rating in returned_data:
+        labels.append(rating[0])
+        data.append(rating[1])
     return render(request, 'info/chart.html', {
         'labels': labels,
-        'data': test,
+        'data': returned_data,
     })
 
 

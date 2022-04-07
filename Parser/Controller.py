@@ -159,14 +159,14 @@ def db_converter_caller():
 
 # Main function, provides info and choice
 def main():
-    print("  _____ __  __ _____  ____    _____        __        _____        _\n"
-          "|_   _|  \/  |  __ \|  _ \  |_   _|      / _|      |  __ \      | |                                     \n"
-          "  | | | \  / | |  | | |_) |   | |  _ __ | |_ ___   | |  | | __ _| |_ __ _ _ __ ___   _____   _____ _ __ \n"
-          "  | | | |\/| | |  | |  _ <    | | | '_ \|  _/ _ \  | |  | |/ _` | __/ _` | '_ ` _ \ / _ \ \ / / _ \ '__|\n"
-          " _| |_| |  | | |__| | |_) |  _| |_| | | | || (_) | | |__| | (_| | || (_| | | | | | | (_) \ V /  __/ |   \n"
-          "|_____|_|  |_|_____/|____/  |_____|_| |_|_| \___/  |_____/ \__,_|\__\__,_|_| |_| |_|\___/ \_/ \___|_|   \n")
+    print("\033[1;31m _____ __  __ _____  ____    _____        __        _____        _")
+    print("\033[1;31m|_   _|  \/  |  __ \|  _ \  |_   _|      / _|      |  __ \      | |                                     ")
+    print("\033[1;37m  | | | \  / | |  | | |_) |   | |  _ __ | |_ ___   | |  | | __ _| |_ __ _ _ __ ___   _____   _____ _ __ ")
+    print("\033[1;37m  | | | |\/| | |  | |  _ <    | | | '_ \|  _/ _ \  | |  | |/ _` | __/ _` | '_ ` _ \ / _ \ \ / / _ \ '__|")
+    print("\033[1;34m _| |_| |  | | |__| | |_) |  _| |_| | | | || (_) | | |__| | (_| | || (_| | | | | | | (_) \ V /  __/ |   ")
+    print("\033[1;34m|_____|_|  |_|_____/|____/  |_____|_| |_|_| \___/  |_____/ \__,_|\__\__,_|_| |_| |_|\___/ \_/ \___|_|   ")
 
-    print("\033[1;34m Welkom bij de IMDB Data-Parser van groep 7")
+    print("\033[1;34m Welkom bij de IMDB Datamover van groep 7")
     print("\033[1;34mWat wilt u doen?")
     print(
         "\033[1;34m1. Dataset omzetten naar CSV?\n2. Database opzetten?\n3. Staging database omzetten naar Final database?\n4. De afsluiting, indices creeëren, tables omzetten naar LOGGABLE etc.\n5. Allemaal, in goede volgorde\n6. Haal data voor r-modellen op\033[1;37m")
