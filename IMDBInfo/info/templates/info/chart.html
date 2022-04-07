@@ -13,7 +13,7 @@
             </ul>
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active text-center" id="linechart" role="tabpanel" aria-labelledby="linechart-tab">
-                    <h3 class="my-3">Headline</h3>
+                    <h3 class="my-3">Aantal films dat in een land gemaakt is, met een IMDB-rating boven de 8</h3>
                     <div class="row justify-content-center">
                         <div id="container align-self-center" style="width: 75%;">
                             <canvas id="population-chart"></canvas>
@@ -21,7 +21,7 @@
                     </div>
                 </div>
                 <div class="tab-pane fade text-center" id="piechart" role="tabpanel" aria-labelledby="piechart-tab">
-                    <h3 class="my-3">Headline</h3>
+                    <h3 class="my-3">Aantal films dat in een land gemaakt is, met een IMDB-rating boven de 8</h3>
                     <div class="row justify-content-center">
                         <div id="container" style="width: 75%;">
                             <canvas id="pie-chart"></canvas>
@@ -43,7 +43,7 @@
           data: {{ data|safe }},
           backgroundColor: "#3AAFA9",
           pointBorderColor: "#4c9760",
-          label: 'Aantal stemmen'
+          label: 'Aantal films'
         }],
         labels: {{ labels|safe }}
       },
@@ -56,13 +56,11 @@
       type: 'pie',
       data: {
         datasets: [{
-          data: {{ data|safe }},
-          backgroundColor: [
-            '#3AAFA9', '#2B7A78', '#17252A', '#DEF2F1', '#FEFFFF'
-          ],
-          label: 'Population'
+          data: {{ country_data|safe }},
+          backgroundColor: {{ colors|safe }},
+          label: 'Aantal films'
         }],
-        labels: {{ labels|safe }}
+        labels: {{ country_labels|safe }}
       },
       options: {
         responsive: true

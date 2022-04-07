@@ -218,6 +218,7 @@ def main():
         case "6":
             write_csv_from_table("movie_rating_actrice_count")
             write_csv_from_table("plot_rating")
+            write_csv_from_table("running_times_rating")
     #playsound(os.path.abspath("assets/success.wav"))
 
 # Calls the main function (at the bottom to ensure all functions are available)

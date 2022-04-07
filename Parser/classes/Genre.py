@@ -75,12 +75,12 @@ class Genre(DataSet):
                               """
                     cur.execute(command)
 
-                    command = "DROP TABLE temp"
-                    cur.execute(command)
                     link_table = cur.fetchall()
                     execute_values(cur,
                                    "INSERT INTO show_info_genre (show_info_id, genre_id) VALUES %s",
                                    link_table)
+                    command = "DROP TABLE temp"
+                    cur.execute(command)
                     print("did it")
         except Exception as err:
             playsound(os.path.abspath('./assets/fail.wav'))
