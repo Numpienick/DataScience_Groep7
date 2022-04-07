@@ -1,4 +1,7 @@
 import psycopg2
+import os
+
+from playsound import playsound
 from psycopg2 import sql
 from psycopg2.extensions import AsIs
 from configparser import ConfigParser
@@ -84,13 +87,18 @@ def setup_database(db_type='staging'):
                 'owner': owner
             })
             print(f"\033[1;32m\nDatabase {db_name} has been successfully created and is owned by {owner}\033[1;37m")
+            # playsound(os.path.abspath('./assets/success.wav'))
     except Exception as err:
         raise err
     finally:
         if conn:
             conn.close()
 
-    filename = "DataScience_Groep7.sql" if db_type == "final" else "Staging_DataScience_Groep7.sql"
+    if db_type == "final":
+        filename = "DataScience_Groep7.sql"
+    else:
+        filename = "Staging_DataScience_Groep7.sql"
+
     with open(f"../SQL/{filename}", "r") as f:
         try:  # Reads the setup script
             sql_file = f.read()

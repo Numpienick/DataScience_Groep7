@@ -1,10 +1,13 @@
+import os
 import time
 import multiprocessing as mp
 from multiprocessing import Process
 
-from Parser.CSVWriter import write_csv, read_file
+from playsound import playsound
+
+from Parser.CSVWriter import write_csv, read_file, write_csv_from_table
 from Parser.DbConnector import setup_database
-from Parser.DbConverter import convert_db, convert, fill_staging_db
+from Parser.DbConverter import convert_db, convert, add_indices, convert_to_loggable, fill_staging_db
 
 from Parser.classes.Actor import Actor
 from Parser.classes.Actress import Actress
@@ -101,6 +104,7 @@ def csv_caller(data_set_choice):
             write_csv(read_file(running_time), running_time)
     end_time = time.perf_counter()
     print(f"\033[1;32m\nDone! Finished parsing in {end_time - start_time:0.04f} seconds\033[1;37m")
+    # playsound(os.path.abspath('./assets/success.wav'))
 
 
 def db_converter_caller():
@@ -117,7 +121,7 @@ def db_converter_caller():
     match data_set_choice:
         case "0":
             for dataset in data_sets:
-                if dataset.file is "movies":
+                if dataset.file == "movies":
                     convert(dataset)
                     data_sets.remove(dataset)
             pool = mp.Pool(mp.cpu_count())
@@ -150,6 +154,7 @@ def db_converter_caller():
             main()
     end_time = time.perf_counter()
     print(f"\033[1;32m\nDone! Finished converting in {end_time - start_time:0.04f} seconds\033[1;37m")
+    # playsound(os.path.abspath('./assets/success.wav'))
 
 
 # Main function, provides info and choice
@@ -157,7 +162,7 @@ def main():
     print("\033[1;34m Welkom bij de IMDB Data-Parser van groep 7")
     print("\033[1;34mWat wilt u doen?")
     print(
-        "\033[1;34m1. Dataset omzetten naar CSV?\n2. Database opzetten?\n3. Staging database omzetten naar Final database?\n4. Allemaal, in goede volgorde\033[1;37m")
+        "\033[1;34m1. Dataset omzetten naar CSV?\n2. Database opzetten?\n3. Staging database omzetten naar Final database?\n4. De afsluiting, indices creeëren, tables omzetten naar LOGGABLE etc.\n5. Allemaal, in goede volgorde\n6. Haal data voor r-modellen op\033[1;37m")
     menu_choice = input()
     match menu_choice:
         case "1":  # CSV_Caller
@@ -182,7 +187,10 @@ def main():
                     fill_staging_db()
         case "3":  # DB Converter
             db_converter_caller()
-        case "4":  # All
+        case "4":  # Finalize
+            convert_to_loggable()
+            add_indices()
+        case "5":  # All
             choice = ask_for_dataset()
 
             processes = [
@@ -198,7 +206,12 @@ def main():
 
             fill_staging_db()
             db_converter_caller()
-
+            convert_to_loggable()
+            add_indices()
+        case "6":
+            write_csv_from_table("movie_rating_actrice_count")
+            write_csv_from_table("plot_rating")
+    #playsound(os.path.abspath("assets/success.wav"))
 
 # Calls the main function (at the bottom to ensure all functions are available)
 if __name__ == "__main__":

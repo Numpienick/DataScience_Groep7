@@ -1,12 +1,16 @@
+import os
 import re
 import csv
 import time
-import asyncio
-import aiofiles
-from aiocsv import AsyncWriter
+import os
+from Parser.DbConnector import connect
+from psycopg2.extras import execute_values
 
 
 # Reads IMDB .list file
+from playsound import playsound
+
+
 def read_file(data_type):
     print(f"\nStarts reading {data_type.file}")
     startTime = time.perf_counter()
@@ -22,14 +26,15 @@ def read_file(data_type):
             cleaned = re.search(data_type.clean_file_regex, str(txt))
             txt = str(cleaned.group("data"))
             end_time_clean = time.perf_counter()
-            print(f"Done cleaning {data_type.file} in {end_time_clean - startTime:0.04f} seconds")
+            print(f"\033[1;32mDone cleaning {data_type.file} in {end_time_clean - startTime:0.04f} seconds\033[1;37m")
             print(f"\nContinuing reading {data_type.file}")
 
         data = re.findall(data_type.regex, str(txt))
         end_time = time.perf_counter()
-        print(f"Done reading {data_type.file} in {end_time - startTime:0.04f} seconds")
+        print(f"\033[1;32mDone reading {data_type.file} in {end_time - startTime:0.04f} seconds\033[1;37m")
         return data
     except Exception as e:
+        #playsound(os.path.abspath('./assets/fail.wav'))
         print(e)
 
 
@@ -54,13 +59,6 @@ def write_csv(data, data_type):
             else:
                 writer.writerow(headers)
 
-            # credit_only = headers.index("credit_only")
-            # uncredited = headers.index("uncredited")
-            # suspended = headers.index("suspended")
-            # music_video = headers.index("music_video")
-            # scenes_deleted = headers.index("scenes_deleted")
-            # rumored = headers.index("rumored")
-            # approximated = headers.index("approximated")
 
             # With persons loops through every row, if all names are empty, uses the last filled one to fill it.
             if name == "actors" or name == "actresses" or name == "cinematographers" or name == "directors" or "credit_only" in headers or "uncredited" in headers or "suspended" in headers or "music_video" in headers or "scenes_deleted" in headers or "rumored" in headers or "approximated" in headers or "archive_footage" in headers:
@@ -80,12 +78,11 @@ def write_csv(data, data_type):
                             old_nickname = line[0]
                             old_lastname = line[1]
                             old_firstname = line[2]
-
                     if "credit_only" in headers or "uncredited" in headers or "suspended" in headers or "music_video" in headers or "scenes_deleted" in headers or "rumored" in headers or "approximated" in headers or "archive_footage" in headers:
                         # Loops through every column that is a boolean and puts true if it's not empty
                         if "credit_only" in headers:
                             credit_only = headers.index("credit_only")
-                            listed[credit_only] = len(line[credit_only]) > 0 # Fill the field of the column in the current line with a bool if the column field is empty or not
+                            listed[credit_only] = len(line[credit_only]) > 0  # Fill the field of the column in the current line with a bool if the column field is empty or not
                         if "uncredited" in headers:
                             uncredited = headers.index("uncredited")
                             listed[uncredited] = len(line[uncredited]) > 0
@@ -104,6 +101,9 @@ def write_csv(data, data_type):
                         if "approximated" in headers:
                             approximated = headers.index("approximated")
                             listed[approximated] = len(line[approximated]) > 0
+                        if "commercial" in headers:
+                            commercial = headers.index("commercial")
+                            listed[commercial] = len(line[commercial]) > 0
                         if "archive_footage" in headers:
                             archive_footage = headers.index("archive_footage")
                             listed[archive_footage] = len(line[archive_footage]) > 0
@@ -113,7 +113,59 @@ def write_csv(data, data_type):
                 writer.writerows(data)
 
             end_time = time.perf_counter()
-            print(f"Done writing to {name}.csv in {end_time - start_time:0.04f} seconds")
+            print(f"\033[1;32mDone writing to {name}.csv in {end_time - start_time:0.04f} seconds\033[1;37m")
     except Exception as e:
-        print(f"Something went wrong trying to write to {data_type.file}!")
+        print(f"\033[1;31mSomething went wrong trying to write to {data_type.file}!\033[1;37m")
+        #playsound(os.path.abspath('./assets/fail.wav'))
         print(e)
+
+
+def write_csv_from_table(view):
+    try:
+        filename = view
+        filepath = "NewData/" + filename + '.csv'
+        if os.path.exists(filepath):
+            os.remove(filepath)
+        conn = connect("final")
+        with conn:
+            with conn.cursor() as cur:
+                if view == 'movie_rating_actrice_count':
+                    command = """
+                    CREATE TABLE "temp" (
+                        "show_title" varchar,
+                        "rating" float,
+                        "total_roles" int
+                    ) 
+                    """
+                if view == 'plot_rating':
+                    command = """
+                    CREATE TABLE "temp" (
+                        "plot" varchar,
+                        "rating" float
+                    ) 
+                    """
+                if view == 'running_times_rating':
+                    command = """
+                    CREATE TABLE "temp" (
+                        "running_times" int,
+                        "rating" float
+                    ) 
+                    """
+                cur.execute(command)
+                command = "SELECT * FROM {}".format(view)
+                cur.execute(command)
+                data = cur.fetchall()
+                execute_values(cur, "INSERT INTO temp VALUES %s", data)
+                with open(filepath, 'x', encoding="utf-8", newline='') as f:
+                    cur.copy_to(f, 'temp', sep=';')
+
+                    f.close()
+                command = "DROP TABLE temp"
+                cur.execute(command)
+    except Exception as err:
+        # playsound(os.path.abspath('./assets/fail.wav'))
+        raise err
+    finally:
+        if conn:
+            conn.close()
+

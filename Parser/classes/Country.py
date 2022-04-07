@@ -1,3 +1,6 @@
+import os
+
+from playsound import playsound
 from psycopg2.extras import execute_values
 
 from Parser.DbConnector import connect
@@ -7,7 +10,7 @@ from Parser.classes.Dataset import DataSet
 class Country(DataSet):
     def __init__(self):
         super().__init__()
-        self.regex = r"""\"?(?P<show_title>.+(?= \(Music Video\) \([\d?])|(?<=\").+?(?=\")|.+(?= \([\d?]))\"?(?:\s\((?P<music_video>Music Video)?\))?(?:\s\((?P<release_date>\d[^?]+?)\)|\?{4}(?:.+?)?\))?(?:\s\((?P<type_of_show>TV|V|VG)\))?(?:\s\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \(#)|(?!\(\#|\{).+?(?=\}))?))?(?:\})?\s?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s\{\{?(?P<suspended>SUSPENDED)\}\})?\0*?\s+?(?P<countries_of_origin>\w.+)"""
+        self.regex = r"\"?(?P<show_title>.+(?= \(Music Video\) \([\d?])|(?<=\").+?(?=\")|.+(?= \([\d?]))\"?(?:\s\((?P<music_video>Music Video)?\))?(?:\s\((?P<release_date>\d[^?]+?)\)|\?{4}(?:.+?)?\))?(?:\s\((?P<type_of_show>TV|V|VG)\))?(?:\s\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \(#)|(?!\(\#|\{).+?(?=\}))?))?(?:\})?\s?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s\{\{?(?P<suspended>SUSPENDED)\}\})?\0*?\s+?(?P<countries_of_origin>\w.+)"
         self.file = "countries"
 
     def get_table(self):
@@ -16,8 +19,9 @@ class Country(DataSet):
             conn = connect("staging")
             with conn:
                 with conn.cursor() as cur:
-                    cur.execute("SELECT * FROM countries")
+                    cur.execute("SELECT * FROM countries WHERE episode_title IS NULL AND episode_number IS NULL AND season_number IS NULL")
                     data = cur.fetchall()
+                    print("Data Length: " + str(len(data)))
                     return data
 
         except Exception as err:
@@ -55,27 +59,27 @@ class Country(DataSet):
 
                     cur.execute("SELECT DISTINCT countries_of_origin FROM temp")
                     data = cur.fetchall()
+                    print("Data Length: " + str(len(data)))
 
                     execute_values(cur,
-                                   "INSERT INTO country (countries_of_origin) VALUES %s",
+                                   "INSERT INTO country (country_name) VALUES %s",
                                    data)
 
                     command = """
-                              SELECT show_info.show_info_id, country.country_id
+                              SELECT DISTINCT show_info.show_info_id, country.country_id
                               FROM temp
-                              LEFT JOIN show_info
+                              INNER JOIN show_info
                               ON temp.show_title = show_info.show_title
                               AND temp.release_date = show_info.release_date
-                              JOIN country
-                              ON temp.countries_of_origin = country.countries_of_origin
+                              INNER JOIN country
+                              ON temp.countries_of_origin = country.country_name
                               """
                     cur.execute(command)
                     link_table = cur.fetchall()
-                    execute_values(cur,
-                                   "INSERT INTO show_info_country (show_info_id, country_id) VALUES %s",
-                                   link_table)
+                    execute_values(cur, "INSERT INTO show_info_country (show_info_id, country_id) VALUES %s", link_table)
                     print("did it")
         except Exception as err:
+            playsound(os.path.abspath('./assets/fail.wav'))
             raise err
         finally:
             if conn:
