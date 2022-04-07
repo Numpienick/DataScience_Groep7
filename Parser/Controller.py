@@ -3,8 +3,6 @@ import time
 import multiprocessing as mp
 from multiprocessing import Process
 
-from playsound import playsound
-
 from Parser.CSVWriter import write_csv, read_file, write_csv_from_table
 from Parser.DbConnector import setup_database
 from Parser.DbConverter import convert_db, convert, add_indices, convert_to_loggable, fill_staging_db

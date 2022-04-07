@@ -1,6 +1,5 @@
 import os
 
-from playsound import playsound
 from psycopg2.extras import execute_values
 
 from Parser.DbConnector import connect
@@ -78,9 +77,9 @@ class Cinematographer(DataSet):
                                    temp)
 
                     command = """
-                              SELECT show_info.show_info_id, cinematographer.cinematographer_id
+                              SELECT DISTINCT show_info.show_info_id, cinematographer.cinematographer_id
                               FROM temp
-                              LEFT JOIN show_info
+                              INNER JOIN show_info
                               ON temp.show_title = show_info.show_title
                               AND temp.release_date = show_info.release_date
                               JOIN cinematographer
@@ -100,7 +99,6 @@ class Cinematographer(DataSet):
                     cur.execute(command)
                     print("did it")
         except Exception as err:
-            playsound(os.path.abspath('./assets/fail.wav'))
             raise err
         finally:
             if conn:

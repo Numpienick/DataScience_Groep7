@@ -1,7 +1,5 @@
 import psycopg2
 import os
-
-from playsound import playsound
 from psycopg2 import sql
 from psycopg2.extensions import AsIs
 from configparser import ConfigParser
@@ -86,8 +84,7 @@ def setup_database(db_type='staging'):
             cur.execute(sql.SQL(create_command).format(sql.Identifier(db_name)), {
                 'owner': owner
             })
-            print(f"\033[1;32m\nDatabase {db_name} has been successfully created and is owned by {owner}\033[1;37m")
-            # playsound(os.path.abspath('./assets/success.wav'))
+            print(f"Database {db_name} has been successfully created and is owned by {owner}")
     except Exception as err:
         raise err
     finally:

@@ -8,7 +8,6 @@ from psycopg2.extras import execute_values
 
 
 # Reads IMDB .list file
-from playsound import playsound
 
 
 def read_file(data_type):
@@ -34,7 +33,6 @@ def read_file(data_type):
         print(f"\033[1;32mDone reading {data_type.file} in {end_time - startTime:0.04f} seconds\033[1;37m")
         return data
     except Exception as e:
-        #playsound(os.path.abspath('./assets/fail.wav'))
         print(e)
 
 
@@ -115,8 +113,6 @@ def write_csv(data, data_type):
             end_time = time.perf_counter()
             print(f"\033[1;32mDone writing to {name}.csv in {end_time - start_time:0.04f} seconds\033[1;37m")
     except Exception as e:
-        print(f"\033[1;31mSomething went wrong trying to write to {data_type.file}!\033[1;37m")
-        #playsound(os.path.abspath('./assets/fail.wav'))
         print(e)
 
 
@@ -163,7 +159,6 @@ def write_csv_from_table(view):
                 command = "DROP TABLE temp"
                 cur.execute(command)
     except Exception as err:
-        # playsound(os.path.abspath('./assets/fail.wav'))
         raise err
     finally:
         if conn:

@@ -1,6 +1,4 @@
 import os
-
-from playsound import playsound
 from psycopg2.extras import execute_values
 
 from Parser.DbConnector import connect
@@ -99,7 +97,6 @@ class Director(DataSet):
                     cur.execute(command)
                     print("did it")
         except Exception as err:
-            # playsound(os.path.abspath('./assets/fail.wav'))
             raise err
         finally:
             if conn:
