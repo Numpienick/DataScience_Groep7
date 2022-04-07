@@ -11,7 +11,7 @@ from Parser.classes.Dataset import DataSet
 class Cinematographer(DataSet):
     def __init__(self):
         super().__init__()
-        self.regex = r"""(?:, )?(?P<nick_name>\'[\S ]+?\'|^\"[\S ]+?\")?(?:,)?(?: )?(?:(?:(?P<last_name>[\S ]+?)?, )?(?P<first_name>[\S ]+?)[^ \S]+|(?:\t\t\t))\\"?(?P<show_title>.+(?= \(Music Video\) \([\d?])|(?<=\").+?(?=\")|.+(?= \([\d?]))\"?(?:\s\((?P<music_video>Music Video)?\))?(?:\s\((?P<release_date>\d[^?]+?)\)|\?{4}(?:.+?)?\))?(?:\s\((?P<type_of_show>TV|V|VG)\))?(?:\s\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \(#)|(?!\(\#|\{).+?(?=\}))?))?(?:\})?\s?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s\{\{?(?P<suspended>SUSPENDED)\}\})?(?:(?:(?:\s+)?\((?:(?P<type_of_cinematographer>[^)]*?(?:cinematographer)[^)]*?)|(?P<type_of_director>[^)]*?(?:director)|(?:directed)[^)]*?)|(?:as (?P<also_known_as>[^)]+?))|(?P<segment>segment[^)]*?)|(?P<scenes_deleted>scenes deleted)|(?P<credit_only>credit only)|(?P<archive_footage>archive footage)|(?P<uncredited>uncredited)|(?P<rumored>rumored)|(?:[^)]+?))\))+)?"""
+        self.regex = r"""(?:, )?(?P<nick_name>\'[\S ]+?\'|^\"[\S ]+?\")?(?:,)?(?: )?(?:(?:(?P<last_name>[\S ]+?)?, )?(?P<first_name>[\S ]+?)[^ \S]+|(?:\t\t\t))\"?(?P<show_title>.+(?= \(Music Video\) \([\d?])|(?<=\").+?(?=\")|.+(?= \([\d?]))\"?(?:\s\((?P<music_video>Music Video)?\))?(?:\s\((?P<release_date>\d[^?]+?)\)|\?{4}(?:.+?)?\))?(?:\s\((?P<type_of_show>TV|V|VG)\))?(?:\s\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \(#)|(?!\(\#|\{).+?(?=\}))?))?(?:\})?\s?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s\{\{?(?P<suspended>SUSPENDED)\}\})?(?:(?:(?:\s+)?\((?:(?P<type_of_cinematographer>[^)]*?(?:cinematographer)[^)]*?)|(?P<type_of_director>[^)]*?(?:director)|(?:directed)[^)]*?)|(?:as (?P<also_known_as>[^)]+?))|(?P<segment>segment[^)]*?)|(?P<scenes_deleted>scenes deleted)|(?P<credit_only>credit only)|(?P<archive_footage>archive footage)|(?P<uncredited>uncredited)|(?P<rumored>rumored)|(?:[^)]+?))\))+)?"""
         self.file = "cinematographers"
         self.clean_file_regex = r"-{4}\s+?-{6}\s+(?P<data>[\s\S]+?(?=-{77}))"
 
@@ -100,7 +100,7 @@ class Cinematographer(DataSet):
                     cur.execute(command)
                     print("did it")
         except Exception as err:
-            playsound(os.path.abspath("./assets/fail.wav"))
+            playsound(os.path.abspath('./assets/fail.wav'))
             raise err
         finally:
             if conn:
@@ -108,18 +108,20 @@ class Cinematographer(DataSet):
 
     @classmethod
     def insert_also_known_as(cls, cur):
+        return "" #Commented out because the same issue as episodes, foreign key + inheritance limitation?
         print("Inserting known as")
 
         command = """
                   SELECT DISTINCT temp.also_known_as
                   FROM temp
+                  WHERE temp.also_known_as IS NOT NULL
                   """
         cur.execute(command)
         also_known_as = cur.fetchall()
         execute_values(cur, "INSERT INTO also_known_as (also_known_as) VALUES %s", also_known_as)
 
         command = """
-                  SELECT role.person_id, also_known_as.also_known_as_id
+                  SELECT DISTINCT cinematographer.person_id, also_known_as.also_known_as_id
                   FROM temp
                   INNER JOIN also_known_as
                   ON temp.also_known_as = also_known_as.also_known_as
