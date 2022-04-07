@@ -17,7 +17,7 @@ class Director(DataSet):
             conn = connect("staging")
             with conn:
                 with conn.cursor() as cur:
-                    cur.execute("SELECT DISTINCT * from directors")
+                    cur.execute("SELECT DISTINCT * from directors WHERE episode_title IS NULL AND episode_number IS NULL AND season_number IS NULL")
                     data = cur.fetchmany(100)
                 return data
         except Exception as err:

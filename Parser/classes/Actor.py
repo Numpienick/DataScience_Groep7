@@ -17,7 +17,7 @@ class Actor(DataSet):
             conn = connect("staging")
             with conn:
                 with conn.cursor() as cur:
-                        cur.execute("SELECT DISTINCT * from actors")
+                        cur.execute("SELECT DISTINCT * from actors WHERE episode_title IS NULL AND episode_number IS NULL AND season_number IS NULL")
                         data = cur.fetchall()
                         return data
         except Exception as err:
