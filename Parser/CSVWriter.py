@@ -1,6 +1,9 @@
 import re
 import csv
 import time
+import os
+from Parser.DbConnector import connect
+from psycopg2.extras import execute_values
 
 
 # Reads IMDB .list file
@@ -113,3 +116,40 @@ def write_csv(data, data_type):
             print(f"Done writing to {name}.csv in {end_time - start_time:0.04f} seconds")
     except Exception as e:
         print(e)
+
+
+def write_csv_from_table(view):
+    try:
+        filename = view
+        filepath = "NewData/" + filename + '.csv'
+        if os.path.exists(filepath):
+            os.remove(filepath)
+        conn = connect("final")
+        with conn:
+            with conn.cursor() as cur:
+                command = """
+                CREATE TABLE "temp" (
+                    "show_title" varchar,
+                    "rating" float,
+                    "total_roles" int
+                ) 
+                """
+                cur.execute(command)
+                command = "SELECT * FROM {}".format(view)
+                cur.execute(command)
+                data = cur.fetchall()
+                execute_values(cur, "INSERT INTO temp VALUES %s", data)
+                with open(filepath, 'x', encoding="utf-8", newline='') as f:
+                    abs_filepath = os.path.abspath(filepath)
+                    # command = "COPY (SELECT * FROM {}) TO '{}' CSV DELIMITER AS ';';".format('temp', abs_filepath)
+                    cur.copy_to(f, 'temp', sep=';')
+
+                    f.close()
+                command = "DROP TABLE temp"
+                cur.execute(command)
+    except Exception as err:
+        raise err
+    finally:
+        if conn:
+            conn.close()
+

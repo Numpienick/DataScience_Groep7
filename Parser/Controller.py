@@ -1,6 +1,6 @@
 import time
 
-from Parser.CSVWriter import write_csv, read_file
+from Parser.CSVWriter import write_csv, read_file, write_csv_from_table
 from Parser.DbConnector import setup_database
 from Parser.DbConverter import convert_db, convert
 
@@ -140,7 +140,7 @@ def main():
     print("Welkom bij de IMDB Data-Parser van groep 7")
     print("Wat wilt u doen?")
     print(
-        "1. Dataset omzetten naar CSV?\n2. Database opzetten?\n3. Staging database omzetten naar Final database?\n4. Allemaal, in goede volgorde")
+        "1. Dataset omzetten naar CSV?\n2. Database opzetten?\n3. Staging database omzetten naar Final database?\n4. Allemaal, in goede volgorde\n5. Haal data tigo op")
     menu_choice = input()
     match menu_choice:
         case "1":  # CSV_Caller
@@ -164,6 +164,8 @@ def main():
             setup_database()
             setup_database("final")
             db_converter_caller()
+        case "5":
+            write_csv_from_table("movie_rating_actrice_count")
 
 
 # Calls the main function (at the bottom to ensure all functions are available)

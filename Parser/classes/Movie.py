@@ -6,7 +6,7 @@ from Parser.classes.Dataset import DataSet
 class Movie(DataSet):
     def __init__(self):
         super().__init__()
-        self.regex = r"\"?(?P<show_title>.+(?= \(Music Video\) \([\d?])|.+(?=\")|.+(?= \([\d?]))\"?\s\((?:(?P<music_video>Music Video)?\)\s\()?(?:(?P<release_date>[^?]+?)|\?{4}(?:.+?)?)\)\s+?(?:\((?P<type_of_show>TV|V|VG)\))?(?:\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \()|(?!\(\#|\{).+?(?=\}))?))?(?:\})?(?:\s)?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s)?(?:\{\{?(?P<suspended>SUSPENDED)\}\})?\0*?\s*?(?:(?P<release_year>\d{4})|\?{4})(?:-(?P<end_year>\d{4})|-\?{4})?"
+        self.regex = r"\"?(?P<show_title>.+(?= \(Music Video\) \([\d?])|(?<=\").+?(?=\")|.+(?= \([\d?]))\"?(?:\s\((?P<music_video>Music Video)?\))?(?:\s\((?P<release_date>\d[^?]+?)\)|\?{4}(?:.+?)?\))?(?:\s\((?P<type_of_show>TV|V|VG)\))?(?:\s\{(?P<episode_title>(?:(?!\(\#|\{).+?(?= \(#)|(?!\(\#|\{).+?(?=\}))?))?(?:\})?\s?(?:\(\#(?P<season_number>\d+?)\.(?P<episode_number>\d+?)\)\})?(?:\s\{\{?(?P<suspended>SUSPENDED)\}\})?\0*?\s*?(?:(?P<release_year>\d{4})|\?{4})(?:-(?P<end_year>\d{4}|\?{4}))?"
         self.file = "movies"
 
     @staticmethod
@@ -20,7 +20,7 @@ class Movie(DataSet):
                     # Selects the data of all the shows in the movies.csv file.
                     command = "SELECT * FROM movies WHERE end_year IS NOT NULL AND release_date <> '????'"
                     cur.execute(command)
-                    data = cur.fetchmany(100)
+                    data = cur.fetchall()
                     cur.execute(command)
                     # A temporary table used for executing a join.
                     command = (
@@ -55,6 +55,7 @@ class Movie(DataSet):
                                     """
                     cur.execute(command)
                     data = cur.fetchall()
+                    print("Data Length: " + str(len(data)))
                     # Deletes the temporary table.
                     command = (
                         """
@@ -119,6 +120,7 @@ class Movie(DataSet):
                     command = "SELECT distribution, amount_of_votes, rating, temp_id  FROM temp"
                     cur.execute(command)
                     data = cur.fetchall()
+                    print("Data Length: " + str(len(data)))
                     print("Inserting the data in the rating table")
                     execute_values(cur, "INSERT INTO rating (distribution, amount_of_votes, rating, temp_id) VALUES %s",
                                    data)
@@ -131,6 +133,7 @@ class Movie(DataSet):
                                     """
                     cur.execute(command)
                     data = cur.fetchall()
+                    print("Data Length: " + str(len(data)))
                     print("Inserting data in show table")
                     execute_values(cur,
                                    "INSERT INTO show (rating_id, show_title, release_date,release_year, type_of_show, suspended, end_year) VALUES %s",
@@ -157,6 +160,7 @@ class Movie(DataSet):
                         """
                     )
                     cur.execute(command)
+                    print("Data Length: " + str(len(data)))
                     print("Inserted data in the show and rating table")
         except Exception as err:
             raise err
@@ -185,7 +189,8 @@ class Movie(DataSet):
                                     WHERE (movies.end_year IS NULL) AND (movies.release_date IS NOT NULL) AND ((movies.episode_title IS NOT NULL OR movies.season_number IS NOT NULL) OR movies.episode_number IS NOT NULL)
                                     """
                     cur.execute(command)
-                    data = cur.fetchmany(100)
+                    data = cur.fetchall()
+                    print("Data Length: " + str(len(data)))
                     print("Got all the data needed for the episode table")
                     return data
 
@@ -234,6 +239,7 @@ class Movie(DataSet):
                                                                     """
                     cur.execute(command)
                     data = cur.fetchall()
+                    print("Data Length: " + str(len(data)))
                     # Deletes the table, data has been retrieved.
                     command = (
                         """
@@ -285,6 +291,7 @@ class Movie(DataSet):
                     command = "SELECT distribution, amount_of_votes, rating, temp_id  FROM temp"
                     cur.execute(command)
                     data = cur.fetchall()
+                    print("Data Length: " + str(len(data)))
                     print("Inserting the data in the rating table")
                     execute_values(cur,
                                    "INSERT INTO rating (distribution, amount_of_votes, rating, temp_id) VALUES %s",
@@ -299,6 +306,7 @@ class Movie(DataSet):
                                                    """
                     cur.execute(command)
                     data = cur.fetchall()
+                    print("Data Length: " + str(len(data)))
                     print("Inserting data in episode table")
                     execute_values(cur,
                                    "INSERT INTO episode (rating_id, show_title, release_date, release_year, type_of_show, suspended, show_id, episode_name, season_number, episode_number) VALUES %s",
@@ -341,16 +349,37 @@ class Movie(DataSet):
                 with conn.cursor() as cur:
                     print("Getting all data needed for the show_info table from staging database")
                     # Selects the data of all the movies  in the movies.csv file.
+                    command = "SELECT * FROM movies WHERE movies.episode_title IS NULL AND movies.season_number IS NULL AND movies.episode_number IS NULL AND movies.end_year IS NULL"
+                    cur.execute(command)
+                    data = cur.fetchall()
                     command = """
-                    SELECT movies.show_title, movies.release_date, movies.release_year, movies.type_of_show, movies.suspended, ratings.distribution, ratings.amount_of_votes, ratings.rating
-                    FROM movies 
-                    LEFT JOIN ratings
-                    ON movies.show_title = ratings.show_title
-                    AND movies.release_date = ratings.release_date
-                    WHERE movies.episode_title is NULL AND movies.season_number IS NULL AND movies.episode_number IS NULL AND movies.end_year IS NULL 
+                    CREATE TEMP TABLE "films" (
+                        "show_title" varchar,
+                        "music_video" bool,
+                        "release_date" varchar,
+                        "type_of_show" varchar,
+                        "episode_title" varchar,
+                        "season_number" int,
+                        "episode_number" int,
+                        "suspended" bool,
+                        "release_year" int,
+                        "end_year" varchar
+);
                     """
                     cur.execute(command)
-                    data = cur.fetchmany(100)
+                    execute_values(cur,
+                                   "INSERT INTO films VALUES %s",
+                                   data)
+                    command = """
+                                        SELECT DISTINCT films.show_title, films.release_date, films.release_year, films.type_of_show, films.suspended, ratings.distribution, ratings.amount_of_votes, ratings.rating
+                                        FROM films 
+                                        INNER JOIN ratings
+                                        ON films.show_title = ratings.show_title
+                                        AND films.release_date = ratings.release_date
+                                        """
+                    cur.execute(command)
+                    data = cur.fetchall()
+                    print("Data Length: " + str(len(data)))
                     print("Got all the data needed for the show_info table")
                     return data
 
@@ -406,6 +435,7 @@ class Movie(DataSet):
                     command = "SELECT distribution, amount_of_votes, rating, temp_id  FROM temp"
                     cur.execute(command)
                     data = cur.fetchall()
+                    print("Data Length: " + str(len(data)))
                     print("Inserting the data in the rating table")
                     execute_values(cur, "INSERT INTO rating (distribution, amount_of_votes, rating, temp_id) VALUES %s",
                                    data)
@@ -419,6 +449,7 @@ class Movie(DataSet):
                                     """
                     cur.execute(command)
                     data = cur.fetchall()
+                    print("Data Length: " + str(len(data)))
                     print("Inserting data in show_info table")
                     execute_values(cur,
                                    "INSERT INTO show_info (rating_id, show_title, release_date,release_year, type_of_show, suspended) VALUES %s",
@@ -454,12 +485,14 @@ class Movie(DataSet):
 
     def get_table(self):
         show_info = Movie.get_showinfo()
-        show = Movie.get_show()
-        episode = Movie.get_episode()
-        return show_info, show, episode
+        # show = Movie.get_show()
+        # episode = Movie.get_episode()
+        return show_info
+        # return show_info, show, episode
 
     def insert_table(self, data):
         show_info, show, episode = data
-        Movie.insert_showinfo(show_info)
-        Movie.insert_show(show)
-        Movie.insert_episode(episode)
+        # Movie.insert_showinfo(show_info)
+        # Movie.insert_show(show)
+        # Movie.insert_episode(episode)
+        Movie.insert_showinfo(data)

@@ -76,7 +76,7 @@ CREATE TABLE "episode" (
 
 CREATE TABLE "show" (
   "show_id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
-  "end_year" int
+  "end_year" varchar
 ) inherits ("show_info");
 
 CREATE TABLE "country" (
@@ -202,3 +202,14 @@ COMMENT ON TABLE "show_info" IS 'Master of show and episode';
 COMMENT ON TABLE "episode" IS 'Detail of show_info';
 
 COMMENT ON TABLE "show" IS 'Detail of show_info';
+
+CREATE VIEW movie_rating_actrice_count
+AS
+SELECT show_info.show_title, rating.rating, COUNT(role.female) AS total_female_roles
+    FROM ONLY show_info
+INNER JOIN rating
+    ON show_info.rating_id = rating.rating_id
+INNER JOIN role
+    ON show_info.show_info_id = role.show_info_id
+    WHERE role.female = true AND rating.rating IS NOT NULL
+GROUP BY show_info.show_title, rating.rating
