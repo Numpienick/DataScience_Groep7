@@ -5,10 +5,13 @@
         <div class="row">
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="linechart-tab" data-bs-toggle="tab" data-bs-target="#linechart" type="button" role="tab" aria-controls="linechart" aria-selected="true">Line Chart</button>
+                    <button class="nav-link active" id="linechart-tab" data-bs-toggle="tab" data-bs-target="#linechart" type="button" role="tab" aria-controls="linechart" aria-selected="true">Meest populaire genres in 2016</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="piechart-tab" data-bs-toggle="tab" data-bs-target="#piechart" type="button" role="tab" aria-controls="piechart" aria-selected="false">Pie Chart</button>
+                    <button class="nav-link" id="piechart-tab" data-bs-toggle="tab" data-bs-target="#piechart" type="button" role="tab" aria-controls="piechart" aria-selected="false">Aantal films per land</button>
+                </li>
+                 <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="yearly-tab" data-bs-toggle="tab" data-bs-target="#yearlychart" type="button" role="tab" aria-controls="yearlychart" aria-selected="false">Aantal films per genre</button>
                 </li>
             </ul>
             <div class="tab-content" id="myTabContent">
@@ -16,7 +19,7 @@
                     <h3 class="my-3">Meest populaire genres van 2016</h3>
                     <div class="row justify-content-center">
                         <div id="container align-self-center" style="width: 75%;">
-                            <canvas id="population-chart"></canvas>
+                            <canvas id="genre-chart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -25,6 +28,14 @@
                     <div class="row justify-content-center">
                         <div id="container" style="width: 75%;">
                             <canvas id="pie-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade text-center" id="yearlychart" role="tabpanel" aria-labelledby="yealy-tab">
+                    <h3 class="my-3">Aantal films per genre van 2010 tot 2016</h3>
+                    <div class="row justify-content-center">
+                        <div id="container" style="width: 75%;">
+                            <canvas id="yearly-chart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -40,15 +51,26 @@
       type: 'line',
       data: {
         datasets: [{
-          data: {{ chartdata|safe }},
+          data: {{ genre_data|safe }},
           backgroundColor: "#3AAFA9",
-          pointBorderColor: "#4c9760",
+          pointBackgroundColor: {{genre_colors|safe}},
           label: 'Aantal films'
         }],
-        labels: {{ labels|safe }}
+        labels: {{ genre_labels|safe }}
       },
       options: {
         responsive: true
+      }
+    };
+
+    var yearly_config = {
+      type: 'line',
+      data: {
+        datasets: {{ yearly_data|safe }},
+        labels: {{ years|safe }}
+      },
+      options: {
+          responsive: true,
       }
     };
 
@@ -57,7 +79,7 @@
       data: {
         datasets: [{
           data: {{ country_data|safe }},
-          backgroundColor: {{ colors|safe }},
+          backgroundColor: {{ country_colors|safe }},
           label: 'Aantal films'
         }],
         labels: {{ country_labels|safe }}
@@ -68,10 +90,12 @@
     };
 
     window.onload = function() {
-      var ctx = document.getElementById('population-chart').getContext('2d');
+      var ctx = document.getElementById('genre-chart').getContext('2d');
       window.myPie = new Chart(ctx, config);
       var ctx = document.getElementById('pie-chart').getContext('2d');
       window.myPie = new Chart(ctx, config2);
+      var ctx = document.getElementById('yearly-chart').getContext('2d');
+      window.myPie = new Chart(ctx, yearly_config);
     };
 
   </script>

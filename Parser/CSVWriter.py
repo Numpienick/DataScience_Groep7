@@ -28,7 +28,7 @@ def read_file(data_type):
             print(f"\033[1;32mDone cleaning {data_type.file} in {end_time_clean - startTime:0.04f} seconds\033[1;37m")
             print(f"\nContinuing reading {data_type.file}")
 
-        data = re.findall(data_type.regex, str(txt))
+        data = re.findall(data_type.regex, str(txt), re.M)
         end_time = time.perf_counter()
         print(f"\033[1;32mDone reading {data_type.file} in {end_time - startTime:0.04f} seconds\033[1;37m")
         return data
