@@ -23,62 +23,68 @@
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="vraag1" role="tabpanel" aria-labelledby="vraag1-tab">
                     <h3 class="my-3">Welke acteurs hebben in films gespeeld met een IMDB-rating boven de 8? Ook de hoeveelheid films.</h3>
+                        {% for vraag in vraag1SQL %}
                             <article class="media content-section my-4 pb-0 pt-3" style="background-color: #3AAFA9;">
                                 <div class="media-body" >
+                                    <h2 class="article-title mt-2">Naam: {{ vraag.first_name }} {{ vraag.last_name }}</h2>
                                     <p class="article-content">
-                                         {% render_table table %}
+                                         Aantal films: {{ vraag.amount }}
                                     </p>
                                 </div>
                             </article>
+                        {% endfor %}
                     </div>
                     <div class="tab-pane fade" id="vraag2" role="tabpanel" aria-labelledby="vraag2-tab">
                         <h3 class="my-3">Wat zijn de top 10 films met hoogste IMDB-rating?  </h3>
+                        {% for vraag in vraag2SQL %}
                             <article class="media content-section my-4 pb-0 pt-3" style="background-color: #3AAFA9;">
                                 <div class="media-body" >
-{#                                    <h2 class="article-title mt-2">Film naam: {{ rating.rating }}</h2>#}
+                                    <h2 class="article-title mt-2">Film naam: {{ vraag.show_title }}</h2>
                                     <p class="article-content">
-{#                                        IMDb Rating: {{ rating.amount_of_votes }}#}
+                                        IMDb Rating: {{ vraag.rating }}
                                     </p>
                                 </div>
                             </article>
+                        {% endfor %}
                     </div>
                     <div class="tab-pane fade" id="vraag3" role="tabpanel" aria-labelledby="vraag3-tab">
                         <h3 class="my-3">Welke directors hebben aan een film gewerkt onder een IMDB-rating van 6? </h3>
-                            <article class="media content-section my-4 pb-3 pt-3" style="background-color: #3AAFA9;">
+                            {% for vraag in vraag3SQL %}
+                            <article class="media content-section my-4 pb-0 pt-3" style="background-color: #3AAFA9;">
                                 <div class="media-body" >
-{#                                    <h2 class="article-title mt-2">Director: {{ rating.rating }}</h2>#}
+                                    <h2 class="article-title mt-2">Naam: {{ vraag.first_name }} {{ vraag.last_name }}</h2>
+                                    <p class="article-content">
+                                         Aantal films: {{ vraag.amount }}
+                                    </p>
                                 </div>
                             </article>
+                        {% endfor %}
                     </div>
                     <div class="tab-pane fade" id="vraag4" role="tabpanel" aria-labelledby="vraag4-tab">
                         <h3 class="my-3">Welk genre film is het meest uitgebracht?</h3>
+                        {% for vraag in vraag4SQL %}
                             <article class="media content-section my-4 pb-0 pt-3" style="background-color: #3AAFA9;">
                                 <div class="media-body" >
-                                    <div class="article-metadata">
-{#                                        <h5 class="mb-2" style="color: #17252A">Positie: {{ rating.id }}</h5>#}
-                                    </div>
-{#                                    <h2 class="article-title mt-2">Genre: {{ rating.rating }}</h2>#}
+                                    <h2 class="article-title mt-2">Genre: {{ vraag.genre_name }}</h2>
                                     <p class="article-content">
-{#                                        Aantal uitgebracht: {{ rating.amount_of_votes }}#}
+                                        Aantal uitgebracht: {{ vraag.amount }}
                                     </p>
                                 </div>
                             </article>
+                        {% endfor %}
                     </div>
                     <div class="tab-pane fade" id="vraag5" role="tabpanel" aria-labelledby="vraag5-tab">
                         <h3 class="my-3">Hoeveel films per genre combinatie hebben een hogere IDMB-rating dan 8?</h3>
+                            {% for vraag in vraag5SQL %}
                             <article class="media content-section my-4 pb-0 pt-3" style="background-color: #3AAFA9;">
                                 <div class="media-body" >
-                                    <div class="article-metadata">
-{#                                        <h5 class="mb-2" style="color: #17252A">Movie ID: {{ rating.id }}</h5>#}
-                                    </div>
-{#                                    <h2 class="article-title mt-2">Rating: {{ rating.rating }}</h2>#}
+                                    <h2 class="article-title mt-2">Genre combies: {{ vraag.combies }}</h2>
                                     <p class="article-content">
-{#                                        Amount of votes: {{ rating.amount_of_votes }}#}
-{#                                        <br>#}
-{#                                        Rating distribution: {{ rating.distribution }}#}
+                                        Aantal uitgebracht: {{ vraag.amount }}
                                     </p>
                                 </div>
                             </article>
+                        {% endfor %}
                     </div>
                 </div>
         </div>
