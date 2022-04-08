@@ -67,27 +67,11 @@
       }
     };
 
-    {#var config2 = {#}
-    {#  type: 'pie',#}
-    {#  data: {#}
-    {#    datasets: [{#}
-    {#      data: {{ data|safe }},#}
-    {#      backgroundColor: [#}
-    {#        '#3AAFA9', '#2B7A78', '#17252A', '#DEF2F1', '#FEFFFF'#}
-    {#      ],#}
-    {#      label: 'Population'#}
-    {#    }],#}
-    {#    labels: {{ labels|safe }}#}
-    {#  },#}
-    {#  options: {#}
-    {#    responsive: true#}
-    {#  }#}
-
     window.onload = function() {
       var ctx = document.getElementById('population-chart').getContext('2d');
       window.myPie = new Chart(ctx, config);
-      {#var ctx = document.getElementById('pie-chart').getContext('2d');#}
-      {#window.myPie = new Chart(ctx, config2);#}
+      var ctx = document.getElementById('pie-chart').getContext('2d');
+      window.myPie = new Chart(ctx, config2);
     };
 
   </script>

@@ -1,9 +1,36 @@
 {% extends "info/base.html" %}
+{% load static %}
 {% block content %}
     <div class="container">
         <div class="row text-center">
-            <h3 class="my-3 col-12">Headline</h3>
-
+            <h3 class="my-3 col-12">Hoe meer actrices in films, hoe beter de beoordeling. </h3>
+            <div class="row pt-4">
+                <div class="col-2"></div>
+                <div class="col-8">
+                    <img src="{% static 'info/hypothese.jpg' %}" class="card-img" alt="...">
+                    <p class="pt-2">
+                        Wat opvalt bij dit scatterplot is dan er een lichte stijging zit vanaf 1 tot aan ongeveer 8.
+                        Op basis hiervan zou je kunnen zeggen dat er een verband is. Echter neemt het vanaf 9 weer
+                        sterk af. Dan is de invloed net zo groot als bij 1. Uiteraard kan je op dit punt nog niks
+                        zeker zeggen. Verder in het verslag zal de relatie een stuk duidelijker worden door middel van
+                        verdere analyses van de data.
+                    </p>
+                </div>
+                <div class="col-2"></div>
+            </div>
+            <div class="row pt-4">
+                <div class="col-3"></div>
+                <div class="col-6">
+                    <img src="{% static 'info/hypothese2.jpg' %}" class="card-img" alt="...">
+                    <p class="pt-2">
+                        Om de data te toetsen zijn enkele sleutelwaarden nodig om dit uit te kunnen voeren. Deze zijn
+                        in de tabel hieronder weergegeven. Deze gegevens zullen gebruikt worden om later in het
+                        verslag de correlatiecoëfficiënt te berekenen, waardoor de relatie tussen de data alsmaar
+                        helderder wordt.
+                    </p>
+                </div>
+                <div class="col-3"></div>
+            </div>
         </div>
     </div>
 {% endblock content %}
