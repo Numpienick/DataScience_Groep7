@@ -3,19 +3,6 @@ import random
 from django.shortcuts import render
 # from .models import Rating
 from django.db import connection
-from django_tables2 import tables
-
-from .models import Simple
-
-
-class SimpleTable(tables.Table):
-    class Meta:
-        model = Simple
-
-class TableView(tables.Table):
-    table_class = SimpleTable
-    queryset = Simple.objects.all()
-    template_name = "data.html"
 
 def home(request):
     return render(request, 'info/home.html')

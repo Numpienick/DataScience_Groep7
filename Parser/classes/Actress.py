@@ -29,7 +29,7 @@ class Actress(DataSet):
                 conn.close()
 
     def insert_table(self, role):
-        print("Inserting role")
+        print("Inserting role from actresses")
 
         try:
             conn = connect("final")
