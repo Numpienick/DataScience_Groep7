@@ -75,7 +75,7 @@ class Plot(DataSet):
                     execute_values(cur, "INSERT INTO show_info_plot (show_info_id, plot_id) VALUES %s", link_table)
                     command = "DROP TABLE temp"
                     cur.execute(command)
-                    print("did it")
+                    print("\033[1;32mFinished inserting Plot to Plot and show_info_plot")
         except Exception as err:
             raise err
         finally:

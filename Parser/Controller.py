@@ -3,9 +3,11 @@ import time
 import multiprocessing as mp
 from multiprocessing import Process
 
+from playsound import playsound
+
 from Parser.CSVWriter import write_csv, read_file, write_csv_from_table
 from Parser.DbConnector import setup_database
-from Parser.DbConverter import convert_db, convert, add_indices, convert_to_loggable, fill_staging_db
+from Parser.DbConverter import convert, add_indices, convert_to_loggable, fill_staging_db
 
 from Parser.classes.Actor import Actor
 from Parser.classes.Actress import Actress
@@ -169,53 +171,58 @@ def main():
     print(
         "\033[1;34m1. Dataset omzetten naar CSV?\n2. Database opzetten?\n3. Staging database omzetten naar Final database?\n4. De afsluiting, indices creeëren, tables omzetten naar LOGGABLE etc.\n5. Allemaal, in goede volgorde\n6. Haal data voor r-modellen op\033[1;37m")
     menu_choice = input()
-    match menu_choice:
-        case "1":  # CSV_Caller
-            csv_caller(ask_for_dataset())
-        case "2":  # Setup DB
-            print("\033[1;34mWelke database wilt u opzetten?")
-            print("\033[1;34m1. Staging database\n2. Final database\n3. Allebei\033[1;37m")
-            db_choice = input()
-            match db_choice:  # DB Choice
-                case "1":
-                    setup_database()
-                case "2":
-                    setup_database("final")
-                case "3":
-                    processes = [
-                        Process(target=setup_database, args=()),
-                        Process(target=setup_database, args=(["final"]))]
-                    for p in processes:
-                        p.start()
-                    for p in processes:
-                        p.join()
-                    fill_staging_db()
-        case "3":  # DB Converter
-            db_converter_caller()
-        case "4":  # Finalize
-            #convert_to_loggable()
-            add_indices()
-        case "5":  # All
-            processes = [
-                Process(target=setup_database, args=()),
-                Process(target=setup_database, args=(["final"])),
-                Process(target=csv_caller, args=([0]))
-            ]
-            for p in processes:
-                p.start()
+    try:
+        match menu_choice:
+            case "1":  # CSV_Caller
+                csv_caller(ask_for_dataset())
+            case "2":  # Setup DB
+                print("\033[1;34mWelke database wilt u opzetten?")
+                print("\033[1;34m1. Staging database\n2. Final database\n3. Allebei\033[1;37m")
+                db_choice = input()
+                match db_choice:  # DB Choice
+                    case "1":
+                        setup_database()
+                    case "2":
+                        setup_database("final")
+                    case "3":
+                        processes = [
+                            Process(target=setup_database, args=()),
+                            Process(target=setup_database, args=(["final"]))]
+                        for p in processes:
+                            p.start()
+                        for p in processes:
+                            p.join()
+                        fill_staging_db()
+            case "3":  # DB Converter
+                db_converter_caller()
+            case "4":  # Finalize
+                convert_to_loggable()
+                add_indices()
+            case "5":  # All
+                processes = [
+                    Process(target=setup_database, args=()),
+                    Process(target=setup_database, args=(["final"])),
+                    Process(target=csv_caller, args=([0]))
+                ]
+                for p in processes:
+                    p.start()
 
-            for p in processes:
-                p.join()
+                for p in processes:
+                    p.join()
 
-            fill_staging_db()
-            db_converter_caller("0")
-            convert_to_loggable()
-            add_indices()
-        case "6":
-            write_csv_from_table("movie_rating_actrice_count")
-            write_csv_from_table("plot_rating")
-            write_csv_from_table("running_times_rating")
-    #playsound(os.path.abspath("assets/success.wav"))
+                fill_staging_db()
+                db_converter_caller("0")
+                convert_to_loggable()
+                add_indices()
+            case "6":
+                write_csv_from_table("movie_rating_actrice_count")
+                write_csv_from_table("plot_rating")
+                write_csv_from_table("running_times_rating")
+        playsound(os.path.abspath("assets/success.wav"))
+    except Exception as err:
+        print("\033[1;31mEr is iets verkeerd gegaan\n\033[1;37m")
+        playsound(os.path.abspath("assets/fail.wav"))
+
 
 # Calls the main function (at the bottom to ensure all functions are available)
 if __name__ == "__main__":

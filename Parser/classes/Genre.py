@@ -80,7 +80,7 @@ class Genre(DataSet):
                                    link_table)
                     command = "DROP TABLE temp"
                     cur.execute(command)
-                    print("did it")
+                    print("\033[1;32mFinished inserting Genre to Genre and show_info_genre")
         except Exception as err:
             #playsound(os.path.abspath('./assets/fail.wav'))
             raise err

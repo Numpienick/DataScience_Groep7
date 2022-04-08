@@ -89,7 +89,7 @@ class RunningTime(DataSet):
 
                     command = "DROP TABLE temp"
                     cur.execute(command)
-                    print("did it")
+                    print("\033[1;32mFinished inserting Running_times to Running_times and show_info_running_times")
         except Exception as err:
             #playsound(os.path.abspath('./assets/fail.wav'))
             raise err

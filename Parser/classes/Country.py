@@ -78,7 +78,7 @@ class Country(DataSet):
                     execute_values(cur, "INSERT INTO show_info_country (show_info_id, country_id) VALUES %s", link_table)
                     command = "DROP TABLE temp"
                     cur.execute(command)
-                    print("did it")
+                    print("\033[1;32mFinished inserting Country to Country and show_info_country")
         except Exception as err:
             #playsound(os.path.abspath('./assets/fail.wav'))
             raise err

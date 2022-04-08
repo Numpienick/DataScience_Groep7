@@ -95,7 +95,8 @@ class Director(DataSet):
 
                     command = "DROP TABLE temp"
                     cur.execute(command)
-                    print("did it")
+                    print("\033[1;32mFinished inserting Director to Director and Person and show_info_director")
+
         except Exception as err:
             raise err
         finally:

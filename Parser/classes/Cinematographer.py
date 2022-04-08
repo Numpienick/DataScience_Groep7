@@ -97,7 +97,7 @@ class Cinematographer(DataSet):
 
                     command = "DROP TABLE temp"
                     cur.execute(command)
-                    print("did it")
+                    print("\033[1;32mFinished inserting Cinematographer to Cinematographer and Person and show_info_cinematographer")
         except Exception as err:
             #playsound(os.path.abspath('./assets/fail.wav'))
             raise err

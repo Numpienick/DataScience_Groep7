@@ -120,7 +120,8 @@ class Movie(DataSet):
                     # Deletes the temporary table.
                     command = "DROP TABLE temp"
                     cur.execute(command)
-                    print("Inserted data in the show_info and rating table")
+                    print("\033[1;32mFinished inserting Movie to show_info and rating")
+
         except Exception as err:
             raise err
         finally:

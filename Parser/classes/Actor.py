@@ -86,12 +86,11 @@ class Actor(DataSet):
                     execute_values(cur,
                                    "INSERT INTO role (show_info_id, nick_name, last_name, first_name, character_name, segment, voice_actor, scenes_deleted, credit_only, archive_footage, uncredited, rumored, motion_capture, role_position, female) VALUES %s",
                                    data)
-                    print("Finished inserting roles")
+                    print("\033[1;32mFinished inserting Actors to Role and Person")
                     Actor.insert_also_known_as(cur)
 
                     command = "DROP TABLE temp"
                     cur.execute(command)
-                    print("did it")
         except Exception as err:
             #playsound(os.path.abspath('./assets/fail.wav'))
             raise err

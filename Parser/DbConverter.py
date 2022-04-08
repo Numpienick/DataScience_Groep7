@@ -8,10 +8,6 @@ import psycopg2
 from psycopg2 import sql
 
 
-def convert_db():
-    add_indices()
-
-
 def convert(table):
     table.insert_table(table.get_table())
 
@@ -68,7 +64,8 @@ def fill_staging_db():
         print(f"\n\033[1;31mSomething went wrong trying to transfer {filename} to the staging database\033[1;37m")
         raise err
     end_time = time.perf_counter()
-    print(f"\033[1;32m\nDone!! Finished filling the staging database in {end_time - start_time:0.04f} seconds\033[1;37m")
+    print(
+        f"\033[1;32m\nDone!! Finished filling the staging database in {end_time - start_time:0.04f} seconds\033[1;37m")
 
 
 def add_indices():
@@ -91,20 +88,20 @@ def add_indices():
             conn.close()
 
 
+# Converts unloggable tables (for faster inserts) back to loggable for safety
 def convert_to_loggable():
     print("Converting to loggable")
     try:
         conn = connect("final")
         with conn:
             with conn.cursor() as cur:
-                cur.execute(
-                    "SELECT table_name AS full_rel_name FROM information_schema.tables WHERE table_schema = 'public';")
-                tables = cur.fetchall()
+                tables = ["person", "also_known_as", "person_also_known_as", "country", "rating", "show_info",
+                          "cinematographer", "show_info_cinematographer", "show_info_country", "director",
+                          "show_info_director", "genre", "show_info_genre", "plot", "show_info_plot", "running_times",
+                          "show_info_running_times", "show", "episode", "role"]
                 for table in tables:
-                    table_name = str(table)
-                    table_name = table_name.translate({ord(i): None for i in '()\','})
-                    cur.execute(sql.SQL("ALTER TABLE {} SET LOGGED").format(sql.Identifier(table_name)))
-                    print()
+                    cur.execute(sql.SQL("ALTER TABLE {} SET LOGGED").format(sql.Identifier(table)))
+                print("\033[1;32mSuccesfully converted tables to loggable")
     except Exception as err:
         raise err
     finally:
@@ -148,7 +145,8 @@ def insert_known_as(known_as):
         conn = connect("final")
         with conn:
             with conn.cursor() as cur:
-                execute_values(cur, "INSERT INTO also_known_as (also_known_as) VALUES %s RETURNING also_known_as_id;", known_as)
+                execute_values(cur, "INSERT INTO also_known_as (also_known_as) VALUES %s RETURNING also_known_as_id;",
+                               known_as)
                 test = cur.fetchall()
                 # command = "INSERT INTO {} (nick_name, last_name, first_name) VALUES %s"
                 # cur.execute_values(sql.SQL(command).format(sql.Literal(AsIs(table))), person)
