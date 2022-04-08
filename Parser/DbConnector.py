@@ -1,12 +1,8 @@
-import psycopg2
 import os
-from psycopg2 import sql
-from psycopg2.extensions import AsIs
 from configparser import ConfigParser
-from psycopg2.extensions import AsIs
-from psycopg2.sql import NULL
-from psycopg2.extras import execute_values
 
+import psycopg2
+from psycopg2 import sql
 
 
 def config(section='staging'):

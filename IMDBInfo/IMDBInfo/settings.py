@@ -79,9 +79,9 @@ WSGI_APPLICATION = 'IMDBInfo.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': "DSfinal",
+        'NAME': "final",
         'USER': "postgres",
-        'PASSWORD': "Test@1234!",
+        'PASSWORD': "root",
         'HOST': '',
         'PORT': '',
     }

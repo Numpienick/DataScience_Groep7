@@ -1,6 +1,6 @@
-from django.db import models
-from django.utils import timezone
 from django.contrib.auth.models import User
+from django.db import models
+
 
 class vraag1SQL(models.Model):
     first_name = models.CharField(max_length=200)

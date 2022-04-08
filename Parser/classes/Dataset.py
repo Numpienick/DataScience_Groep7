@@ -1,6 +1,3 @@
-from psycopg2.extras import execute_values
-
-
 class DataSet:
     clean_file_regex = r""
     regex = r""

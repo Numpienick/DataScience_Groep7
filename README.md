@@ -31,6 +31,7 @@ Parser made in Python
 - Movies
 - Plot
 - Ratings
+> The parsing is multithreaded (from raw > CSV. CSV > staging and staging > final)
 
 ## Installation
 ### Installing Python

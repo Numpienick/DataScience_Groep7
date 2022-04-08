@@ -1,15 +1,14 @@
+import csv
 import os
 import re
-import csv
 import time
-import os
-from Parser.DbConnector import connect
+
 from psycopg2.extras import execute_values
+
+from Parser.DbConnector import connect
 
 
 # Reads IMDB .list file
-
-
 def read_file(data_type):
     print(f"\nStarts reading {data_type.file}")
     startTime = time.perf_counter()

@@ -1,7 +1,6 @@
 import random
 
 from django.shortcuts import render
-# from .models import Rating
 from django.db import connection
 
 from .models import vraag1SQL, vraag2SQL, vraag3SQL, vraag4SQL, vraag5SQL

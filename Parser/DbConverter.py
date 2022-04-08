@@ -1,11 +1,9 @@
-import os
 import multiprocessing as mp
 import time
 
-from DbConnector import *
-from Parser.classes.Plot import Plot
-import psycopg2
 from psycopg2 import sql
+
+from DbConnector import *
 
 
 def convert(table):

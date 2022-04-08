@@ -1,9 +1,12 @@
-import os
-
 from psycopg2.extras import execute_values
 
 from Parser.DbConnector import connect
 from Parser.classes.Dataset import DataSet
+from psycopg2.extras import execute_values
+
+from Parser.DbConnector import connect
+from Parser.classes.Dataset import DataSet
+
 
 class Actor(DataSet):
     def __init__(self):
