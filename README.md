@@ -86,8 +86,10 @@ Web interface made in Django(Python)
 ## Installation
 ### Installing Django
 1. Make sure you have installed Python, if not. Go to the instructions at the Parser instructions.
-2. Open terminal and type `python -m pip install Django`.
-3. If you don't have psycopg2 installed, type `python -m pip install psycopg2`.
+
+#### Modules
+1. Open terminal and type `python -m pip install Django` and `pip install playsound==1.2.2` (version is important, may have bugs).
+2. If you don't have psycopg2 installed, type `python -m pip install psycopg2`.
 
 
 ### Development requirements
