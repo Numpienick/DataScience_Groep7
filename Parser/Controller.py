@@ -193,7 +193,7 @@ def main():
         case "3":  # DB Converter
             db_converter_caller()
         case "4":  # Finalize
-            #convert_to_loggable()
+            convert_to_loggable()
             add_indices()
         case "5":  # All
             processes = [
