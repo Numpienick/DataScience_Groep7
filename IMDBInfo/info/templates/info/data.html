@@ -1,0 +1,91 @@
+{% extends "info/base.html" %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <ul class="nav nav-tabs text-center" id="myTab" role="tablist">
+                  <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="vraag1-tab" data-bs-toggle="tab" data-bs-target="#vraag1" type="button" role="tab" aria-controls="vraag1" aria-selected="true">vraag 1</button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="vraag2-tab" data-bs-toggle="tab" data-bs-target="#vraag2" type="button" role="tab" aria-controls="vraag2" aria-selected="false">vraag 2</button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="vraag3-tab" data-bs-toggle="tab" data-bs-target="#vraag3" type="button" role="tab" aria-controls="vraag3" aria-selected="false">vraag 3</button>
+                  </li>
+                <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="vraag4-tab" data-bs-toggle="tab" data-bs-target="#vraag4" type="button" role="tab" aria-controls="vraag4" aria-selected="false">vraag 4</button>
+                  </li>
+                <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="vraag5-tab" data-bs-toggle="tab" data-bs-target="#vraag5" type="button" role="tab" aria-controls="vraag5" aria-selected="false">vraag 5</button>
+                  </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="vraag1" role="tabpanel" aria-labelledby="vraag1-tab">
+                    <h3 class="my-3">Welke acteurs hebben in films gespeeld met een IMDB-rating boven de 8? Ook de hoeveelheid films.</h3>
+                        {% for vraag in vraag1SQL %}
+                            <article class="media content-section my-4 pb-0 pt-3" style="background-color: #3AAFA9;">
+                                <div class="media-body" >
+                                    <h2 class="article-title mt-2">Naam: {{ vraag.first_name }} {{ vraag.last_name }}</h2>
+                                    <p class="article-content">
+                                         Aantal films: {{ vraag.amount }}
+                                    </p>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                    <div class="tab-pane fade" id="vraag2" role="tabpanel" aria-labelledby="vraag2-tab">
+                        <h3 class="my-3">Wat zijn de top 10 films met hoogste IMDB-rating?  </h3>
+                        {% for vraag in vraag2SQL %}
+                            <article class="media content-section my-4 pb-0 pt-3" style="background-color: #3AAFA9;">
+                                <div class="media-body" >
+                                    <h2 class="article-title mt-2">Film naam: {{ vraag.show_title }}</h2>
+                                    <p class="article-content">
+                                        IMDb Rating: {{ vraag.rating }}
+                                    </p>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                    <div class="tab-pane fade" id="vraag3" role="tabpanel" aria-labelledby="vraag3-tab">
+                        <h3 class="my-3">Aantal films met een rating onder de 6 waar actrices in hebben gespeeld. </h3>
+                            {% for vraag in vraag3SQL %}
+                            <article class="media content-section my-4 pb-0 pt-3" style="background-color: #3AAFA9;">
+                                <div class="media-body" >
+                                    <h2 class="article-title mt-2">Naam: {{ vraag.first_name }} {{ vraag.last_name }}</h2>
+                                    <p class="article-content">
+                                         Aantal films: {{ vraag.amount }}
+                                    </p>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                    <div class="tab-pane fade" id="vraag4" role="tabpanel" aria-labelledby="vraag4-tab">
+                        <h3 class="my-3">Welk genre film is het meest uitgebracht?</h3>
+                        {% for vraag in vraag4SQL %}
+                            <article class="media content-section my-4 pb-0 pt-3" style="background-color: #3AAFA9;">
+                                <div class="media-body" >
+                                    <h2 class="article-title mt-2">Genre: {{ vraag.genre_name }}</h2>
+                                    <p class="article-content">
+                                        Aantal uitgebracht: {{ vraag.amount }}
+                                    </p>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                    <div class="tab-pane fade" id="vraag5" role="tabpanel" aria-labelledby="vraag5-tab">
+                        <h3 class="my-3">Hoeveel films per genre combinatie hebben een hogere IDMB-rating dan 8?</h3>
+                            {% for vraag in vraag5SQL %}
+                            <article class="media content-section my-4 pb-0 pt-3" style="background-color: #3AAFA9;">
+                                <div class="media-body" >
+                                    <h2 class="article-title mt-2">Genre combies: {{ vraag.combies }}</h2>
+                                    <p class="article-content">
+                                        Aantal uitgebracht: {{ vraag.amount }}
+                                    </p>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                </div>
+        </div>
+    </div>
+{% endblock content %}
