@@ -43,55 +43,44 @@ def data(request):
 
     return render(request, 'info/chart.html', data)
 
-def popularity_chart(request):
+def charts(request):
     with connection.cursor() as cur:
         cur.execute("""
-        SELECT show_info.release_year, genre.genre_name, count(*)
+        SELECT genre.genre_name, count(*)
         FROM show_info
         INNER JOIN show_info_genre ON show_info.show_info_id = show_info_genre.show_info_id
         INNER JOIN genre ON show_info_genre.genre_id = genre.genre_id
         WHERE show_info.release_year = 2016
-        GROUP BY show_info.release_year, genre.genre_name
+        GROUP BY show_info.release_year, genre.genre_name HAVING count(*) > 5
         """)
         fetched = cur.fetchall()
-    xdata = []
-    ydata = []
+    genre_colors = []
     genres = []
-    chartdata = []
+    genre_data = []
     for fetch in fetched:
-        year = fetch[0]
-        genre = fetch[1]
-        number = fetch[2]
-        if year not in xdata:
-            xdata.append(year)
+        genre = fetch[0]
+        number = fetch[1]
         if genre not in genres:
             genres.append(genre)
-        if number not in ydata:
-            ydata.append(number)
-        chartdata.append(number)
+        genre_data.append(number)
+        r = hex(random.randrange(0, 255))[2:]
+        g = hex(random.randrange(0, 255))[2:]
+        b = hex(random.randrange(0, 255))[2:]
+        random_col = '#' + r + g + b
+        genre_colors.append(random_col)
 
-    data = {
-        'chartdata': chartdata,
-        'labels': genres
-    }
-
-    return render(request, 'info/chart.html', data)
-
-def chart(request):
-    labels = []
-    data = []
-    colors = []
-
-    cursor = connection.cursor()
-    cursor.execute("SELECT country.country_name, COUNT(show_info.show_info_id) as count "
-                   "FROM show_info "
-                   "LEFT JOIN rating ON show_info.rating_id = rating.rating_id "
-                   "LEFT JOIN show_info_country ON show_info.show_info_id = show_info_country.show_info_id "
-                   "LEFT JOIN country ON show_info_country.country_id = country.country_id "
-                   "WHERE rating.rating > 8 AND country.country_name IS NOT NULL "
-                   "GROUP BY country.country_name HAVING COUNT(show_info.show_info_id) > 100")
-
-    returned_data = cursor.fetchall()
+    country_colors = []
+    country_labels = []
+    country_data = []
+    with connection.cursor() as cur:
+        cur.execute("SELECT country.country_name, COUNT(show_info.show_info_id) as count "
+                       "FROM show_info "
+                       "LEFT JOIN rating ON show_info.rating_id = rating.rating_id "
+                       "LEFT JOIN show_info_country ON show_info.show_info_id = show_info_country.show_info_id "
+                       "LEFT JOIN country ON show_info_country.country_id = country.country_id "
+                       "WHERE rating.rating > 8 AND country.country_name IS NOT NULL "
+                       "GROUP BY country.country_name HAVING COUNT(show_info.show_info_id) > 100")
+        returned_data = cur.fetchall()
 
     for country in returned_data:
         r = hex(random.randrange(0, 255))[2:]
@@ -99,14 +88,65 @@ def chart(request):
         b = hex(random.randrange(0, 255))[2:]
 
         random_col = '#' + r + g + b
-        colors.append(random_col)
-        labels.append(country[0])
-        data.append(country[1])
-    return render(request, 'info/chart.html', {
-        'country_labels': labels,
-        'country_data': returned_data,
-        'colors': colors
-    })
+        country_colors.append(random_col)
+        country_labels.append(country[0])
+        country_data.append(country[1])
+
+    with connection.cursor() as cur:
+        cur.execute("""
+        SELECT show_info.release_year, genre.genre_name, count(*) as amount
+        FROM show_info
+        INNER JOIN show_info_genre ON show_info.show_info_id = show_info_genre.show_info_id
+        INNER JOIN genre ON show_info_genre.genre_id = genre.genre_id
+        INNER JOIN rating ON show_info.rating_id = rating.rating_id
+        WHERE rating.amount_of_votes > 20 AND show_info.release_year BETWEEN 2010 AND 2016
+        GROUP BY show_info.release_year, genre.genre_name HAVING count(*)> 5
+        """)
+        fetched = cur.fetchall()
+
+    yearly_data = []
+    years = []
+    for genre in genres:
+        r = hex(random.randrange(0, 255))[2:]
+        g = hex(random.randrange(0, 255))[2:]
+        b = hex(random.randrange(0, 255))[2:]
+        random_col = '#' + r + g + b
+        yearly_data.append({
+            "label": genre,
+            "backgroundColor": "rgba(0,0,0,0)",
+            "borderColor": random_col,
+            "pointBackgroundColor": "rgb(0,0,0)",
+            "data": []
+
+        })
+    count = 0
+    for fetch in fetched:
+        year = fetch[0]
+        genre = fetch[1]
+        amount = fetch[2]
+        if year not in years:
+            years.append(year)
+        for dataset in yearly_data:
+            if ("label", genre) in dataset.items():
+                dataset["data"].append({
+                    "x": f"{year}",
+                    "y": amount
+
+                })
+                count += 1
+
+    data = {
+        'genre_data': genre_data,
+        'genre_labels': genres,
+        'country_data': country_data,
+        'country_labels': country_labels,
+        'genre_colors': genre_colors,
+        'country_colors': country_colors,
+        'yearly_data': yearly_data,
+        'years': years
+    }
+
+    return render(request, 'info/chart.html', data)
 
 
 def rscript(request):
